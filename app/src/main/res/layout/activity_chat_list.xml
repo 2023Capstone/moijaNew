@@ -13,4 +13,8 @@
         android:text="채팅방목록"
         tools:layout_editor_absoluteX="176dp"
         tools:layout_editor_absoluteY="374dp" />
+
+    <Button
+        android:layout_width="200dp"
+        android:layout_height="100dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
