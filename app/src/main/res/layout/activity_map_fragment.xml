@@ -29,6 +29,11 @@
             android:layout_height="0dp"
             android:layout_weight="5" /> <!-- 화면의 75% 차지 -->
 
+    <com.kakao.vectormap.MapView
+        android:id="@+id/map_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
         <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
