@@ -215,6 +215,7 @@ public class MapFragment extends Fragment {
                         if(!searchingwithMine)
                         {
                             Mylocation.Lastlocation=location;
+
                             if(Mylocation.Lastlocation!=null) {
                                 //마커 스타일 설정
                                 LabelStyles styles = kakaoMap.getLabelManager()
