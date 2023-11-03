@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 메뉴바의 아이템들을 담는 xml-->
+    <item
+        android:id="@+id/menuitem1"
+        android:title="출발지/목적지 입력" />
+    <item
+        android:id="@+id/menuitem2"
+        android:title="버스노선 확인" />
+    <item
+        android:id="@+id/menuitem3"
+        android:title="이하 다른메뉴들" />
+</menu>

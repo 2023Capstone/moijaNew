@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- 인터넷 사용 권한 설정 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <application
+        android:name=".KakoApplication"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Moija"
+        tools:targetApi="31">
+        <meta-data
+            android:name="com.kakao.vectormap.APP_KEY"
+            android:value="e2ae3134cde7671dfbff94e05053a585" />
+        <activity
+
+            android:name=".map.SearchPage"
+            android:exported="false" />
+        <activity
+            android:name=".fragment.MapFragment"
+            android:exported="false" />
+        <activity
+
+            android:name=".Location.Location"
+            android:exported="false" />
+        <activity
+
+            android:name=".fragment.Fragment_Chat_Map"
+            android:exported="false" />
+        <activity
+
+            android:name=".fragment.ChatFragment"
+            android:exported="false" />
+        <activity
+            android:name=".chat.Chat"
+            android:exported="true" />
+
+
+        <activity
+            android:name=".IntroActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- Redirect URI: "kakao${NATIVE_APP_KEY}://oauth" -->
+                <data
+                    android:host="oauth"
+                    android:scheme="kakao44bdf179ef832c51f0a780b3f0154b53" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
