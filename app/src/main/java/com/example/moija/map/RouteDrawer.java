@@ -18,7 +18,7 @@ import java.util.Arrays;
 //길을 그려주는 클래스
 public class RouteDrawer {
 
-    public MapProvider mapProvider=new MapProvider() {
+    private MapProvider mapProvider=new MapProvider() {
         @Override
         public RouteLineLayer getRouteLineLayer() {
             return routeLineLayer;
@@ -26,7 +26,7 @@ public class RouteDrawer {
     };
     RouteLineLayer routeLineLayer;
 
-     public ArrayList<RouteLine> GoalRoutes=new ArrayList<>();
+    public ArrayList<RouteLine> GoalRoutes=new ArrayList<>();
     public RouteDrawer(MapProvider mapProvider) {
         this.mapProvider = mapProvider;
     }

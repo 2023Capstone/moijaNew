@@ -17,11 +17,67 @@
         android:backgroundTint="@color/white"
         android:layout_gravity="left|end"
         android:layout_margin="16dp" />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/searchbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/find"
+        android:backgroundTint="@color/white"
+        android:layout_gravity="right|end"
+        android:layout_margin="16dp" />
 
     <com.kakao.vectormap.MapView
         android:id="@+id/map_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+    <LinearLayout
+        android:visibility="invisible"
+        android:id="@+id/setGoalLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
 
+        android:orientation="vertical"
+        android:layout_marginBottom="45dp"
+        android:layout_gravity="bottom">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FAFAFA"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp"
+            android:orientation="horizontal">
+            <ImageButton
+                android:id="@+id/busbtn"
+                android:src="@drawable/bus"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginLeft="20dp"
+                android:padding="0sp"
+                android:background="@android:color/transparent"
+                android:scaleType="centerCrop"
+                />
+
+            <ImageButton
+                android:id="@+id/outbusbtn"
+                android:src="@drawable/outbus"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginLeft="70dp"
+                android:padding="0sp"
+                android:background="@android:color/transparent"
+                android:scaleType="centerCrop"
+                />
+            <ImageButton
+                android:id="@+id/trainbtn"
+                android:src="@drawable/train"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginLeft="60dp"
+                android:background="@android:color/transparent"
+                android:padding="0sp"
+                android:scaleType="centerCrop"
+                />
+        </LinearLayout>
+    </LinearLayout>
 
 </FrameLayout>

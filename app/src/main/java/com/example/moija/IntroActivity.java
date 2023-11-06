@@ -6,7 +6,7 @@ import android.os.Handler;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.moija.fragment.Fragment_Chat_Map;
+import com.example.moija.fragment.HomeFragment;
 
 public class IntroActivity extends AppCompatActivity {
     @Override
@@ -17,7 +17,7 @@ public class IntroActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent(getApplicationContext(), Fragment_Chat_Map.class);
+                Intent intent = new Intent(getApplicationContext(), HomeFragment.class);
                 startActivity(intent); //인트로 실행 후 바로 LoginActivity 넘어감.
                 finish();
             }

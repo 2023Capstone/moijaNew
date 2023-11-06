@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name=".KakoApplication"
@@ -13,38 +14,42 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:theme="@style/Theme.Moija"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Moija"
         tools:targetApi="31">
         <meta-data
             android:name="com.kakao.vectormap.APP_KEY"
-            android:value="e2ae3134cde7671dfbff94e05053a585" />
+            android:value="44bdf179ef832c51f0a780b3f0154b53" />
         <activity
-
+            android:theme="@style/Theme.Moija"
             android:name=".map.SearchPage"
             android:exported="false" />
         <activity
+            android:theme="@style/Theme.Map"
             android:name=".fragment.MapFragment"
             android:exported="false" />
         <activity
-
+            android:theme="@style/Theme.Moija"
             android:name=".Location.Location"
             android:exported="false" />
-        <activity
 
-            android:name=".fragment.Fragment_Chat_Map"
-            android:exported="false" />
         <activity
-
+            android:theme="@style/Theme.Moija"
             android:name=".fragment.ChatFragment"
             android:exported="false" />
         <activity
+            android:theme="@style/Theme.Moija"
             android:name=".chat.Chat"
             android:exported="true" />
+        <activity
+            android:theme="@style/Theme.Map"
+            android:name=".fragment.HomeFragment"
+            android:exported="false" />
 
 
         <activity
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:name=".IntroActivity"
             android:exported="true">
             <intent-filter>

@@ -22,7 +22,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.moija.R;
-import com.example.moija.fragment.Fragment_Chat_Map;
+import com.example.moija.fragment.HomeFragment;
 import com.example.moija.fragment.MapFragment;
 import com.google.gson.annotations.SerializedName;
 
@@ -163,7 +163,7 @@ public class SearchPage extends AppCompatActivity {
         backbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent myIntent=new Intent(SearchPage.this, Fragment_Chat_Map.class);
+                Intent myIntent=new Intent(SearchPage.this, HomeFragment.class);
                 startActivity(myIntent);
             }
         });
@@ -257,7 +257,7 @@ public class SearchPage extends AppCompatActivity {
                     else if(Goalsearched==true)
                     {
                         //인텐트를 이용해 메인액티비티로 넘어가는데
-                        Intent myIntent=new Intent(SearchPage.this, Fragment_Chat_Map.class);
+                        Intent myIntent=new Intent(SearchPage.this, HomeFragment.class);
                         //FindGoal이라는 String Key를 넘겨줌
                         //메인액티비티에서 이 Key를 확인하고 길찾기 메서드를 실행시킴
                         myIntent.putExtra("key","FindGoal");
@@ -291,7 +291,7 @@ public class SearchPage extends AppCompatActivity {
                     else if(Startsearched==true)
                     {
                         //인텐트를 이용해 메인액티비티로 넘어가는데
-                        Intent myIntent=new Intent(SearchPage.this, Fragment_Chat_Map.class);
+                        Intent myIntent=new Intent(SearchPage.this, HomeFragment.class);
                         //FindGoal이라는 String Key를 넘겨줌
                         //메인액티비티에서 이 Key를 확인하고 길찾기 메서드를 실행시킴
                         myIntent.putExtra("key","FindGoal");
