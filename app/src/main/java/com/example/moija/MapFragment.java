@@ -91,7 +91,7 @@ public class MapFragment extends Fragment {
     RouteDrawer routeDrawer;
     //카카오맵 클래스 선언(사용하고 있는 카카오맵을 담기 위함)
     //API 키
-    protected static final String API_KEY = "44bdf179ef832c51f0a780b3f0154b53";
+    protected static final String API_KEY = "ab4624b190ebccd6369144de2502ad14";
 
     protected static final String OdsayAPI_KEY="Bk3FXTpa4bUs3dxTOsUxSFvLGFYhTaoBDPKfSPOLdwI";
     //api 기본 URL
