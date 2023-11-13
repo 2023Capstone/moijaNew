@@ -10,8 +10,8 @@ import com.example.moija.fragment.MapFragment;
 //값을 저장해놓고 액티비티가 바뀌어도 다시 불러올 수 있도록 하기 위함
 public class Mylocation {
     public static Location Lastlocation;
-    public static MapFragment.Place selectedPlace;
+    public static Place selectedPlace;
     public static Location selectedLocation=new Location("Goal");
-    public static MapFragment.Place StartPlace;
+    public static Place StartPlace;
     public static Location startLocation=new Location("Start");
 }

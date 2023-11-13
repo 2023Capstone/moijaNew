@@ -1,10 +1,8 @@
 package com.example.moija.fragment;
 
+import static com.example.moija.map.MainPage.API_KEY;
+
 import com.example.moija.R;
-
-import static android.content.Intent.getIntent;
-
-import static androidx.core.content.ContentProviderCompat.requireContext;
 
 import android.content.Context;
 import android.content.Intent;
@@ -23,11 +21,9 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -40,7 +36,7 @@ import com.example.moija.map.KakaoMobilityclasses;
 import com.example.moija.map.MapProvider;
 import com.example.moija.map.Mylocation;
 import com.example.moija.map.RouteDrawer;
-import com.example.moija.map.SearchPage;
+import com.example.moija.map.MainPage;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.Gson;
@@ -97,30 +93,9 @@ public class MapFragment extends Fragment {
     RouteDrawer routeDrawer;
     //카카오맵 클래스 선언(사용하고 있는 카카오맵을 담기 위함)
     //API 키
-    public static final String API_KEY = "8661fab6b43b9d4005d9eb9a06b10449";
-    //api 기본 URL
-    public static final String BASE_URL = "https://dapi.kakao.com/";
+
     //REST api의 장소 정보를 담기 위한 객체
     //장소 검색 시에 받아온 정보를 Place 형태로 리스트로 담아 저장
-    public class Place {
-        private String place_name; //장소명
-        private String address_name; //주소명
-        private double x; // 경도
-        private double y; // 위도
-        public String getPlaceName() {
-            return place_name;
-        }
-        public String getAddressName() {
-            return address_name;
-        }
-        public double getX() {
-            return x;
-        }
-        public double getY() {
-            return y;
-        }
-    }
-
 
     //길찾기 API를 가져오는 쿼리 셋팅
     public interface DirectionApi {
@@ -152,7 +127,7 @@ public class MapFragment extends Fragment {
                 // 아이템을 선택했을 때 실행할 동작 구현
                 int itemId = item.getItemId();
                 if (itemId == R.id.menuitem1) {
-                    Intent Movetosearch = new Intent(getActivity(), SearchPage.class);
+                    Intent Movetosearch = new Intent(getActivity(), MainPage.class);
                     startActivity(Movetosearch);
                 } else if (itemId == R.id.menuitem2) {
                     Toast.makeText(getActivity().getApplicationContext(), "버스노선 확인", Toast.LENGTH_SHORT).show();
@@ -374,14 +349,12 @@ public class MapFragment extends Fragment {
                 .baseUrl("https://apis-navi.kakaomobility.com/") // 카카오 모빌리티 API의 기본 URL
                 .addConverterFactory(GsonConverterFactory.create()) // Gson 변환기 추가
                 .build();
-
         DirectionApi directionApi = retrofit.create(DirectionApi.class);
         //카카오모빌리티api에서 쿼리로 정보받아옴
         Call<KakaoMobilityclasses.Root> call = directionApi.getDirections("KakaoAK " + API_KEY,
                 Mylocation.StartPlace.getX()+","+Mylocation.StartPlace.getY(),
                 Mylocation.selectedPlace.getX()+","+Mylocation.selectedPlace.getY(),
                 false);
-
         call.enqueue(new Callback<KakaoMobilityclasses.Root>() {
             @Override
             public void onResponse(Call<KakaoMobilityclasses.Root> call, Response<KakaoMobilityclasses.Root> response) {

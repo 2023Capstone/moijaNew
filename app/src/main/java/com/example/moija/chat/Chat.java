@@ -12,7 +12,6 @@ import com.example.moija.R;
 
 public class Chat extends Fragment {
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

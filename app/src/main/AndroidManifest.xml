@@ -22,7 +22,7 @@
             android:value="e2ae3134cde7671dfbff94e05053a585" />
         <activity
 
-            android:name=".map.SearchPage"
+            android:name=".map.MainPage"
             android:exported="false" />
         <activity
             android:name=".fragment.MapFragment"
