@@ -297,7 +297,7 @@ public class MainPage extends AppCompatActivity{
                 .build();
         KakaoApi kakaoapi = retrofit.create(KakaoApi.class);
         Call<SearchResults> call=null;
-        call=kakaoapi.searchNearPlace("KakaoAK "+API_KEY, query,Mylocation.Lastlocation.getLongitude(),Mylocation.Lastlocation.getLatitude(),50);
+        call=kakaoapi.searchNearPlace("KakaoAK "+API_KEY, query,Mylocation.Lastlocation.getLongitude(),Mylocation.Lastlocation.getLatitude(),500);
         call.enqueue(new Callback<SearchResults>() {
             @Override
             public void onResponse(Call<SearchResults> call, Response<SearchResults> response) {
