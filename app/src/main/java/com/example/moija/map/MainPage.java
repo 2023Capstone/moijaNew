@@ -297,20 +297,20 @@ public class MainPage extends AppCompatActivity{
                 .build();
         KakaoApi kakaoapi = retrofit.create(KakaoApi.class);
         Call<SearchResults> call=null;
-        call=kakaoapi.searchNearPlace("KakaoAK "+API_KEY, query,Mylocation.Lastlocation.getLongitude(),Mylocation.Lastlocation.getLatitude(),500);
+        call=kakaoapi.searchNearPlace("KakaoAK "+API_KEY, query,Mylocation.Lastlocation.getLongitude(),Mylocation.Lastlocation.getLatitude(),1000);
         call.enqueue(new Callback<SearchResults>() {
             @Override
             public void onResponse(Call<SearchResults> call, Response<SearchResults> response) {
                 if (response.isSuccessful()) {
-
                     SearchResults searchResults = response.body();
                     List<Place> places=searchResults.getPlaces();
                     if(places.get(0).getPlaceName()!=null)
                     {
-                        String Json = new Gson().toJson(places.get(0).getPlaceName());
+                        /*로그에 결과값 표시
+                        String Json = new Gson().toJson(places);
+                        Log.d("mylog",Json);*/
                         startEditText.setText("출발 위치 : "+places.get(0).getPlaceName());
                         Mylocation.StartPlace=places.get(0);
-                        Log.d("mylog",Json);
                         Startsearched=true;
                     }
                 }
@@ -339,19 +339,34 @@ public class MainPage extends AppCompatActivity{
             public void onResponse(Call<SearchResults.LoctoAddResult> call, Response<SearchResults.LoctoAddResult> response) {
                 if (response.isSuccessful()) {
                     SearchResults.LoctoAddResult searchResults = response.body();
-                    if(searchResults.getDocuments().get(0).getRoad_address()!=null)
+                    SearchResults.LoctoAddResult.RoadAddress roadaddress=searchResults.getDocuments().get(0).getRoad_address();
+                    if(roadaddress!=null)
                     {
-                        String roadAddressJson = new Gson().toJson(searchResults.getDocuments().get(0).getRoad_address());
-                        startEditText.setText("출발 위치 : "+searchResults.getDocuments().get(0).getRoad_address().getBuilding_name());
-                        Log.d("mylog",roadAddressJson);
-                        Startsearched=true;
+                        /*로그에 결과표시
+                        String roadAddressJson = new Gson().toJson(roadaddress);
+                        Log.d("mylog", roadAddressJson);*/
+                        if(roadaddress.getBuilding_name()!=null && !roadaddress.getBuilding_name().isEmpty()) {
+                            startEditText.setText("출발 위치 : " + searchResults.getDocuments().get(0).getRoad_address().getBuilding_name());
+                            Startsearched = true;
+                        }
+                        else
+                        {
+                            /*로그에 결과표시
+                            String AddressJson = new Gson().toJson(searchResults.getDocuments().get(0).getAddress());
+                            Log.d("mylog",AddressJson);*/
+                            //도로명주소인 RoadAddress에 있는 building_name(건물명)이 null이거나 빈값이 나올수도 있음
+                            //따라서 그럴 경우에 주소를 넘겨주어 주소를 통해 가까운 건물을 검색하는 메서드를 호출함
+                            FindNearPlace(searchResults.getDocuments().get(0).getAddress().getAddress_name());
+                        }
                     }
                     else {
+                        /*로그에 결과표시
                         String AddressJson = new Gson().toJson(searchResults.getDocuments().get(0).getAddress());
+                        Log.d("mylog",AddressJson);*/
                         //도로명주소인 RoadAddress가 null값이 나올수도 있음
                         //따라서 그럴 경우에 주소를 넘겨주어 주소를 통해 가까운 건물을 검색하는 메서드를 호출함
                         FindNearPlace(searchResults.getDocuments().get(0).getAddress().getAddress_name());
-                        Log.d("mylog",AddressJson);
+
                     }
                 }
             }
