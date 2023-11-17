@@ -1,6 +1,6 @@
 package com.example.moija.fragment;
 
-import static com.example.moija.map.MainPage.API_KEY;
+import static com.example.moija.MainPage.API_KEY;
 
 import com.example.moija.R;
 
@@ -36,7 +36,7 @@ import com.example.moija.map.KakaoMobilityclasses;
 import com.example.moija.map.MapProvider;
 import com.example.moija.map.Mylocation;
 import com.example.moija.map.RouteDrawer;
-import com.example.moija.map.MainPage;
+import com.example.moija.MainPage;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.Gson;
@@ -294,14 +294,14 @@ public class MapFragment extends Fragment {
 
             LabelStyles styles = thiskakaoMap.getLabelManager()
                     .addLabelStyles(LabelStyles.from(LabelStyle.from(R.drawable.goalmarker).setTextStyles(20, Color.BLACK).setApplyDpScale(false)));
-            LabelOptions options = LabelOptions.from(LatLng.from(Mylocation.selectedPlace.getY(), Mylocation.selectedPlace.getX())).setTexts("도착").setStyles(styles);
+            LabelOptions options = LabelOptions.from(LatLng.from(Mylocation.GoalPlace.getY(), Mylocation.GoalPlace.getX())).setTexts("도착").setStyles(styles);
             goalLabel = layer.addLabel(options);
             goalLabel.scaleTo(0.15f, 0.15f);
             Mylocation.startLocation.setLatitude(Mylocation.StartPlace.getY());
             Mylocation.startLocation.setLongitude(Mylocation.StartPlace.getX());
-            Mylocation.selectedLocation.setLatitude(Mylocation.selectedPlace.getY());
-            Mylocation.selectedLocation.setLongitude(Mylocation.selectedPlace.getX());
-            float distance = Mylocation.startLocation.distanceTo(Mylocation.selectedLocation);
+            Mylocation.goalLocation.setLatitude(Mylocation.GoalPlace.getY());
+            Mylocation.goalLocation.setLongitude(Mylocation.GoalPlace.getX());
+            float distance = Mylocation.startLocation.distanceTo(Mylocation.goalLocation);
             int zoomLevel;
             if (distance < 1000) {
                 zoomLevel = 15;  // 거리가 1km 미만이면 확대 수준 15
@@ -312,8 +312,8 @@ public class MapFragment extends Fragment {
             }
             //카메라를 시작 지점, 끝지점 사이 중간 쪽으로 이동
             setGoalLayout.setVisibility(View.VISIBLE);
-            routeinfo.setText(Mylocation.StartPlace.getPlaceName()+"-"+Mylocation.selectedPlace.getPlaceName());
-            CameraUpdate cameraUpdatetoGoal = CameraUpdateFactory.newCenterPosition(LatLng.from((Mylocation.StartPlace.getY()+Mylocation.selectedPlace.getY())/2,(Mylocation.StartPlace.getX()+Mylocation.selectedPlace.getX())/2),zoomLevel);
+            routeinfo.setText(Mylocation.StartPlace.getPlaceName()+"-"+Mylocation.GoalPlace.getPlaceName());
+            CameraUpdate cameraUpdatetoGoal = CameraUpdateFactory.newCenterPosition(LatLng.from((Mylocation.StartPlace.getY()+Mylocation.GoalPlace.getY())/2,(Mylocation.StartPlace.getX()+Mylocation.GoalPlace.getX())/2),zoomLevel);
             thiskakaoMap.moveCamera(cameraUpdatetoGoal, CameraAnimation.from(500, true, true));
 
         }
@@ -353,7 +353,7 @@ public class MapFragment extends Fragment {
         //카카오모빌리티api에서 쿼리로 정보받아옴
         Call<KakaoMobilityclasses.Root> call = directionApi.getDirections("KakaoAK " + API_KEY,
                 Mylocation.StartPlace.getX()+","+Mylocation.StartPlace.getY(),
-                Mylocation.selectedPlace.getX()+","+Mylocation.selectedPlace.getY(),
+                Mylocation.GoalPlace.getX()+","+Mylocation.GoalPlace.getY(),
                 false);
         call.enqueue(new Callback<KakaoMobilityclasses.Root>() {
             @Override

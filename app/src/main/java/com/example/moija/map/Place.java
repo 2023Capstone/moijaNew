@@ -14,6 +14,7 @@ public class Place {
         public String getPlaceName() {
             return place_name;
         }
+        public void setPlaceName(String name){this.place_name=name;}
         public String getAddressName() {
             return address_name;
         }

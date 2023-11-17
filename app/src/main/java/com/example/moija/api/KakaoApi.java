@@ -1,4 +1,6 @@
-package com.example.moija.map;
+package com.example.moija.api;
+
+import com.example.moija.map.SearchResults;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

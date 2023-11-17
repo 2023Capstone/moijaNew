@@ -15,7 +15,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.example.moija.map.MainPage;
 import com.example.moija.map.Mylocation;
 
 public class IntroActivity extends AppCompatActivity {

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/white"
-    tools:context=".map.MainPage">
+    tools:context=".MainPage">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -48,8 +48,6 @@
                 android:layout_width="350dp"
                 android:textColor="@color/black"
                 android:layout_height="50dp" />
-
-
         </LinearLayout>
 
 
@@ -62,13 +60,5 @@
         android:layout_height="wrap_content"
         android:dividerHeight="1dp"
         android:visibility="invisible"
-        android:divider="@android:drawable/divider_horizontal_bright"/>
-    <ListView
-        android:visibility="visible"
-        android:layout_marginTop="20dp"
-        android:id="@+id/historyListView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:dividerHeight="1dp"
         android:divider="@android:drawable/divider_horizontal_bright"/>
 </LinearLayout>
