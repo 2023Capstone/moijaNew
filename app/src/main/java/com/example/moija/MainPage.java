@@ -47,7 +47,6 @@ public class MainPage extends AppCompatActivity{
     private Button mylocbtn;
 
     private Button makemapbtn;
-    private FrameLayout Mapframe;
     //시작점을 정했는지, 도착점을 정했는지
     private boolean Startsearched,Goalsearched=false;
     //검색결과를 담을 리스트뷰
@@ -71,7 +70,6 @@ public class MainPage extends AppCompatActivity{
         getSupportFragmentManager().beginTransaction().replace(R.id.Mapframe,MapFragment).commit();
         //키보드 제어
         InputMethodManager Keyboardmanager = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
-        SharedPreferences prefs=getSharedPreferences("SearchHistoryPrefs",Context.MODE_PRIVATE);
         //원래는 검색 후에 결과들 중 하나 선택하면 맵이 띄워져야 하나 합치기 전이므로 일단 임시적으로 맵을 키고 끌 수 있는 버튼을 구현함
         makemapbtn.setOnClickListener(new View.OnClickListener() {
             @Override
