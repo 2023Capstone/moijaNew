@@ -12,13 +12,16 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import com.example.moija.api.KakaoApi;
+import com.example.moija.fragment.MapFragment;
 import com.example.moija.map.Mylocation;
 import com.example.moija.map.Place;
 import com.example.moija.map.SearchResults;
@@ -35,21 +38,25 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 //검색 페이지에 관한 내용
 public class MainPage extends AppCompatActivity{
-    private EditText startEditText;
-    private EditText goalEditText;
+    private EditText startEditText,goalEditText;
     //시작점을 검색하는건지 도착지점을 검색하는지 나누는 변수 (0: 시작점 1: 도착점)
     private int Searchcode=0;
     public static final String API_KEY = "8661fab6b43b9d4005d9eb9a06b10449";
     //api 기본 URL
     public static final String BASE_URL = "https://dapi.kakao.com/";
     private Button mylocbtn;
-    //시작점을 정했는지
-    private boolean Startsearched=false;
-    //도착지점을 정했는지
-    private boolean Goalsearched=false;
+
+    private Button makemapbtn;
+    private FrameLayout Mapframe;
+    //시작점을 정했는지, 도착점을 정했는지
+    private boolean Startsearched,Goalsearched=false;
     //검색결과를 담을 리스트뷰
     private ListView resultListView;
 
+    private boolean makedmap=false;
+    Fragment MapFragment;
+
+    FrameLayout Mapframelayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,16 +65,53 @@ public class MainPage extends AppCompatActivity{
         goalEditText=findViewById(R.id.goalEditText);
         resultListView = findViewById(R.id.resultListView);
         mylocbtn=findViewById(R.id.mylocbtn);
+        makemapbtn=findViewById(R.id.makemapbtn);
+        Mapframelayout=findViewById(R.id.Mapframe);
+        MapFragment=new MapFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.Mapframe,MapFragment).commit();
         //키보드 제어
         InputMethodManager Keyboardmanager = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
         SharedPreferences prefs=getSharedPreferences("SearchHistoryPrefs",Context.MODE_PRIVATE);
+        //원래는 검색 후에 결과들 중 하나 선택하면 맵이 띄워져야 하나 합치기 전이므로 일단 임시적으로 맵을 키고 끌 수 있는 버튼을 구현함
+        makemapbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(makedmap==false)
+                {
+                    Mapframelayout.setVisibility(View.VISIBLE);
+                    makedmap=true;
+                }
+                else {
+                    Mapframelayout.setVisibility(View.GONE);
+                    makedmap=false;
+                }
+            }
+        });
+        //시작점을 검색하는 EditText에 focus되었을때
+        startEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    Searchcode=0;
+                    //다시 지우는 번거로움을 없애기 위해 자동으로 비운다
+                    if (Startsearched==true) {
+                        Startsearched=false;
+                        startEditText.setText("");
+                    }
+                    if(Goalsearched==false){
+                        goalEditText.setText("");
+                    }
+                    //검색결과 숨김
+                    resultListView.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
         //도착점을 검색하는 EditText에 focus되었을때, startEditText와 같은 로직
         goalEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
                     Searchcode=1;
-                    String text =goalEditText.getText().toString();
                     if (Goalsearched==true) {
                         Goalsearched=false;
                         goalEditText.setText("");
