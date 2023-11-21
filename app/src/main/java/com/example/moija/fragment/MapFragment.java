@@ -124,7 +124,6 @@ public class MapFragment extends Fragment {
 
                                     layer.remove(MyLabel);
                                 }
-
                                 //마커를 그리고 MyLabel에 집어넣음
                                 MyLabel = layer.addLabel(options);
                                 //마커 이미지 크기 조절

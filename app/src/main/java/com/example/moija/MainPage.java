@@ -1,7 +1,12 @@
 package com.example.moija;
 
+import static com.example.moija.time.DateTime.getCurrentDateTime;
+
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -10,6 +15,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -28,7 +34,9 @@ import com.example.moija.map.SearchResults;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -46,7 +54,12 @@ public class MainPage extends AppCompatActivity{
     public static final String BASE_URL = "https://dapi.kakao.com/";
     private Button mylocbtn;
 
-    private Button makemapbtn;
+    private ListView recordPlaceList;
+    private RecordPlaceDB recordPlaceDB;
+    private ArrayAdapter<String> recordAdapter;
+    private Queue<String> dataList;
+    private static final int MAX_QUEUE_SIZE = 10;
+    private Button makemapbtn,dataclear;
     //시작점을 정했는지, 도착점을 정했는지
     private boolean Startsearched,Goalsearched=false;
     //검색결과를 담을 리스트뷰
@@ -66,10 +79,36 @@ public class MainPage extends AppCompatActivity{
         mylocbtn=findViewById(R.id.mylocbtn);
         makemapbtn=findViewById(R.id.makemapbtn);
         Mapframelayout=findViewById(R.id.Mapframe);
+        dataList = new LinkedList<>();
+        dataclear=findViewById(R.id.dataclear);
+        recordPlaceList=findViewById(R.id.recordPlaceList);
+        recordAdapter=new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<>(dataList));
+        recordPlaceDB = new RecordPlaceDB(getApplicationContext());
         MapFragment=new MapFragment();
+        recordPlaceList.setAdapter(recordAdapter);
+        updateList();
         getSupportFragmentManager().beginTransaction().replace(R.id.Mapframe,MapFragment).commit();
         //키보드 제어
         InputMethodManager Keyboardmanager = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+        //데이터베이스 삭제
+        dataclear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            }
+        });
+        //검색기록 누르면 자동 입력되게 함
+        recordPlaceList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // 클릭한 아이템의 값을 가져와서 입력 필드에 표시
+                String selectedItem = dataList.toArray(new String[0])[position];
+                String[] parts = selectedItem.split(" - ");
+                if (parts.length == 2) {
+                    startEditText.setText(parts[0]);
+                    goalEditText.setText(parts[1]);
+                }
+            }
+        });
         //원래는 검색 후에 결과들 중 하나 선택하면 맵이 띄워져야 하나 합치기 전이므로 일단 임시적으로 맵을 키고 끌 수 있는 버튼을 구현함
         makemapbtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,7 +139,8 @@ public class MainPage extends AppCompatActivity{
                         goalEditText.setText("");
                     }
                     //검색결과 숨김
-                    resultListView.setVisibility(View.INVISIBLE);
+                    recordPlaceList.setVisibility(View.VISIBLE);
+                    resultListView.setVisibility(View.GONE);
                 }
             }
         });
@@ -118,7 +158,8 @@ public class MainPage extends AppCompatActivity{
                         startEditText.setText("");
                     }
                     //검색결과 숨김
-                    resultListView.setVisibility(View.INVISIBLE);
+                    recordPlaceList.setVisibility(View.VISIBLE);
+                    resultListView.setVisibility(View.GONE);
                 }
             }
         });
@@ -190,7 +231,8 @@ public class MainPage extends AppCompatActivity{
                         //도착점 정해져있으면
                         else if(Goalsearched==true)
                         {
-                            //검색 결과 띄우는 동작 수행
+                            //검색 결과 기록
+                            addRecord();
                         }
                     }
                     //도착점을 찾는중이었다면
@@ -210,10 +252,12 @@ public class MainPage extends AppCompatActivity{
                         //시작점 정해져있으면
                         else if(Startsearched==true)
                         {
-                           //검색 결과 띄우는 동작 수행
+                            //검색 결과 기록
+                            addRecord();
                         }
                     }
-                resultListView.setVisibility(View.INVISIBLE);
+                recordPlaceList.setVisibility(View.VISIBLE);
+                resultListView.setVisibility(View.GONE);
             }
         });
         mylocbtn.setOnClickListener(new View.OnClickListener() {
@@ -239,6 +283,76 @@ public class MainPage extends AppCompatActivity{
         startEditText.setText("출발 위치: " + place.getPlaceName());
         Startsearched=true;
         Mylocation.StartPlace=place;
+    }
+    //검색기록 추가
+    public void addRecord(){
+        String start = startEditText.getText().toString();
+        String end = goalEditText.getText().toString();
+
+        SQLiteDatabase database = recordPlaceDB.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("startPlace", start);
+        values.put("endPlace", end);
+        values.put("time", getCurrentDateTime());
+        long newRowId = database.insert("recordPlace_DB", null, values);
+
+        if (newRowId == -1) {
+            // 데이터베이스에 추가 실패한 경우
+            Toast.makeText(getApplicationContext(), "데이터베이스에 정보를 추가하는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+        } else {
+            // 데이터베이스에 성공적으로 추가한 경우
+            Toast.makeText(getApplicationContext(), "데이터베이스에 정보를 추가했습니다.", Toast.LENGTH_SHORT).show();
+            dataMaxRows(database);
+            // 데이터베이스 업데이트 후 리스트 업데이트
+            updateList();
+        }
+    }
+
+    private void updateList() {
+        dataList.clear();
+        SQLiteDatabase database = recordPlaceDB.getReadableDatabase();
+
+        Cursor cursor = database.query("recordPlace_DB", null, null, null, null, null, "time DESC", "10");
+
+        int startPlaceIndex = cursor.getColumnIndex("startPlace");
+        int endPlaceIndex = cursor.getColumnIndex("endPlace");
+
+        if (cursor.moveToFirst()) {
+            do {
+                String startPlace = cursor.getString(startPlaceIndex);
+                String endPlace = cursor.getString(endPlaceIndex);
+                dataList.offer(startPlace + " - " + endPlace);
+
+                if (dataList.size() > MAX_QUEUE_SIZE) {
+                    dataList.poll();
+                }
+            } while (cursor.moveToNext());
+        } else {
+            // 데이터가 없음을 사용자에게 알림
+            Toast.makeText(getApplicationContext(), "검색 결과가 없습니다.", Toast.LENGTH_SHORT).show();
+            Log.d("updateList", "커서가 데이터를 가리키지 않습니다.");
+        }
+        cursor.close(); // 커서 사용 후 닫기
+
+        // 어댑터 업데이트
+        recordAdapter.clear();
+        recordAdapter.addAll(dataList);
+        recordAdapter.notifyDataSetChanged();
+        Log.d("updateList", "리스트가 업데이트되었습니다: " + dataList.size());
+    }
+
+    private void dataMaxRows(SQLiteDatabase database) {
+        Cursor cursor = database.rawQuery("SELECT COUNT(*) FROM recordPlace_DB", null);
+        int rowCount = 0;
+        if (cursor.moveToFirst()) {
+            rowCount = cursor.getInt(0);
+        }
+        cursor.close();
+
+        if (rowCount > MAX_QUEUE_SIZE) {
+            String deleteQuery = "DELETE FROM recordPlace_DB WHERE time IN (SELECT MIN(time) FROM recordPlace_DB)";
+            database.execSQL(deleteQuery);
+        }
     }
     //검색한 결과를 바로 시작점/도착점으로 설정할 때 사용(내 위치를 시작점에 넣을때)
     public void searchAndSet(String query, String startorgoal, boolean searchbymyloc){
@@ -370,6 +484,7 @@ public class MainPage extends AppCompatActivity{
                                 SearchAdapter adapter = new SearchAdapter(MainPage.this, filteredplace);
                                 resultListView.setAdapter(adapter);
                             }
+                            recordPlaceList.setVisibility(View.GONE);
                             resultListView.setVisibility(View.VISIBLE);
                         }
                         if(searchcode==1 && Startsearched==true) {
@@ -383,6 +498,7 @@ public class MainPage extends AppCompatActivity{
                                 SearchAdapter adapter = new SearchAdapter(MainPage.this, filteredplace);
                                 resultListView.setAdapter(adapter);
                             }
+                            recordPlaceList.setVisibility(View.GONE);
                             resultListView.setVisibility(View.VISIBLE);
                         }
                         else {
@@ -390,6 +506,7 @@ public class MainPage extends AppCompatActivity{
                                 SearchAdapter adapter = new SearchAdapter(MainPage.this, searchResults.getPlaces());
                                 resultListView.setAdapter(adapter);
                             }
+                            recordPlaceList.setVisibility(View.GONE);
                             resultListView.setVisibility(View.VISIBLE);
                         }
                     }

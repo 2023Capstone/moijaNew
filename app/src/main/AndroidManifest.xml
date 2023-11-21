@@ -33,10 +33,6 @@
             android:exported="false" />
         <activity
 
-            android:name=".fragment.Fragment_Chat_Map"
-            android:exported="false" />
-        <activity
-
             android:name=".fragment.ChatFragment"
             android:exported="false" />
         <activity
