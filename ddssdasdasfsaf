@@ -1,0 +1,23 @@
+[33m2c2dbe1[m[33m ([m[1;36mHEAD -> [m[1;32mhyeonseul[m[33m, [m[1;31morigin/jihwan[m[33m, [m[1;31morigin/hyeonseul[m[33m)[m HEAD@{0}: checkout: moving from hyeonseul to hyeonseul
+[33m2c2dbe1[m[33m ([m[1;36mHEAD -> [m[1;32mhyeonseul[m[33m, [m[1;31morigin/jihwan[m[33m, [m[1;31morigin/hyeonseul[m[33m)[m HEAD@{1}: branch: Reset to origin/hyeonseul
+[33m2c2dbe1[m[33m ([m[1;36mHEAD -> [m[1;32mhyeonseul[m[33m, [m[1;31morigin/jihwan[m[33m, [m[1;31morigin/hyeonseul[m[33m)[m HEAD@{2}: commit: 검색기록 추가
+[33m15790c8[m HEAD@{3}: commit: 수정
+[33m0e321db[m HEAD@{4}: commit: 검색창,맵프래그먼트,그리기(임시)
+[33ma81236c[m HEAD@{5}: commit: 검색창
+[33m7bc6edb[m HEAD@{6}: commit: 내위치 오류 수정
+[33m0b1e40d[m HEAD@{7}: commit: 수정2
+[33m758ef7e[m HEAD@{8}: commit: 전체적인 구조 수정
+[33m4c185cd[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/huijeong[m[33m)[m HEAD@{9}: checkout: moving from 398db634e2ed9c0c8c7470db1cecda3c00bb428d to hyeonseul
+[33m398db63[m HEAD@{10}: commit: 전체적인 구조 수정
+[33m45d792f[m HEAD@{11}: rebase (continue): base
+[33m4c185cd[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/huijeong[m[33m)[m HEAD@{12}: rebase (start): checkout origin/hyeonseul
+[33mf21f68e[m HEAD@{13}: commit: rest api키 변경
+[33mcfaec10[m[33m ([m[1;32mmaster[m[33m)[m HEAD@{14}: checkout: moving from hyeonseul to hyeonseul
+[33mcfaec10[m[33m ([m[1;32mmaster[m[33m)[m HEAD@{15}: branch: Reset to origin/hyeonseul
+[33mcfaec10[m[33m ([m[1;32mmaster[m[33m)[m HEAD@{16}: checkout: moving from hyeonseul to hyeonseul
+[33mcfaec10[m[33m ([m[1;32mmaster[m[33m)[m HEAD@{17}: branch: Reset to origin/hyeonseul
+[33mcfaec10[m[33m ([m[1;32mmaster[m[33m)[m HEAD@{18}: pull --no-stat -v --progress origin master: Fast-forward
+[33m1fb53c1[m HEAD@{19}: checkout: moving from master to hyeonseul
+[33mcfaec10[m[33m ([m[1;32mmaster[m[33m)[m HEAD@{20}: commit: api키 수정
+[33md2715cc[m HEAD@{21}: commit: 수정
+[33m1fb53c1[m HEAD@{22}: initial pull
