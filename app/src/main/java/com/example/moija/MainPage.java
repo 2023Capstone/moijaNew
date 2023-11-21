@@ -27,6 +27,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.example.moija.api.KakaoApi;
+import com.example.moija.api.OdsayApi;
 import com.example.moija.fragment.MapFragment;
 import com.example.moija.map.Mylocation;
 import com.example.moija.map.Place;
@@ -38,6 +39,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -50,8 +53,11 @@ public class MainPage extends AppCompatActivity{
     //시작점을 검색하는건지 도착지점을 검색하는지 나누는 변수 (0: 시작점 1: 도착점)
     private int Searchcode=0;
     public static final String API_KEY = "8661fab6b43b9d4005d9eb9a06b10449";
+
+    public static final String OdsayAPI_KEY="Bk3FXTpa4bUs3dxTOsUxSFvLGFYhTaoBDPKfSPOLdwI";
     //api 기본 URL
     public static final String BASE_URL = "https://dapi.kakao.com/";
+    public static final String OdsayBASE_URL="https://api.odsay.com/";
     private Button mylocbtn;
 
     private ListView recordPlaceList;
@@ -86,7 +92,7 @@ public class MainPage extends AppCompatActivity{
         recordPlaceDB = new RecordPlaceDB(getApplicationContext());
         MapFragment=new MapFragment();
         recordPlaceList.setAdapter(recordAdapter);
-        updateList();
+
         getSupportFragmentManager().beginTransaction().replace(R.id.Mapframe,MapFragment).commit();
         //키보드 제어
         InputMethodManager Keyboardmanager = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
@@ -94,6 +100,10 @@ public class MainPage extends AppCompatActivity{
         dataclear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                SQLiteDatabase database = recordPlaceDB.getWritableDatabase();
+                String deleteQuery = "DELETE FROM recordPlace_DB";
+                database.execSQL(deleteQuery);
+                updateList();
             }
         });
         //검색기록 누르면 자동 입력되게 함
@@ -353,6 +363,29 @@ public class MainPage extends AppCompatActivity{
             String deleteQuery = "DELETE FROM recordPlace_DB WHERE time IN (SELECT MIN(time) FROM recordPlace_DB)";
             database.execSQL(deleteQuery);
         }
+    }
+    public void searchpath(){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(OdsayBASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        OdsayApi odsayApi=retrofit.create(OdsayApi.class);
+        Call<OdsaySearchResult> call=odsayApi.FindRoute(OdsayAPI_KEY,0,126.926493082645,37.6134436427887,127.126936754911,37.5004198786564);
+        call.enqueue(new Callback<OdsaySearchResult>() {
+            @Override
+            public void onResponse(Call<OdsaySearchResult> call, Response<OdsaySearchResult> response) {
+                if (response.isSuccessful()) {
+                    OdsaySearchResult searchResult = response.body();
+                    String Json2 = new Gson().toJson(searchResult);
+                    Log.d("mylog",Json2);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<OdsaySearchResult> call, Throwable t) {
+                    t.printStackTrace();
+            }
+        });
     }
     //검색한 결과를 바로 시작점/도착점으로 설정할 때 사용(내 위치를 시작점에 넣을때)
     public void searchAndSet(String query, String startorgoal, boolean searchbymyloc){
