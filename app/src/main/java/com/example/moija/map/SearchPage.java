@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +23,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.moija.Location.SelectLocation;
 import com.example.moija.R;
 import com.example.moija.fragment.HomeFragment;
 import com.example.moija.fragment.MapFragment;
@@ -43,8 +46,13 @@ import retrofit2.http.Query;
 //검색 페이지에 관한 내용
 public class SearchPage extends AppCompatActivity {
 
-    //검색창
+    //출발 위치, 도착위치 정하는 변수
     private EditText startEditText;
+    private EditText goalEditText;
+
+    // 출발지와 목적지 정보를 저장할 SelectLocation 객체
+    private SelectLocation selectLocation = new SelectLocation();
+
     //시작점을 검색하는건지 도착지점을 검색하는지 나누는 변수 (0: 시작점 1: 도착점)
     private int Searchcode=0;
     //시작점을 정했는지
@@ -53,9 +61,10 @@ public class SearchPage extends AppCompatActivity {
     private boolean Goalsearched=false;
     private MapFragment.Place Startplace;
     private MapFragment.Place Goalplace;
-    private EditText goalEditText;
+
     //검색결과를 담을 리스트뷰
     private ListView resultListView;
+    private ListView busSelectListView;
 
     private ImageButton backbutton;
     //REST API 에서 검색한 장소들을 Place 형태로 SearchResponse가 받음
@@ -142,7 +151,58 @@ public class SearchPage extends AppCompatActivity {
         startEditText = findViewById(R.id.startEditText);
         goalEditText=findViewById(R.id.goalEditText);
         resultListView = findViewById(R.id.resultListView);
+        busSelectListView = findViewById(R.id.busSelectListView);
         backbutton=findViewById(R.id.backbutton);
+        
+        //처음 버스선택List 숨기기
+        busSelectListView.setVisibility(View.GONE);
+        busSelectListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                MapFragment.Place selected = (MapFragment.Place) busSelectListView.getItemAtPosition(position);
+
+                // 출발지 선택 시
+                if(Searchcode == 0) {
+                    Startplace = selected;
+                    selectLocation.setStartLatitude(selected.getY());
+                    selectLocation.setStartLongitude(selected.getX());
+                    Startsearched = true;
+                }
+                // 도착지 선택 시
+                else if(Searchcode == 1) {
+                    Goalplace = selected;
+                    selectLocation.setGoalLatitude(selected.getY());
+                    selectLocation.setGoalLongitude(selected.getX());
+                    Goalsearched = true;
+                }
+
+                // 출발지와 도착지가 모두 선택되었는지 확인하고, busSelectListView를 보여줍니다.
+                if (Startsearched && Goalsearched) {
+
+                    // Now show the busSelectListView with the bus options
+                    busSelectListView.setVisibility(View.VISIBLE);
+
+                    List<String> list = new ArrayList<>();
+                    list.add("Bus 1");
+                    list.add("Bus 2");
+                    list.add("Bus 3");
+
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(SearchPage.this, android.R.layout.simple_list_item_1, list);
+                    busSelectListView.setAdapter(adapter);
+
+                    // Add a header to the ListView for better UX
+                    TextView listViewHeader = new TextView(SearchPage.this);
+                    listViewHeader.setText("Select a Bus Route");
+                    listViewHeader.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+                    listViewHeader.setPadding(10, 30, 10, 30);
+                    listViewHeader.setGravity(Gravity.CENTER_HORIZONTAL);
+
+                    if (busSelectListView.getHeaderViewsCount() == 0) {
+                        busSelectListView.addHeaderView(listViewHeader, null, false);
+                    }
+                }
+            }
+        });
         //1초마다 현재위치가 설정되어있는지 확인하고, 설정되있으면 현재 주소를 토대로 시작위치를 결정하도록 한다
         Timer timer = new Timer();
         TimerTask Findaddress= new TimerTask() {
@@ -264,7 +324,7 @@ public class SearchPage extends AppCompatActivity {
                         //선택했던 장소에 대한 정보를 메인으로 넘김
 
                         //액티비티 이동
-                        startActivity(myIntent);
+//                        startActivity(myIntent);
                     }
                     resultListView.setVisibility(View.INVISIBLE);
 
@@ -298,7 +358,7 @@ public class SearchPage extends AppCompatActivity {
                         //선택했던 장소에 대한 정보를 메인으로 넘김
 
                         //액티비티 이동
-                        startActivity(myIntent);
+//                        startActivity(myIntent);
                     }
 
                     Goalsearched=true;

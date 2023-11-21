@@ -14,51 +14,55 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Theme.Moija"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:theme="@style/Theme.Moija"
         tools:targetApi="31">
+        <activity
+            android:name=".temp.MainActivity_temp"
+            android:exported="false" />
+        <activity
+            android:name=".temp.BusInfo$MainActivity_temp"
+            android:exported="false" />
+
         <meta-data
             android:name="com.kakao.vectormap.APP_KEY"
             android:value="44bdf179ef832c51f0a780b3f0154b53" />
+
         <activity
-            android:theme="@style/Theme.Moija"
             android:name=".map.SearchPage"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.Moija" />
         <activity
-            android:theme="@style/Theme.Map"
             android:name=".fragment.MapFragment"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.Map" />
         <activity
-            android:theme="@style/Theme.Moija"
             android:name=".Location.Location"
-            android:exported="false" />
-
+            android:exported="false"
+            android:theme="@style/Theme.Moija" />
         <activity
-            android:theme="@style/Theme.Moija"
             android:name=".fragment.ChatFragment"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.Moija" />
         <activity
-            android:theme="@style/Theme.Moija"
             android:name=".chat.Chat"
-            android:exported="true" />
+            android:exported="true"
+            android:theme="@style/Theme.Moija" />
         <activity
-            android:theme="@style/Theme.Map"
             android:name=".fragment.HomeFragment"
-            android:exported="false" />
-
-
+            android:exported="false"
+            android:theme="@style/Theme.Map" />
         <activity
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:name=".IntroActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
             android:exported="true">
