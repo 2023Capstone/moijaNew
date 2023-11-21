@@ -1,16 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center">
 
     <TextView
-        android:layout_width="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.424"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.374"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="MoYeo"
-        android:textAlignment="center"
+        android:text="가보자"
         android:textColor="#0A94CC"
-        android:textSize="60dp"
-        android:textStyle="bold" />
+        android:textSize="50dp"
+        android:textStyle="bold"
+        tools:layout_editor_absoluteX="100dp"
+        tools:layout_editor_absoluteY="203dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Going"
+        android:textSize="40dp"
+        android:textStyle="bold"
+        tools:layout_editor_absoluteX="198dp"
+        tools:layout_editor_absoluteY="268dp" />
+
+    <ImageView
+        android:layout_width="436dp"
+        android:layout_height="229dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/bbbus"
+        tools:layout_editor_absoluteX="-13dp"
+        tools:layout_editor_absoluteY="394dp" />
 
 </LinearLayout>
