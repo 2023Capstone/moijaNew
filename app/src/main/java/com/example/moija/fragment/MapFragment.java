@@ -149,6 +149,23 @@ public class MapFragment extends Fragment {
                     }
 
                 };
+                //실시간 위치를 제공하기 위해 권한을 물어봄
+                final LocationManager map_lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+                if ( Build.VERSION.SDK_INT >= 23 &&
+                        ContextCompat.checkSelfPermission( getActivity().getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
+                    ActivityCompat.requestPermissions( getActivity(), new String[] {  android.Manifest.permission.ACCESS_FINE_LOCATION  },
+                            0 );
+                }
+                else{
+                    map_lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                            1000,
+                            1,
+                            gpsLocationListener);
+                    map_lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
+                            1000,
+                            1,
+                            gpsLocationListener);
+                }
             }
         });
         return rootview;
