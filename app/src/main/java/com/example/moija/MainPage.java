@@ -3,8 +3,6 @@ package com.example.moija;
 import static com.example.moija.time.DateTime.getCurrentDateTime;
 
 import android.content.ContentValues;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -26,8 +24,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.example.moija.ODsay.OdsaySearchResult;
 import com.example.moija.api.KakaoApi;
-import com.example.moija.api.OdsayApi;
+import com.example.moija.ODsay.OdsayApi;
 import com.example.moija.fragment.MapFragment;
 import com.example.moija.map.Mylocation;
 import com.example.moija.map.Place;
@@ -39,8 +38,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -280,6 +277,10 @@ public class MainPage extends AppCompatActivity{
                 }
             }
         });
+        //출발지와 도착지가 다 정해지면
+        if(Startsearched && Goalsearched) {
+            resultListView.setVisibility(View.VISIBLE);
+        }
     }
     //도착점 설정 메서드
     public void setGoalPlace(Place place){
@@ -363,29 +364,7 @@ public class MainPage extends AppCompatActivity{
             database.execSQL(deleteQuery);
         }
     }
-    public void searchpath(){
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(OdsayBASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        OdsayApi odsayApi=retrofit.create(OdsayApi.class);
-        Call<OdsaySearchResult> call=odsayApi.FindRoute(OdsayAPI_KEY,0,126.926493082645,37.6134436427887,127.126936754911,37.5004198786564);
-        call.enqueue(new Callback<OdsaySearchResult>() {
-            @Override
-            public void onResponse(Call<OdsaySearchResult> call, Response<OdsaySearchResult> response) {
-                if (response.isSuccessful()) {
-                    OdsaySearchResult searchResult = response.body();
-                    String Json2 = new Gson().toJson(searchResult);
-                    Log.d("mylog",Json2);
-                }
-            }
 
-            @Override
-            public void onFailure(Call<OdsaySearchResult> call, Throwable t) {
-                    t.printStackTrace();
-            }
-        });
-    }
     //검색한 결과를 바로 시작점/도착점으로 설정할 때 사용(내 위치를 시작점에 넣을때)
     public void searchAndSet(String query, String startorgoal, boolean searchbymyloc){
         Retrofit retrofit = new Retrofit.Builder()

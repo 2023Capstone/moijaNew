@@ -1,4 +1,4 @@
-package com.example.moija;
+package com.example.moija.ODsay;
 
 import com.google.gson.annotations.SerializedName;
 
