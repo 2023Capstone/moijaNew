@@ -19,9 +19,9 @@
         tools:targetApi="31">
         <meta-data
             android:name="com.kakao.vectormap.APP_KEY"
-            android:value="e2ae3134cde7671dfbff94e05053a585" />
-        <activity
+            android:value="44bdf179ef832c51f0a780b3f0154b53" />
 
+        <activity
             android:name=".MainPage"
             android:exported="false" />
         <activity

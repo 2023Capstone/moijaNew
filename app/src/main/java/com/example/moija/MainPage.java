@@ -52,7 +52,7 @@ public class MainPage extends AppCompatActivity{
     private EditText startEditText,goalEditText;
     //시작점을 검색하는건지 도착지점을 검색하는지 나누는 변수 (0: 시작점 1: 도착점)
     private int Searchcode=0;
-    public static final String API_KEY = "44bdf179ef832c51f0a780b3f0154b53";
+    public static final String API_KEY = "ab4624b190ebccd6369144de2502ad14";
 
     public static final String OdsayAPI_KEY="Bk3FXTpa4bUs3dxTOsUxSFvLGFYhTaoBDPKfSPOLdwI";
     //api 기본 URL
