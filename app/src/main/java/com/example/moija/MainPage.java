@@ -643,7 +643,7 @@ public class MainPage extends AppCompatActivity{
                     pathInfos.addPath12Names(call.getStartName(), call.getEndName());
 
                     callApi(Mylocation.StartPlace.getX(), Mylocation.StartPlace.getY(), call.getStartX(), call.getStartY(), new CallApiData(), pathInfos);
-                    busLogic(searchResult, callApiData, pathInfos);
+//                    busLogic(searchResult, callApiData, pathInfos);
                     Log.d("path12", pathInfos.toString());
                 }
             }
