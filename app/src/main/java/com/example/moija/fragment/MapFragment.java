@@ -2,6 +2,7 @@ package com.example.moija.fragment;
 
 import com.example.moija.MainPage;
 import com.example.moija.R;
+import com.example.moija.data.PathInfo;
 
 import android.content.Context;
 import android.content.Intent;
@@ -27,6 +28,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.example.moija.data.PathInfo;
 import com.example.moija.map.Mylocation;
 import com.example.moija.map.RouteDrawer;
 import com.kakao.vectormap.KakaoMap;
@@ -190,25 +192,25 @@ public class MapFragment extends Fragment {
             }
         });
 
-        List<Pair<String, String>> busList = new ArrayList<>();
-
-        busList.add(new Pair<>("city", "160"));
-        busList.add(new Pair<>("city", "290"));
-        busList.add(new Pair<>("intercity", "진주행"));
-
-        for (int i = 0; i < busList.size(); i++) {
-            Pair<String, String> bus = busList.get(i);
-            // ">" 기호를 추가할지 결정 (마지막 버스 정보가 아닌 경우에만 추가)
-            boolean addArrow = i < busList.size() - 1;
-
-            if ("city".equals(bus.first)) {
-                // 도시 버스일 경우의 처리
-                addBusInfo(R.drawable.colorful_city_bus, bus.second, addArrow);
-            } else if ("intercity".equals(bus.first)) {
-                // 시외 버스일 경우의 처리
-                addBusInfo(R.drawable.intercity_bus, bus.second, addArrow);
-            }
-        }
+//        List<Pair<String, String>> busList = new ArrayList<>();
+//
+//        busList.add(new Pair<>("city", "160"));
+//        busList.add(new Pair<>("city", "290"));
+//        busList.add(new Pair<>("intercity", "진주행"));
+//
+//        for (int i = 0; i < busList.size(); i++) {
+//            Pair<String, String> bus = busList.get(i);
+//            // ">" 기호를 추가할지 결정 (마지막 버스 정보가 아닌 경우에만 추가)
+//            boolean addArrow = i < busList.size() - 1;
+//
+//            if ("city".equals(bus.first)) {
+//                // 도시 버스일 경우의 처리
+//                addBusInfo(R.drawable.colorful_city_bus, bus.second, addArrow);
+//            } else if ("intercity".equals(bus.first)) {
+//                // 시외 버스일 경우의 처리
+//                addBusInfo(R.drawable.intercity_bus, bus.second, addArrow);
+//            }
+//        }
 
         return rootview;
     }
