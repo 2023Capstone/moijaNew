@@ -25,6 +25,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.example.moija.api.KakaoApi;
+import com.example.moija.api.ODsayService;
 import com.example.moija.api.OdsayApi;
 import com.example.moija.data.CallApiData;
 import com.example.moija.data.OdsayData;
