@@ -5,7 +5,15 @@ public class CallApiData {
     double startPointY;
     double endPointX;
     double endPointY;
-
+    
+    //두번째 api 호출 데이터 저장
+    String startName;
+    String endName;
+    double startX;
+    double startY;
+    double endX;
+    double endY;
+    
     public double getStartPointX() {
         return startPointX;
     }
@@ -38,6 +46,51 @@ public class CallApiData {
         this.endPointY = endPointY;
     }
 
+    public String getStartName() {
+        return startName;
+    }
 
+    public void setStartName(String startName) {
+        this.startName = startName;
+    }
 
+    public String getEndName() {
+        return endName;
+    }
+
+    public void setEndName(String endName) {
+        this.endName = endName;
+    }
+
+    public double getStartX() {
+        return startX;
+    }
+
+    public void setStartX(double startX) {
+        this.startX = startX;
+    }
+
+    public double getStartY() {
+        return startY;
+    }
+
+    public void setStartY(double startY) {
+        this.startY = startY;
+    }
+
+    public double getEndX() {
+        return endX;
+    }
+
+    public void setEndX(double endX) {
+        this.endX = endX;
+    }
+
+    public double getEndY() {
+        return endY;
+    }
+
+    public void setEndY(double endY) {
+        this.endY = endY;
+    }
 }
