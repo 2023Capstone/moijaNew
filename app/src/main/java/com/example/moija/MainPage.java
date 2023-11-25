@@ -60,6 +60,7 @@ public class MainPage extends AppCompatActivity{
     public static final String OdsayAPI_KEY="Bk3FXTpa4bUs3dxTOsUxSFvLGFYhTaoBDPKfSPOLdwI";
     //api 기본 URL
     public static final String BASE_URL = "https://dapi.kakao.com/";
+    public static final String BASE_URL2 = "https://api.odsay.com/";
     public static final String OdsayBASE_URL="https://api.odsay.com/";
     private Button mylocbtn;
 
@@ -371,29 +372,29 @@ public class MainPage extends AppCompatActivity{
             database.execSQL(deleteQuery);
         }
     }
-    public void searchpath(){
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(OdsayBASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        OdsayApi odsayApi=retrofit.create(OdsayApi.class);
-        Call<OdsaySearchResult> call=odsayApi.FindRoute(OdsayAPI_KEY,0,126.926493082645,37.6134436427887,127.126936754911,37.5004198786564);
-        call.enqueue(new Callback<OdsaySearchResult>() {
-            @Override
-            public void onResponse(Call<OdsaySearchResult> call, Response<OdsaySearchResult> response) {
-                if (response.isSuccessful()) {
-                    OdsaySearchResult searchResult = response.body();
-                    String Json2 = new Gson().toJson(searchResult);
-                    Log.d("mylog",Json2);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<OdsaySearchResult> call, Throwable t) {
-                    t.printStackTrace();
-            }
-        });
-    }
+//    public void searchpath(){
+//        Retrofit retrofit = new Retrofit.Builder()
+//                .baseUrl(OdsayBASE_URL)
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .build();
+//        OdsayApi odsayApi=retrofit.create(OdsayApi.class);
+//        Call<OdsaySearchResult> call=odsayApi.FindRoute(OdsayAPI_KEY,0,126.926493082645,37.6134436427887,127.126936754911,37.5004198786564);
+//        call.enqueue(new Callback<OdsaySearchResult>() {
+//            @Override
+//            public void onResponse(Call<OdsaySearchResult> call, Response<OdsaySearchResult> response) {
+//                if (response.isSuccessful()) {
+//                    OdsaySearchResult searchResult = response.body();
+//                    String Json2 = new Gson().toJson(searchResult);
+//                    Log.d("mylog",Json2);
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<OdsaySearchResult> call, Throwable t) {
+//                    t.printStackTrace();
+//            }
+//        });
+//    }
     //검색한 결과를 바로 시작점/도착점으로 설정할 때 사용(내 위치를 시작점에 넣을때)
     public void searchAndSet(String query, String startorgoal, boolean searchbymyloc){
         Retrofit retrofit = new Retrofit.Builder()
