@@ -3,8 +3,6 @@ package com.example.moija;
 import static com.example.moija.time.DateTime.getCurrentDateTime;
 
 import android.content.ContentValues;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -28,6 +26,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.moija.api.KakaoApi;
 import com.example.moija.api.OdsayApi;
+import com.example.moija.data.CallApiData;
 import com.example.moija.fragment.MapFragment;
 import com.example.moija.map.Mylocation;
 import com.example.moija.map.Place;
