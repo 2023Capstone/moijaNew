@@ -27,6 +27,7 @@ import androidx.fragment.app.Fragment;
 import com.example.moija.api.KakaoApi;
 import com.example.moija.api.OdsayApi;
 import com.example.moija.data.CallApiData;
+import com.example.moija.data.OdsayData;
 import com.example.moija.fragment.MapFragment;
 import com.example.moija.map.Mylocation;
 import com.example.moija.map.Place;
