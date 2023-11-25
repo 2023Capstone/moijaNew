@@ -77,6 +77,11 @@ public class MainPage extends AppCompatActivity{
     Fragment MapFragment;
 
     FrameLayout Mapframelayout;
+
+    //데이터 저장
+    private List<PathInfo> pathInfoList = new ArrayList<>();
+    private ArrayAdapter<String> listViewadapter;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
