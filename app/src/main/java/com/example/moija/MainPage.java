@@ -3,6 +3,7 @@ package com.example.moija;
 import static com.example.moija.time.DateTime.getCurrentDateTime;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -24,9 +25,11 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import com.example.moija.ODsay.OdsaySearchResult;
 import com.example.moija.api.KakaoApi;
-import com.example.moija.ODsay.OdsayApi;
+import com.example.moija.api.ODsayService;
+import com.example.moija.data.CallApiData;
+import com.example.moija.data.OdsayData;
+import com.example.moija.data.PathInfo;
 import com.example.moija.fragment.MapFragment;
 import com.example.moija.map.Mylocation;
 import com.example.moija.map.Place;
@@ -37,7 +40,10 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.stream.Collectors;
 
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -54,6 +60,8 @@ public class MainPage extends AppCompatActivity{
     public static final String OdsayAPI_KEY="Bk3FXTpa4bUs3dxTOsUxSFvLGFYhTaoBDPKfSPOLdwI";
     //api 기본 URL
     public static final String BASE_URL = "https://dapi.kakao.com/";
+
+    public static final String BASE_URL2 = "https://api.odsay.com/";
     public static final String OdsayBASE_URL="https://api.odsay.com/";
     private Button mylocbtn;
 
@@ -66,12 +74,17 @@ public class MainPage extends AppCompatActivity{
     //시작점을 정했는지, 도착점을 정했는지
     private boolean Startsearched,Goalsearched=false;
     //검색결과를 담을 리스트뷰
-    private ListView resultListView;
+    private ListView resultListView,searchPathListView;
 
     private boolean makedmap=false;
     Fragment MapFragment;
 
     FrameLayout Mapframelayout;
+
+    //데이터 저장
+    private List<PathInfo> pathInfoList = new ArrayList<>();
+    private ArrayAdapter<String> listViewadapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +98,7 @@ public class MainPage extends AppCompatActivity{
         dataList = new LinkedList<>();
         dataclear=findViewById(R.id.dataclear);
         recordPlaceList=findViewById(R.id.recordPlaceList);
+        searchPathListView=findViewById(R.id.searchPathListView);
         recordAdapter=new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<>(dataList));
         recordPlaceDB = new RecordPlaceDB(getApplicationContext());
         MapFragment=new MapFragment();
@@ -93,6 +107,9 @@ public class MainPage extends AppCompatActivity{
         getSupportFragmentManager().beginTransaction().replace(R.id.Mapframe,MapFragment).commit();
         //키보드 제어
         InputMethodManager Keyboardmanager = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+
+        listViewadapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<>());
+        searchPathListView.setAdapter(listViewadapter);
         //데이터베이스 삭제
         dataclear.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -216,58 +233,65 @@ public class MainPage extends AppCompatActivity{
                 return true;
             }
         });
-        //검색결과중 하나를 누르면 
+        //검색결과중 하나를 누르면
         resultListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             //검색결과 중 하나 클릭하면
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Place selected=(Place) resultListView.getItemAtPosition(position);
-                    //출발위치를 선택한 위치로 결정
-                    if(Searchcode==0)
+                Place selected=(Place) resultListView.getItemAtPosition(position);
+                //출발위치를 선택한 위치로 결정
+                if(Searchcode==0)
+                {
+                    setStartPlace(selected);
+                    //아직 도착점 안정했으면
+                    if(Goalsearched==false)
                     {
-                        setStartPlace(selected);
-                        //아직 도착점 안정했으면
-                        if(Goalsearched==false)
-                        {
-                            //도착점 검색창에 focus를 넘겨줌
-                            goalEditText.requestFocus();
-                            goalEditText.setText("");
-                            //키보드 올림
-                            Keyboardmanager.showSoftInput(goalEditText, InputMethodManager.SHOW_IMPLICIT);
-                        }
-                        //도착점 정해져있으면
-                        else if(Goalsearched==true)
-                        {
-                            //검색 결과 기록
-                            addRecord();
-                        }
+                        //도착점 검색창에 focus를 넘겨줌
+                        goalEditText.requestFocus();
+                        goalEditText.setText("");
+                        //키보드 올림
+                        Keyboardmanager.showSoftInput(goalEditText, InputMethodManager.SHOW_IMPLICIT);
                     }
-                    //도착점을 찾는중이었다면
-                    else if(Searchcode==1)
+                    //도착점 정해져있으면
+                    else if(Goalsearched==true)
                     {
-                        //도착위치를 선택한 위치로 결정
-                        setGoalPlace(selected);
-                        //시작점 안정했으면
-                        if(Startsearched==false)
-                        {
-                            //시작점 검색창으로 focus 이동
-                            startEditText.requestFocus();
-                            startEditText.setText("");
-                            //키보드 올림
-                            Keyboardmanager.showSoftInput(startEditText, InputMethodManager.SHOW_IMPLICIT);
-                        }
-                        //시작점 정해져있으면
-                        else if(Startsearched==true)
-                        {
-                            //검색 결과 기록
-                            addRecord();
-                        }
+                        addRecord();
                     }
-
+                }
+                //도착점을 찾는중이었다면
+                else if(Searchcode==1)
+                {
+                    //도착위치를 선택한 위치로 결정
+                    setGoalPlace(selected);
+                    //시작점 안정했으면
+                    if(Startsearched==false)
+                    {
+                        //시작점 검색창으로 focus 이동
+                        startEditText.requestFocus();
+                        startEditText.setText("");
+                        //키보드 올림
+                        Keyboardmanager.showSoftInput(startEditText, InputMethodManager.SHOW_IMPLICIT);
+                    }
+                    //시작점 정해져있으면
+                    else if(Startsearched==true)
+                    {
+                        //검색 결과 기록
+                        addRecord();
+                    }
+                }
+                String txt = String.valueOf(Startsearched);
+                String txt2 = String.valueOf(Goalsearched);
+                Log.d("mylog2", txt + txt2);
+                if(Goalsearched && Startsearched){
+                    Log.d("pathSearch", "searchpath is being called");
+                    resultListView.setVisibility(View.GONE);
+                    recordPlaceList.setVisibility(View.GONE);
+                    searchPathListView.setVisibility(View.VISIBLE);
+                    searchpath();
+                }
             }
         });
         mylocbtn.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View view) {
                 if(Mylocation.Lastlocation!=null)
@@ -277,11 +301,9 @@ public class MainPage extends AppCompatActivity{
                 }
             }
         });
-        //출발지와 도착지가 다 정해지면
-        if(Startsearched && Goalsearched) {
-            resultListView.setVisibility(View.VISIBLE);
-        }
+
     }
+
     //도착점 설정 메서드
     public void setGoalPlace(Place place){
         goalEditText.setText("도착 위치: " + place.getPlaceName());
@@ -294,6 +316,7 @@ public class MainPage extends AppCompatActivity{
         Startsearched=true;
         Mylocation.StartPlace=place;
     }
+
     //검색기록 추가
     public void addRecord(){
         String start = startEditText.getText().toString();
@@ -446,11 +469,11 @@ public class MainPage extends AppCompatActivity{
                             }
                             else {
                                 //그냥 주소명도 검색이 안될 경우에는 토스트 메시지로 검색이 안됨을 안내
-                            Toast.makeText(getApplicationContext(),"검색된 장소가 없습니다.",Toast.LENGTH_SHORT);
-                        }
+                                Toast.makeText(getApplicationContext(),"검색된 장소가 없습니다.",Toast.LENGTH_SHORT);
+                            }
                         }
                     }
-                    
+
                 }
             }
             @Override
@@ -528,5 +551,79 @@ public class MainPage extends AppCompatActivity{
                 }
             });
         }
+    }
+
+    //출발지와 도착지가 다 정해지면 발동하는 클래스
+    public void searchpath(){
+        Log.d("odsay", "start class");
+        // 로깅 인터셉터 생성
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY); // 로그 수준 설정
+
+        // OkHttp 클라이언트에 로깅 인터셉터 추가
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(loggingInterceptor)
+                .build();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL2)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build();
+        ODsayService odsayApi=retrofit.create(ODsayService.class);
+
+        CallApiData callApiData = new CallApiData();
+        double startLongitude = Mylocation.StartPlace.getX();
+        double startLatitude = Mylocation.StartPlace.getY();
+        double goalLongitude = Mylocation.GoalPlace.getX();
+        double goalLatitude = Mylocation.GoalPlace.getY();
+
+        callApiData.setStartPointY(startLongitude);
+        callApiData.setStartPointX(startLatitude);
+        callApiData.setEndPointX(goalLongitude);
+        callApiData.setEndPointY(goalLatitude);
+
+        Call<OdsayData> call =
+                odsayApi.searchPublicTransitPath(OdsayAPI_KEY,
+                        callApiData.getStartPointX(), callApiData.getStartPointY() , callApiData.getEndPointX(), callApiData.getEndPointY());
+        call.enqueue(new Callback<OdsayData>() {
+            @Override
+            public void onResponse(Call<OdsayData> call, Response<OdsayData> response) {
+                if (response.isSuccessful()) {
+                    OdsayData searchResult = response.body();
+                    StringBuilder displayText = new StringBuilder();
+                    List<String> pathInfoStrings = new ArrayList<>();
+                    String Json2 = new Gson().toJson(searchResult);
+                    Log.d("odsay", Json2);
+                    for (OdsayData.Path path : searchResult.getResult().getPath()) {
+                        PathInfo pathInfo = new PathInfo();
+                        for (OdsayData.SubPath subPath : path.getSubPath()) {
+                            if (subPath.getTrafficType() == 2) { // 버스 경로인 경우
+                                List<String> busNos = subPath.getLane().stream()
+                                        .map(OdsayData.Lane::getBusNo)
+                                        .collect(Collectors.toList());
+
+                                pathInfo.addSubPath(busNos, subPath.getStartName(), subPath.getEndName());
+                            }
+                        }
+                        pathInfoList.add(pathInfo);
+                        pathInfoStrings.add(pathInfo.toString());
+
+                        displayText.append(pathInfo.toString()).append("\n");
+
+                        Log.d("odsay2", pathInfoStrings.toString());
+                    }
+
+                    listViewadapter.clear();
+                    listViewadapter.addAll(pathInfoStrings);
+                    listViewadapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<OdsayData> call, Throwable t) {
+                t.printStackTrace();
+                Log.d("odsay", "API call failed: " + t.getMessage());
+            }
+        });
     }
 }

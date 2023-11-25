@@ -76,9 +76,19 @@
         android:divider="@android:drawable/divider_horizontal_bright"/>
     <ListView
         android:layout_marginTop="20dp"
+        android:id="@+id/searchPathListView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="visible"
-        android:id="@+id/recordPlaceList"
+        android:dividerHeight="1dp"
+        android:visibility="gone"
         android:divider="@android:drawable/divider_horizontal_bright"/>
+    <ListView
+        android:id="@+id/recordPlaceList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:divider="@android:drawable/divider_horizontal_bright"
+        android:visibility="visible" />
+
+
 </LinearLayout>
