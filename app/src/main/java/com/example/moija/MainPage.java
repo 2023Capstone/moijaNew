@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.stream.Collectors;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -549,5 +550,99 @@ public class MainPage extends AppCompatActivity{
                 }
             });
         }
+    }
+    //출발지와 도착지가 다 정해지면 발동하는 클래스
+    public void searchpath() {
+        //처음은 출발지, 도착지 | 위도 경도를 받는다
+        callApi(Mylocation.StartPlace.getX(), Mylocation.StartPlace.getY(),
+                Mylocation.GoalPlace.getX(), Mylocation.GoalPlace.getY(),
+                new CallApiData(), new PathInfo());
+    }
+
+    private void callApi(double startX, double startY, double endX, double endY, CallApiData callApiData, PathInfo pathInfo) {
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY); // 로그 수준 설정
+
+        // OkHttp 클라이언트에 로깅 인터셉터 추가
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(loggingInterceptor)
+                .build();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL2)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build();
+        ODsayService odsayApi = retrofit.create(ODsayService.class);
+
+        Call<OdsayData> call = odsayApi.searchPublicTransitPath(OdsayAPI_KEY, startX, startY, endX, endY);
+        call.enqueue(new Callback<OdsayData>() {
+            @Override
+            public void onResponse(Call<OdsayData> call, Response<OdsayData> response) {
+                if (response.isSuccessful()) {
+                    OdsayData searchResult = response.body();
+                    busLogic(searchResult, callApiData, pathInfo);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<OdsayData> call, Throwable t) {
+                t.printStackTrace();
+                Log.d("odsay", "API call failed: " + t.getMessage());
+            }
+        });
+    }
+
+    private void busLogic(OdsayData searchResult, CallApiData callApiData, PathInfo pathInfos) {
+        StringBuilder displayText = new StringBuilder();
+        List<String> pathInfoStrings = new ArrayList<>();
+        CallApiData call = new CallApiData();
+        int count = 0;
+
+        for (OdsayData.Path path : searchResult.getResult().getPath()) {
+            // 처음부터 pathType이 12가 아닌 경우에만 pathInfo 객체 생성
+            if (path.getPathType() != 12) {
+                PathInfo pathInfo = new PathInfo();
+                pathInfo.setTotalTime(path.getInfo().getTotalTime());
+                if (path.getPathType() == 2) {
+                    for (OdsayData.SubPath subPath : path.getSubPath()) {
+                        if (subPath.getTrafficType() == 2) { // 버스 경로인 경우
+                            List<String> busNos = subPath.getLane().stream()
+                                    .map(OdsayData.Lane::getBusNo)
+                                    .collect(Collectors.toList());
+                            pathInfo.addSubPath(busNos, subPath.getStartName(), subPath.getEndName());
+                        }
+                    }
+
+                    pathInfoList.add(pathInfo);
+                    pathInfoStrings.add(pathInfo.toString());
+
+                    displayText.append(pathInfo.toString()).append("\n");
+
+                    count++; // 처리한 Path 객체의 수 증가
+                    if (count >= 3) {
+                        break; // 최대 3개의 Path 객체만 처리하고 루프를 중단
+                    }
+                }
+            } else if (path.getPathType() == 12) {
+                for (OdsayData.SubPath subPath : path.getSubPath()) {
+                    // 저장 pathType에 대한 정보
+                    call.setStartName(subPath.getStartName());
+                    call.setEndName(subPath.getEndName());
+                    call.setStartX(subPath.getStartX());
+                    call.setStartY(subPath.getStartY());
+                    call.setEndX(subPath.getEndX());
+                    call.setEndY(subPath.getEndY());
+                    pathInfos.addPath12Names(call.getStartName(), call.getEndName());
+
+                    callApi(Mylocation.StartPlace.getX(), Mylocation.StartPlace.getY(), call.getStartX(), call.getStartY(), new CallApiData(), pathInfos);
+                    busLogic(searchResult, callApiData, pathInfos);
+                    Log.d("path12", pathInfos.toString());
+                }
+            }
+        }
+
+        listViewadapter.clear();
+        listViewadapter.addAll(pathInfoStrings);
+        listViewadapter.notifyDataSetChanged();
     }
 }
