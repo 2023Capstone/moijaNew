@@ -1,9 +1,5 @@
 package com.example.moija.map;
 
-import com.google.gson.annotations.SerializedName;
-
-import java.util.List;
-
 public class Place {
         private String place_name; //장소명
 

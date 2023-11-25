@@ -1,7 +1,5 @@
 package com.example.moija.fragment;
 
-import com.example.moija.R;
-
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -20,6 +18,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.example.moija.R;
 import com.example.moija.map.Mylocation;
 import com.example.moija.map.RouteDrawer;
 import com.kakao.vectormap.KakaoMap;
@@ -34,11 +33,6 @@ import com.kakao.vectormap.label.LabelLayer;
 import com.kakao.vectormap.label.LabelOptions;
 import com.kakao.vectormap.label.LabelStyle;
 import com.kakao.vectormap.label.LabelStyles;
-
-import retrofit2.Call;
-import retrofit2.http.GET;
-import retrofit2.http.Header;
-import retrofit2.http.Query;
 
 public class MapFragment extends Fragment {
 

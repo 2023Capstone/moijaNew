@@ -2,7 +2,6 @@ package com.example.moija.data;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class PathInfo {
     List<List<String>> busNos = new ArrayList<>();
@@ -12,9 +11,6 @@ public class PathInfo {
 
     List<String> path12StartNames = new ArrayList<>();
     List<String> path12EndNames = new ArrayList<>();
-
-
-
 
     public int getTotalTime() {
         return totalTime;

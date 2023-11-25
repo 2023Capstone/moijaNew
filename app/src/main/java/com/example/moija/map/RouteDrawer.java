@@ -2,14 +2,12 @@ package com.example.moija.map;
 
 import android.graphics.Color;
 
-import com.example.moija.R;
 import com.kakao.vectormap.KakaoMap;
 import com.kakao.vectormap.LatLng;
 import com.kakao.vectormap.route.RouteLine;
 import com.kakao.vectormap.route.RouteLineLayer;
 import com.kakao.vectormap.route.RouteLineManager;
 import com.kakao.vectormap.route.RouteLineOptions;
-import com.kakao.vectormap.route.RouteLinePattern;
 import com.kakao.vectormap.route.RouteLineSegment;
 import com.kakao.vectormap.route.RouteLineStyle;
 import com.kakao.vectormap.route.RouteLineStyles;

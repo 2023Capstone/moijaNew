@@ -2,8 +2,6 @@ package com.example.moija;
 
 import static com.example.moija.time.DateTime.getCurrentDateTime;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -17,8 +15,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.moija.R;
-import com.example.moija.time.DateTime;
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

@@ -3,7 +3,6 @@ package com.example.moija;
 import static com.example.moija.time.DateTime.getCurrentDateTime;
 
 import android.content.ContentValues;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -57,7 +56,7 @@ public class MainPage extends AppCompatActivity {
     private int Searchcode = 0;
     public static final String API_KEY = "ab4624b190ebccd6369144de2502ad14";
 
-    public static final String OdsayAPI_KEY = "Bk3FXTpa4bUs3dxTOsUxSFvLGFYhTaoBDPKfSPOLdwI";
+    public static final String OdsayAPI_KEY = "fXCWmI16V2ggA9Y9OhTrVMSiPw/YHkDXoHmKjpLG7l8";
     //api 기본 URL
     public static final String BASE_URL = "https://dapi.kakao.com/";
 
@@ -296,6 +295,7 @@ public class MainPage extends AppCompatActivity {
                 }
             }
         });
+
 
     }
 
@@ -630,7 +630,6 @@ public class MainPage extends AppCompatActivity {
                     pathInfos.addPath12Names(call.getStartName(), call.getEndName());
 
                     callApi(Mylocation.StartPlace.getX(), Mylocation.StartPlace.getY(), call.getStartX(), call.getStartY(), new CallApiData(), pathInfos);
-                    busLogic(searchResult, callApiData, pathInfos);
                     Log.d("path12", pathInfos.toString());
                 }
             }

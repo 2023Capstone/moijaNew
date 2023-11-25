@@ -1,22 +1,13 @@
 package com.example.moija.chat;
 
-import androidx.fragment.app.Fragment;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
-
-import com.example.moija.R;
-
-
-public class Chat extends Fragment {
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-
-        return inflater.inflate(R.layout.activity_chat, container, false);
-    }
-}
+//public class Chat extends Fragment {
+//
+//    @Override
+//    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+//                             Bundle savedInstanceState) {
+//
+//
+//        return inflater.inflate(R.layout.activity_chat, container, false);
+//    }
+//}
