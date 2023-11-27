@@ -446,12 +446,14 @@ public class MainPage extends AppCompatActivity {
                     }
                 }
             }
+
             @Override
             public void onFailure(Call<SearchResults> call, Throwable t) {
                 t.printStackTrace();
             }
         });
     }
+
     //내 위치의 좌표를 받고 결과에 따라 searchAndSet을 통하여 시작점으로 설정한다
     public void FindMyAddress() {
         Retrofit retrofit = new Retrofit.Builder()

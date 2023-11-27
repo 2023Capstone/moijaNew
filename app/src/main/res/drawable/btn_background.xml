@@ -1,19 +1,17 @@
-<?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- 기본값 -->
+    <!-- 버튼 누르면 -->
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#595959"/>
+        </shape>
+    </item>
+
+    <!-- 버튼 기본 -->
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="#FFFFFF" />
-            <stroke android:color="#FFFFFF" />
+            <solid android:color="#FFFFFF"/>
         </shape>
     </item>
-    <!-- 버튼이 눌러지면 -->
-    <item android:state_focused="true">
-        <shape android:shape="rectangle">
-            <solid android:color="#FFD5CFCF"/> <!-- 배경색 변경 -->
-            <stroke android:color="#FFD5CFCF"
-                    android:width="2dp"/><!-- 테두리 색과 테두리 두께 설정 -->
-        </shape>
-    </item>
+
 
 </selector>
