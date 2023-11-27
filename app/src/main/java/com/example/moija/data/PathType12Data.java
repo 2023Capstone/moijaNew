@@ -147,9 +147,8 @@ public class PathType12Data {
             sb.append("Bus Nos: ").append(String.join(", ", busNos1.get(i))).append("\n");
             sb.append("Start: ").append(startNames1.get(i)).append("\n");
             sb.append("End: ").append(endNames1.get(i)).append("\n");
-            sb.append(callApiData.getStartName()).append(">>").append(callApiData.getEndName());
         }
-
+        sb.append(callApiData.getStartName()).append(">>").append(callApiData.getEndName());
         for (int i = 0; i < busNos2.size(); i++) {
             sb.append("Bus Nos: ").append(String.join(", ", busNos2.get(i))).append("\n");
             sb.append("Start: ").append(startNames2.get(i)).append("\n");
