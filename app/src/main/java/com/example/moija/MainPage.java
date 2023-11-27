@@ -639,7 +639,7 @@ public class MainPage extends AppCompatActivity {
 
                                 if(count2 == 1){
                                     Log.d("ODsayApi-12", "새로운 api 호출 ");
-                                    totalApi(pathType12Data);
+                                    totalApi(pathType12Data, callApiData);
                                     pathInfoList2.add(pathType12Data);
                                     pathInfoStrings.add(pathType12Data.toString());
                                     displayText.append(pathType12Data.toString()).append("\n");
@@ -663,30 +663,22 @@ public class MainPage extends AppCompatActivity {
         });
     }
 
-        private void totalApi(PathType12Data pathType12Data) {
+        private void totalApi(PathType12Data pathType12Data, CallApiData callApiData) {
             Log.d("ODsayApi - totlaApi", "TotalApi 실행");
-            CallApiData callApiData = new CallApiData();
             // 첫 번째 API 호출
             Log.d("OdsayApi - callNewApi1", "callNewApi1 실행");
             callNewApi1(Mylocation.StartPlace.getX(), Mylocation.StartPlace.getY(),
                     callApiData.getStartPointX(), callApiData.getStartPointY(),
-                    pathType12Data);
-
-            // 두 번째 API 호출
-            Log.d("ODsayApi - callNewApi2", "callNewApi2 실행");
-            callNewApi2(callApiData.getEndPointX(), callApiData.getEndPointY(),
-                    Mylocation.GoalPlace.getX(), Mylocation.GoalPlace.getY(),
-                    pathType12Data);
+                    pathType12Data, callApiData);
 
             // 결과 확인
             Log.d("totalApi", "결과: " + pathType12Data.toString());
         }
-        private void callNewApi1(double startX, double startY, double endX, double endY, PathType12Data pathType12Data) {
+        private void callNewApi1(double startX, double startY, double endX, double endY, PathType12Data pathType12Data, CallApiData callApiData) {
             Log.d("ODsayApi - callNewApi1", "callNewApi1 시작");
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
             loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY); // 로그 수준 설정
 
-            CallApiData callApiData = new CallApiData();
             StringBuilder displayText = new StringBuilder();
             List<String> pathInfoStrings = new ArrayList<>();
 
@@ -732,6 +724,11 @@ public class MainPage extends AppCompatActivity {
                         //데이터 저장되었는지 확인
                         Log.d("OdsayApi - callNewApi1 - callApi1", pathType12Data.toString1());
                     }
+                    // 두 번째 API 호출
+                    Log.d("ODsayApi - callNewApi2", "callNewApi2 실행");
+                    callNewApi2(callApiData.getEndPointX(), callApiData.getEndPointY(),
+                            Mylocation.GoalPlace.getX(), Mylocation.GoalPlace.getY(),
+                            pathType12Data);
                 }
                 @Override
                 public void onFailure(Call<OdsayData> call, Throwable t) {
@@ -739,6 +736,7 @@ public class MainPage extends AppCompatActivity {
                     Log.d("odsay", "API call failed: " + t.getMessage());
                 }
             });
+
         }
 
 
@@ -773,8 +771,7 @@ public class MainPage extends AppCompatActivity {
                         Log.d("OdsayApi - callNewApi2", "데이터 호출");
                         for (OdsayData.Path path : searchResult.getResult().getPath()) {
                             if (path.getPathType() == 2) {
-                                PathType12Data pathType12Data = new PathType12Data();
-                                pathType12Data.setTotalTime1(path.getInfo().getTotalTime());
+                                pathType12Data.setTotalTIme3(path.getInfo().getTotalTime());
                                 for (OdsayData.SubPath subPath : path.getSubPath()) {
                                     if (subPath.getTrafficType() == 2) { // 버스 경로인 경우
                                         List<String> busNos = subPath.getLane().stream()
