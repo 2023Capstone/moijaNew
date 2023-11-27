@@ -24,6 +24,8 @@ public class OdsayData {
     }
 
     public static class Result {
+        @SerializedName("searchType")
+        private int searchType;
         @SerializedName("path")
         private List<Path> path;
 
@@ -35,6 +37,7 @@ public class OdsayData {
             return path;
         }
 
+        public int getSearchType(){return searchType;}
         @Override
         public String toString() {
             return "Result{" +

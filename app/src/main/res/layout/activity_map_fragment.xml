@@ -6,7 +6,17 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/white"
-    tools:context=".fragment.MapFragment">
+    tools:context="com.example.moija.fragment.MapFragment">
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/removemarkerbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/removemarker"
+        app:maxImageSize="25dp"
+        android:backgroundTint="@color/white"
+        android:layout_gravity="left|end"
+        android:layout_margin="16dp" />
 
     <com.kakao.vectormap.MapView
         android:id="@+id/map_view"

@@ -1,7 +1,5 @@
 package com.example.moija;
 
-import static com.example.moija.time.DateTime.getCurrentDateTime;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ContentValues;
@@ -17,7 +15,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.moija.R;
 import com.example.moija.time.DateTime;
 
 import java.util.ArrayList;
@@ -59,7 +56,7 @@ public class recordPlace extends AppCompatActivity {
                 ContentValues values = new ContentValues();
                 values.put("startPlace", start);
                 values.put("endPlace", end);
-                values.put("time", getCurrentDateTime());
+                values.put("time", DateTime.getCurrentDateTime());
                 long newRowId = database.insert("recordPlace_DB", null, values);
 
                 if (newRowId == -1) {

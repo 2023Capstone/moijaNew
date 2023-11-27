@@ -3,7 +3,6 @@ package com.example.moija;
 import static com.example.moija.time.DateTime.getCurrentDateTime;
 
 import android.content.ContentValues;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -18,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -63,20 +63,18 @@ public class MainPage extends AppCompatActivity {
 
     public static final String BASE_URL2 = "https://api.odsay.com/";
     public static final String OdsayBASE_URL = "https://api.odsay.com/";
-    private Button mylocbtn;
+    private ImageButton mylocbtn;
 
     private ListView recordPlaceList;
     private RecordPlaceDB recordPlaceDB;
     private ArrayAdapter<String> recordAdapter;
     private Queue<String> dataList;
     private static final int MAX_QUEUE_SIZE = 10;
-    private Button makemapbtn, dataclear;
+    private ImageButton dataclear;
     //시작점을 정했는지, 도착점을 정했는지
     private boolean Startsearched, Goalsearched = false;
     //검색결과를 담을 리스트뷰
     private ListView resultListView, searchPathListView;
-
-    private boolean makedmap = false;
     Fragment MapFragment;
 
     FrameLayout Mapframelayout;
@@ -93,7 +91,6 @@ public class MainPage extends AppCompatActivity {
         goalEditText = findViewById(R.id.goalEditText);
         resultListView = findViewById(R.id.resultListView);
         mylocbtn = findViewById(R.id.mylocbtn);
-        makemapbtn = findViewById(R.id.makemapbtn);
         Mapframelayout = findViewById(R.id.Mapframe);
         dataList = new LinkedList<>();
         dataclear = findViewById(R.id.dataclear);
@@ -109,7 +106,7 @@ public class MainPage extends AppCompatActivity {
         InputMethodManager Keyboardmanager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 
         listViewadapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<>());
-        searchPathListView.setAdapter(listViewadapter);
+
         //데이터베이스 삭제
         dataclear.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,25 +124,15 @@ public class MainPage extends AppCompatActivity {
                 // 클릭한 아이템의 값을 가져와서 입력 필드에 표시
                 String selectedItem = dataList.toArray(new String[0])[position];
                 String[] parts = selectedItem.split(" - ");
+
                 if (parts.length == 2) {
-                    startEditText.setText(parts[0]);
-                    goalEditText.setText(parts[1]);
+                    searchAndSet(parts[0],"start",false);
+                    searchAndSet(parts[1],"goal",false);
+
                 }
             }
         });
-        //원래는 검색 후에 결과들 중 하나 선택하면 맵이 띄워져야 하나 합치기 전이므로 일단 임시적으로 맵을 키고 끌 수 있는 버튼을 구현함
-        makemapbtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (makedmap == false) {
-                    Mapframelayout.setVisibility(View.VISIBLE);
-                    makedmap = true;
-                } else {
-                    Mapframelayout.setVisibility(View.GONE);
-                    makedmap = false;
-                }
-            }
-        });
+
         //시작점을 검색하는 EditText에 focus되었을때
         startEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -161,6 +148,8 @@ public class MainPage extends AppCompatActivity {
                         goalEditText.setText("");
                     }
                     //검색결과 숨김
+                    Mapframelayout.setVisibility(View.GONE);
+                    searchPathListView.setVisibility(View.GONE);
                     recordPlaceList.setVisibility(View.VISIBLE);
                     resultListView.setVisibility(View.GONE);
                 }
@@ -180,6 +169,8 @@ public class MainPage extends AppCompatActivity {
                         startEditText.setText("");
                     }
                     //검색결과 숨김
+                    Mapframelayout.setVisibility(View.GONE);
+                    searchPathListView.setVisibility(View.GONE);
                     recordPlaceList.setVisibility(View.VISIBLE);
                     resultListView.setVisibility(View.GONE);
                 }
@@ -190,13 +181,21 @@ public class MainPage extends AppCompatActivity {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
-
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 Searchcode = 0;
-                search(startEditText, 0);
+                if(Startsearched==false)
+                {
+                    search(startEditText, 0);
+                    recordPlaceList.setVisibility(View.GONE);
+                    resultListView.setVisibility(View.VISIBLE);
+                }
+                if(startEditText.getText().toString().isEmpty())
+                {
+                    recordPlaceList.setVisibility(View.VISIBLE);
+                    resultListView.setVisibility(View.GONE);
+                }
             }
-
             @Override
             public void afterTextChanged(Editable s) {
             }
@@ -215,13 +214,21 @@ public class MainPage extends AppCompatActivity {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
-
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 Searchcode = 1;
-                search(goalEditText, 1);
+                if(Goalsearched==false)
+                {
+                    search(goalEditText, 1);
+                    recordPlaceList.setVisibility(View.GONE);
+                    resultListView.setVisibility(View.VISIBLE);
+                }
+                if(goalEditText.getText().toString().isEmpty())
+                {
+                    recordPlaceList.setVisibility(View.VISIBLE);
+                    resultListView.setVisibility(View.GONE);
+                }
             }
-
             @Override
             public void afterTextChanged(Editable s) {
             }
@@ -233,6 +240,22 @@ public class MainPage extends AppCompatActivity {
                 //키보드 내림
                 Keyboardmanager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 return true;
+            }
+        });
+        searchPathListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                PathInfo selectedpath=(PathInfo) searchPathListView.getItemAtPosition(position);
+                Mapframelayout.setVisibility(View.VISIBLE);
+                MapFragment mf = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.Mapframe);
+                mf.DrawingPath=selectedpath;
+                if(mf.routeDrawer!=null) {
+                    mf.routeDrawer.clearRouteLines();
+
+                    mf.Draw();
+                }else if(mf.routeDrawer==null){
+                    return;
+                }
             }
         });
         //검색결과중 하나를 누르면
@@ -301,20 +324,23 @@ public class MainPage extends AppCompatActivity {
 
     //도착점 설정 메서드
     public void setGoalPlace(Place place) {
-        goalEditText.setText("도착 위치: " + place.getPlaceName());
+        goalEditText.setText(place.getPlaceName());
         Goalsearched = true;
         Mylocation.GoalPlace = place;
+        resultListView.setVisibility(View.GONE);
     }
 
     //출발점 설정 메서드
     public void setStartPlace(Place place) {
-        startEditText.setText("출발 위치: " + place.getPlaceName());
+        startEditText.setText(place.getPlaceName());
         Startsearched = true;
         Mylocation.StartPlace = place;
+        resultListView.setVisibility(View.GONE);
     }
 
     //검색기록 추가
     public void addRecord() {
+
         String start = startEditText.getText().toString();
         String end = goalEditText.getText().toString();
 
@@ -385,6 +411,7 @@ public class MainPage extends AppCompatActivity {
     }
 
     //검색한 결과를 바로 시작점/도착점으로 설정할 때 사용(내 위치를 시작점에 넣을때)
+    //startorgoal(시작점인지 도착점인지) searchbymyloc(내 위치기준으로 검색하는지)
     public void searchAndSet(String query, String startorgoal, boolean searchbymyloc) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -392,6 +419,7 @@ public class MainPage extends AppCompatActivity {
                 .build();
         KakaoApi kakaoapi = retrofit.create(KakaoApi.class);
         Call<SearchResults> call = null;
+        //내 위치 기준으로 검색하는거면 현재위치에서 가장 가까운 1km 내의 건물명을 찾음
         if (searchbymyloc == true) {
             call = kakaoapi.searchNearPlace("KakaoAK " + API_KEY, query, Mylocation.Lastlocation.getLongitude(), Mylocation.Lastlocation.getLatitude(), 1000);
         } else {
@@ -403,10 +431,6 @@ public class MainPage extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     SearchResults searchResults = response.body();
                     List<Place> places = searchResults.getPlaces();
-                    String Json2 = new Gson().toJson(searchResults);
-                    Log.d("mylog", Json2);
-                    String Json = new Gson().toJson(places);
-                    Log.d("mylog", Json);
                     if (places.get(0).getPlaceName() != null) {
                         if (startorgoal.equals("start")) {
                             setStartPlace(places.get(0));
@@ -414,16 +438,20 @@ public class MainPage extends AppCompatActivity {
                             setGoalPlace(places.get(0));
                         }
                     }
+                    if(Startsearched && Goalsearched){
+                        searchpath();
+                        resultListView.setVisibility(View.GONE);
+                        recordPlaceList.setVisibility(View.GONE);
+                        searchPathListView.setVisibility(View.VISIBLE);
+                    }
                 }
             }
-
             @Override
             public void onFailure(Call<SearchResults> call, Throwable t) {
                 t.printStackTrace();
             }
         });
     }
-
     //내 위치의 좌표를 받고 결과에 따라 searchAndSet을 통하여 시작점으로 설정한다
     public void FindMyAddress() {
         Retrofit retrofit = new Retrofit.Builder()
@@ -434,7 +462,6 @@ public class MainPage extends AppCompatActivity {
         Call<SearchResults.LoctoAddResult> call = null;
         if (Mylocation.Lastlocation != null) {
             call = kakaoapi.getAddressWithLocation("KakaoAK " + API_KEY, Mylocation.Lastlocation.getLongitude(), Mylocation.Lastlocation.getLatitude());
-            Log.d("mylog", Double.toString(Mylocation.Lastlocation.getLongitude()) + Double.toString(Mylocation.Lastlocation.getLatitude()));
         }
         call.enqueue(new Callback<SearchResults.LoctoAddResult>() {
             @Override
@@ -445,9 +472,6 @@ public class MainPage extends AppCompatActivity {
                     //위치에 따라 도로명주소(roadaddress)가 null이 될때가 있음
                     //따라서 실행전에 null값인지 미리 확인한다
                     if (roadaddress != null) {
-
-                        String roadAddressJson = new Gson().toJson(roadaddress);
-                        Log.d("mylog", roadAddressJson);
                         //주변 건물이 존재하면
                         if (roadaddress.getBuilding_name() != null && !roadaddress.getBuilding_name().isEmpty()) {
                             //해당 건물명을 searchAndSet을 통해 넘겨주고,시작점으로 결정
@@ -456,8 +480,6 @@ public class MainPage extends AppCompatActivity {
                             //건물이 없으면 주소명이 있는지 확인하고 searchAndSet에 넘겨주어 해당 주소에 가까이 있는 건물명을 찾고
                             //시작점으로 설정한다.
                             if (searchResults.getDocuments().get(0).getAddress() != null) {
-                                String AddressJson = new Gson().toJson(searchResults.getDocuments().get(0).getAddress());
-                                Log.d("mylog", AddressJson);
                                 searchAndSet(searchResults.getDocuments().get(0).getAddress().getAddress_name(), "start", true);
                             } else {
                                 //그냥 주소명도 검색이 안될 경우에는 토스트 메시지로 검색이 안됨을 안내
@@ -487,9 +509,11 @@ public class MainPage extends AppCompatActivity {
                     .build();
             KakaoApi kakaoapi = retrofit.create(KakaoApi.class);
             Call<SearchResults> call;
+            //현재위치가 정해져있으면 현재위치를 기준으로 가까운 곳을 검색한다.
             if (Mylocation.Lastlocation != null) {
                 call = kakaoapi.searchPlacesWithMyLocation("KakaoAK " + API_KEY, query, Mylocation.Lastlocation.getLongitude(), Mylocation.Lastlocation.getLatitude());
-            } else {
+            } //정해져있지 않으면 그냥 검색함
+            else {
                 call = kakaoapi.searchPlaces("KakaoAK " + API_KEY, query);
             }
             call.enqueue(new Callback<SearchResults>() {
@@ -498,7 +522,9 @@ public class MainPage extends AppCompatActivity {
                     if (response.isSuccessful()) {
                         //SearchResults에 api 응답을 받고
                         SearchResults searchResults = response.body();
+                        //검색된 장소를 searchedplace리스트에 Place형태로 저장함
                         List<Place> searchedplace = searchResults.getPlaces();
+                        //filteredplace는 이미 검색한 장소를 제외한 장소들을 표시
                         List<Place> filteredplace = new ArrayList<>();
                         //도착점과 시작점 중복 설정 방지를 위한 코드들
                         if (searchcode == 0 && Goalsearched == true) {
@@ -511,8 +537,7 @@ public class MainPage extends AppCompatActivity {
                                 SearchAdapter adapter = new SearchAdapter(MainPage.this, filteredplace);
                                 resultListView.setAdapter(adapter);
                             }
-                            recordPlaceList.setVisibility(View.GONE);
-                            resultListView.setVisibility(View.VISIBLE);
+
                         }
                         if (searchcode == 1 && Startsearched == true) {
 
@@ -525,15 +550,13 @@ public class MainPage extends AppCompatActivity {
                                 SearchAdapter adapter = new SearchAdapter(MainPage.this, filteredplace);
                                 resultListView.setAdapter(adapter);
                             }
-                            recordPlaceList.setVisibility(View.GONE);
-                            resultListView.setVisibility(View.VISIBLE);
+
                         } else {
                             if (searchResults != null && searchResults.getPlaces() != null) {
                                 SearchAdapter adapter = new SearchAdapter(MainPage.this, searchResults.getPlaces());
                                 resultListView.setAdapter(adapter);
                             }
-                            recordPlaceList.setVisibility(View.GONE);
-                            resultListView.setVisibility(View.VISIBLE);
+
                         }
                     }
                 }
@@ -574,8 +597,9 @@ public class MainPage extends AppCompatActivity {
             @Override
             public void onResponse(Call<OdsayData> call, Response<OdsayData> response) {
                 if (response.isSuccessful()) {
+
                     OdsayData searchResult = response.body();
-                    busLogic(searchResult, callApiData, pathInfo);
+                    busLogic(searchResult);
                 }
             }
 
@@ -587,57 +611,79 @@ public class MainPage extends AppCompatActivity {
         });
     }
 
-    private void busLogic(OdsayData searchResult, CallApiData callApiData, PathInfo pathInfos) {
+    private void busLogic(OdsayData searchResult) {
         StringBuilder displayText = new StringBuilder();
         List<String> pathInfoStrings = new ArrayList<>();
         CallApiData call = new CallApiData();
+        pathInfoList.clear();
         int count = 0;
-
         for (OdsayData.Path path : searchResult.getResult().getPath()) {
-            // 처음부터 pathType이 12가 아닌 경우에만 pathInfo 객체 생성
-            if (path.getPathType() != 12) {
+            // 도시내 길찾기의 경우
+            if (searchResult.getResult().getSearchType()==0) {
                 PathInfo pathInfo = new PathInfo();
+                Gson gson2=new Gson();
+                String subjson2=gson2.toJson(path);
+                Log.d("mylog",subjson2);
                 pathInfo.setTotalTime(path.getInfo().getTotalTime());
-                if (path.getPathType() == 2) {
-                    for (OdsayData.SubPath subPath : path.getSubPath()) {
-                        if (subPath.getTrafficType() == 2) { // 버스 경로인 경우
-                            List<String> busNos = subPath.getLane().stream()
+                    for (int i=0; i<path.getSubPath().size();i++) {
+                        if(path.getSubPath().get(i).getTrafficType()==3){//도보
+                            List<String> busNos=new ArrayList<>();
+                            busNos.add("도보");
+                            //도보는 x,y값은 없고 시간만 나타내고 있음
+                            //따라서, x,y값을 받으려면 for문으로 index값을 통하여 x,y값을 받아오는 수밖에 없음
+                            if(i==0){
+                                pathInfo.setSubPath(busNos, Mylocation.StartPlace.getPlaceName(), path.getSubPath().get(i+1).getStartName(), Mylocation.StartPlace.getX(),Mylocation.StartPlace.getY(),path.getSubPath().get(i+1).getStartX(),path.getSubPath().get(i+1).getStartY(),path.getSubPath().get(i).getTrafficType());
+                            }
+                            else if(i==path.getSubPath().size()-1){
+                                pathInfo.setSubPath(busNos,path.getSubPath().get(i-1).getEndName(),Mylocation.GoalPlace.getPlaceName(),path.getSubPath().get(i - 1).getEndX(), path.getSubPath().get(i-1).getEndY(),Mylocation.GoalPlace.getX(),Mylocation.GoalPlace.getY(),path.getSubPath().get(i).getTrafficType());
+                            }
+                            else {
+                                pathInfo.setSubPath(busNos, path.getSubPath().get(i - 1).getEndName(), path.getSubPath().get(i + 1).getStartName(), path.getSubPath().get(i - 1).getEndX(), path.getSubPath().get(i-1).getEndY(),path.getSubPath().get(i+1).getStartX(),path.getSubPath().get(i+1).getStartY(),path.getSubPath().get(i).getTrafficType());
+                            }
+                        }
+                        else if (path.getSubPath().get(i).getTrafficType()==2) { // 버스 경로인 경우
+                            Gson gson=new Gson();
+                            String subjson=gson.toJson(path.getSubPath().get(i));
+                            Log.d("mylog",subjson);
+                            List<String> busNos = path.getSubPath().get(i).getLane().stream()
                                     .map(OdsayData.Lane::getBusNo)
                                     .collect(Collectors.toList());
-                            pathInfo.addSubPath(busNos, subPath.getStartName(), subPath.getEndName());
+                            Log.d("mylog",busNos.toString());
+                            Log.d("mylog",Double.toString(path.getSubPath().get(i).getStartX()));
+                            pathInfo.setSubPath(busNos, path.getSubPath().get(i).getStartName(), path.getSubPath().get(i).getEndName(),path.getSubPath().get(i).getStartX(),path.getSubPath().get(i).getStartY(),path.getSubPath().get(i).getEndX(),path.getSubPath().get(i).getEndY(),path.getSubPath().get(i).getTrafficType());
+                            pathInfoList.add(pathInfo);
+
                         }
-                    }
 
+                    }
+                count++;
+                //도시간 길찾기의 경우
+            } else if (searchResult.getResult().getSearchType() == 1) {
+                Gson json=new Gson();
+                String pathinf=json.toJson(searchResult);
+
+                Log.d("mylog",pathinf);
+                PathInfo pathInfo = new PathInfo();
+                pathInfo.setTotalTime(path.getInfo().getTotalTime());
+                //시외/고속버스 경로일때
+                if(path.getPathType()==12) {
+                    for (OdsayData.SubPath subPath : path.getSubPath()) {
+                            List<String> busNos=new ArrayList<>();
+                            busNos.add("시외버스");
+                            pathInfo.setSubPath(busNos, subPath.getStartName(), subPath.getEndName(), subPath.getStartX(), subPath.getStartY(), subPath.getEndX(), subPath.getEndY(), subPath.getTrafficType());
+                    }
                     pathInfoList.add(pathInfo);
-                    pathInfoStrings.add(pathInfo.toString());
-
-                    displayText.append(pathInfo.toString()).append("\n");
-
-                    count++; // 처리한 Path 객체의 수 증가
-                    if (count >= 3) {
-                        break; // 최대 3개의 Path 객체만 처리하고 루프를 중단
-                    }
-                }
-            } else if (path.getPathType() == 12) {
-                for (OdsayData.SubPath subPath : path.getSubPath()) {
-                    // 저장 pathType에 대한 정보
-                    call.setStartName(subPath.getStartName());
-                    call.setEndName(subPath.getEndName());
-                    call.setStartX(subPath.getStartX());
-                    call.setStartY(subPath.getStartY());
-                    call.setEndX(subPath.getEndX());
-                    call.setEndY(subPath.getEndY());
-                    pathInfos.addPath12Names(call.getStartName(), call.getEndName());
-
-                    callApi(Mylocation.StartPlace.getX(), Mylocation.StartPlace.getY(), call.getStartX(), call.getStartY(), new CallApiData(), pathInfos);
-                    busLogic(searchResult, callApiData, pathInfos);
-                    Log.d("path12", pathInfos.toString());
+                    count++;
                 }
             }
-        }
+            // 처리한 Path 객체의 수 증가
+            if (count >= 3) {
+                break; // 최대 3개의 Path 객체만 처리하고 루프를 중단
+            }
 
-        listViewadapter.clear();
-        listViewadapter.addAll(pathInfoStrings);
-        listViewadapter.notifyDataSetChanged();
+        }
+        PathAdapter pathadapter=new PathAdapter(this,pathInfoList);
+        searchPathListView.setAdapter(pathadapter);
     }
+
 }

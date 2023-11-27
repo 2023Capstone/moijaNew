@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
-        android:name=".KakoApplication"
+        android:name="com.example.moija.KakoApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -23,26 +23,26 @@
             android:enableOnBackInvokedCallback="true"
             />
         <activity
-            android:name=".MainPage"
+            android:name="com.example.moija.MainPage"
             android:exported="false" />
         <activity
-            android:name=".fragment.MapFragment"
-            android:exported="false" />
-        <activity
-
-            android:name=".Location.Location"
+            android:name="com.example.moija.fragment.MapFragment"
             android:exported="false" />
         <activity
 
-            android:name=".fragment.ChatFragment"
+            android:name="com.example.moija.Location.Location"
             android:exported="false" />
         <activity
-            android:name=".chat.Chat"
+
+            android:name="com.example.moija.fragment.ChatFragment"
+            android:exported="false" />
+        <activity
+            android:name="com.example.moija.chat.Chat"
             android:exported="true" />
 
 
         <activity
-            android:name=".IntroActivity"
+            android:name="com.example.moija.IntroActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

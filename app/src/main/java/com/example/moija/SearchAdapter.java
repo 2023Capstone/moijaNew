@@ -17,7 +17,7 @@ public class SearchAdapter extends ArrayAdapter<Place> {
     private LayoutInflater inflater;
 
     public SearchAdapter(Context context, List<Place> places) {
-        super(context, R.layout.list_item_place, places);
+        super(context, R.layout.searchlist_item_place, places);
         inflater = LayoutInflater.from(context);
     }
 
@@ -25,7 +25,7 @@ public class SearchAdapter extends ArrayAdapter<Place> {
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
         if (view == null) {
-            view = inflater.inflate(R.layout.list_item_place, parent, false);
+            view = inflater.inflate(R.layout.searchlist_item_place, parent, false);
         }
 
         TextView placeNameTextView = view.findViewById(R.id.placeNameTextView);

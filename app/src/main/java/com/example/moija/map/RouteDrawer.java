@@ -35,21 +35,35 @@ public class RouteDrawer {
     //대중교통 길 그리기(길 신경쓰지 않고 직선으로 그림)
     //traffictype은 오디세이 api의 결과값중 하나로 대중교통의 종류를 의미
     public void draw(double startx,double starty,double endx,double endy,int traffictype){
+
         routeLineManager=kakaoMap.getRouteLineManager();
         routeLineLayer=routeLineManager.getLayer();
         //선의 색깔을 결정하는 변수
-        RouteLineStyles styles1 = RouteLineStyles.from(RouteLineStyle.from(16, Color.YELLOW));
-        RouteLineStyles styles2 = RouteLineStyles.from(RouteLineStyle.from(16, Color.RED));
-        RouteLineStyles styles3 = RouteLineStyles.from(RouteLineStyle.from(16, Color.BLUE));
-        RouteLineStyles styles4 = RouteLineStyles.from(RouteLineStyle.from(16, Color.GREEN));
-        stylesSet = RouteLineStylesSet.from(styles1,styles2,styles3,styles4);
+        RouteLineStyles styles1 = RouteLineStyles.from(RouteLineStyle.from(10, Color.YELLOW));
+        RouteLineStyles styles2 = RouteLineStyles.from(RouteLineStyle.from(10, Color.RED));
+        RouteLineStyles styles3 = RouteLineStyles.from(RouteLineStyle.from(10, Color.BLUE));
+        RouteLineStyles styles4 = RouteLineStyles.from(RouteLineStyle.from(10, Color.GREEN));
+        RouteLineStyles styles5 = RouteLineStyles.from(RouteLineStyle.from(
+                RouteLinePattern.from(R.drawable.route_pattern_long_dot, 1)));
+        stylesSet = RouteLineStylesSet.from(styles1,styles2,styles3,styles4,styles5);
 
         //시작점의 위도,경도 저장
         LatLng startPoint = LatLng.from(starty, startx);
         //도착점의 위도,경도 저장
         LatLng endPoint = LatLng.from(endy, endx);
+        //도시내 길찾기(버스)초록색
+        if(traffictype==2)
+        {
+            segment = RouteLineSegment.from(Arrays.asList(startPoint, endPoint))
+                    .setStyles(stylesSet.getStyles(3));
+        }
+        if(traffictype==3)
+        {
+            segment = RouteLineSegment.from(Arrays.asList(startPoint, endPoint))
+                    .setStyles(stylesSet.getStyles(4));
+        }
         //기차는 노란색
-        if(traffictype==4)
+        else if(traffictype==4)
         {
             segment = RouteLineSegment.from(Arrays.asList(startPoint, endPoint))
                     .setStyles(stylesSet.getStyles(0));
