@@ -3,27 +3,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingTop="16dp"
+    android:paddingRight="16dp"
+    android:paddingBottom="16dp"
     tools:context=".schedule.CityBus">
+
     <Button
         android:id="@+id/getStationNamesButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Get Bus Info" />
+        android:text="Get Station Names"
+        android:layout_centerHorizontal="true"/>
 
-    <ScrollView
+    <TextView
+        android:id="@+id/busInfoTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/getStationNamesButton"
+        android:layout_marginTop="16dp"
+        android:text=""
+        android:textSize="18sp"
+        android:textColor="@android:color/black"/>
+
+    <ListView
+        android:id="@+id/stationNamesListView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/getStationNamesButton">
-        <TextView
-            android:id="@+id/busInfoTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/getStationNamesButton"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="16dp"
-            android:text=""
-            android:textSize="16sp" />
-    </ScrollView>
+        android:layout_below="@id/busInfoTextView"
+        android:layout_marginTop="16dp"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="1dp"/>
 </RelativeLayout>
 
 

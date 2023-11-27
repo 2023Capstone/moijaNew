@@ -3,7 +3,9 @@ package com.example.moija.schedule;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,22 +19,26 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class CityBus extends AppCompatActivity {
 
     private Button getStationNamesButton;
     private TextView busInfoTextView;
+    private ListView stationNamesListView;
 
     // TODO: 사용자가 발급받은 odsay lab API 키를 입력하세요.
     private static final String API_KEY = "Bk3FXTpa4bUs3dxTOsUxSFvLGFYhTaoBDPKfSPOLdwI";
 
     @Override
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_citybus);
 
         getStationNamesButton = findViewById(R.id.getStationNamesButton);
         busInfoTextView = findViewById(R.id.busInfoTextView);
+        stationNamesListView = findViewById(R.id.stationNamesListView);
 
         getStationNamesButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -43,9 +49,11 @@ public class CityBus extends AppCompatActivity {
         });
     }
 
-    private class GetStationNamesTask extends AsyncTask<Void, Void, String> {
+
+
+    private class GetStationNamesTask extends AsyncTask<Void, Void, BusInfo> {
         @Override
-        protected String doInBackground(Void... voids) {
+        protected BusInfo doInBackground(Void... voids) {
             try {
                 // TODO: 여기에 버스 노선 상세 조회에서 얻은 busID를 입력하세요.
                 String busID = "2040148";
@@ -77,14 +85,18 @@ public class CityBus extends AppCompatActivity {
 
                     String busNo = result.getString("busNo");
 
-                    StringBuilder stationNames = new StringBuilder();
+                    ArrayList<String> stationNames = new ArrayList<>();
                     for (int i = 0; i < stationsArray.length(); i++) {
                         JSONObject station = stationsArray.getJSONObject(i);
                         String stationName = station.getString("stationName");
-                        stationNames.append(stationName).append("\n");
+                        stationNames.add(stationName);
                     }
 
-                    return "Bus No: " + busNo + "\n" + String.join(", ", stationNames);
+                    BusInfo busInfo = new BusInfo();
+                    busInfo.setBusNo(busNo);
+                    busInfo.setStationNames(stationNames);
+
+                    return busInfo;
                 } finally {
                     urlConnection.disconnect();
                 }
@@ -93,14 +105,37 @@ public class CityBus extends AppCompatActivity {
             }
         }
 
-        @Override
-        protected void onPostExecute(String result) {
+        protected void onPostExecute(BusInfo result) {
             // UI에 결과를 표시
             if (result != null) {
-                busInfoTextView.setText(result);
+                busInfoTextView.setText("Bus No: " + result.getBusNo());
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(CityBus.this, android.R.layout.simple_list_item_1, result.getStationNames());
+                stationNamesListView.setAdapter(adapter);
             } else {
-                busInfoTextView.setText("Failed to fetch data");
+                // Handle the case where data retrieval failed
             }
         }
+    }
+}
+
+
+class BusInfo {
+    private String busNo;
+    private ArrayList<String> stationNames;
+
+    public String getBusNo() {
+        return busNo;
+    }
+
+    public void setBusNo(String busNo) {
+        this.busNo = busNo;
+    }
+
+    public ArrayList<String> getStationNames() {
+        return stationNames;
+    }
+
+    public void setStationNames(ArrayList<String> stationNames) {
+        this.stationNames = stationNames;
     }
 }
