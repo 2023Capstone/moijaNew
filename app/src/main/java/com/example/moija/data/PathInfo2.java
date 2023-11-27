@@ -3,7 +3,7 @@ package com.example.moija.data;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PathInfo {
+public class PathInfo2 {
     //처음 부터 patyType2인 경우
     List<List<String>> busNos = new ArrayList<>();
     List<String> startNames = new ArrayList<>();
@@ -65,3 +65,4 @@ public class PathInfo {
         return sb.toString();
     }
 }
+

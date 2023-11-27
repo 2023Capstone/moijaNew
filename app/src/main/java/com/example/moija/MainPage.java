@@ -29,6 +29,7 @@ import com.example.moija.api.ODsayService;
 import com.example.moija.data.CallApiData;
 import com.example.moija.data.OdsayData;
 import com.example.moija.data.PathInfo;
+import com.example.moija.data.PathType12Data;
 import com.example.moija.fragment.MapFragment;
 import com.example.moija.map.Mylocation;
 import com.example.moija.map.Place;
@@ -82,6 +83,7 @@ public class MainPage extends AppCompatActivity {
 
     //데이터 저장
     private List<PathInfo> pathInfoList = new ArrayList<>();
+    private List<PathType12Data> pathInfoList2 = new ArrayList<>();
     private ArrayAdapter<String> listViewadapter;
 
     @Override
@@ -549,12 +551,12 @@ public class MainPage extends AppCompatActivity {
     //출발지와 도착지가 다 정해지면 발동하는 클래스
     public void searchpath() {
         //처음은 출발지, 도착지 | 위도 경도를 받는다
-        callApi(Mylocation.StartPlace.getX(), Mylocation.StartPlace.getY(),
-                Mylocation.GoalPlace.getX(), Mylocation.GoalPlace.getY(),
-                new CallApiData(), new PathInfo());
+        callApi();
     }
 
-    private void callApi(double startX, double startY, double endX, double endY, CallApiData callApiData, PathInfo pathInfo) {
+    private void callApi() {
+        //처음 실행 로그
+        Log.d("ODsayApi", "callApi 호출");
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY); // 로그 수준 설정
 
@@ -569,13 +571,87 @@ public class MainPage extends AppCompatActivity {
                 .build();
         ODsayService odsayApi = retrofit.create(ODsayService.class);
 
-        Call<OdsayData> call = odsayApi.searchPublicTransitPath(OdsayAPI_KEY, startX, startY, endX, endY);
+        Call<OdsayData> call = odsayApi.searchPublicTransitPath(OdsayAPI_KEY, Mylocation.StartPlace.getX(), Mylocation.StartPlace.getY(),
+                Mylocation.GoalPlace.getX(), Mylocation.GoalPlace.getY());
+
+        //첫번쨰 api 호출
+        Log.d("ODsayApiFirst" ,"첫번재 api 호출 call");
         call.enqueue(new Callback<OdsayData>() {
             @Override
             public void onResponse(Call<OdsayData> call, Response<OdsayData> response) {
                 if (response.isSuccessful()) {
                     OdsayData searchResult = response.body();
-                    busLogic(searchResult, callApiData, pathInfo);
+                    StringBuilder displayText = new StringBuilder();
+                    List<String> pathInfoStrings = new ArrayList<>();
+                    PathType12Data pathType12Data = new PathType12Data();
+                    int count = 0;
+                    int count2 = 0;
+
+                    for (OdsayData.Path path : searchResult.getResult().getPath()) {
+                        if (path.getPathType() == 2 || path.getPathType() == 12) {
+                            if (path.getPathType() == 2) {
+                                //pathType == 2 인경우 발생하는 log
+                                Log.d("ODsayApi-2", "pathType2 실행");
+                                PathInfo pathInfo = new PathInfo();
+                                pathInfo.setTotalTime(path.getInfo().getTotalTime());
+                                for (OdsayData.SubPath subPath : path.getSubPath()) {
+                                    if (subPath.getTrafficType() == 2) { // 버스 경로인 경우
+                                        List<String> busNos = subPath.getLane().stream()
+                                                .map(OdsayData.Lane::getBusNo)
+                                                .collect(Collectors.toList());
+                                        pathInfo.addSubPath(busNos, subPath.getStartName(), subPath.getEndName());
+                                    }
+                                }
+                                pathInfoList.add(pathInfo);
+                                pathInfoStrings.add(pathInfo.toString());
+
+                                displayText.append(pathInfo.toString()).append("\n");
+
+                                count++; // 처리한 Path 객체의 수 증가
+                                if (count >= 3) {
+                                    break; // 최대 3개의 Path 객체만 처리하고 루프를 중단
+                                }
+                            } else if (path.getPathType() == 12) {
+                                Log.d("ODsayApi-12", "pathType12 실행");
+                                CallApiData callApiData = new CallApiData();
+                                //시내에 관한 정보는 CallApiData에 저장한다.
+                                String Json2 = new Gson().toJson(path);
+                                String pathType12 = String.valueOf(path.getPathType());
+                                for (OdsayData.SubPath subPath : path.getSubPath()) {
+                                    Log.d("ODsayApi-12", "정보를 callApiData에 저장한다.");
+                                    if(subPath.getTrafficType() == 5 || subPath.getTrafficType() == 6){
+                                        callApiData.setStartName(subPath.getStartName());
+                                        callApiData.setEndName(subPath.getEndName());
+                                        callApiData.setStartPointX(subPath.getStartX());
+                                        callApiData.setStartPointY(subPath.getStartY());
+                                        callApiData.setEndPointX(subPath.getEndX());
+                                        callApiData.setEndPointY(subPath.getEndY());
+                                        callApiData.setTotalTime(path.getInfo().getTotalTime());
+                                    }
+                                }
+
+                                count2++;
+                                if (count2 > 1) {
+                                    break; // 최대 3개의 Path 객체만 처리하고 루프를 중단
+                                }
+                                //callApiData에 잘 저장되었는지 확인
+                                Log.d("ODsayApipathType12", "데이터 확인\n" + callApiData.toString());
+
+                                if(count2 == 1){
+                                    Log.d("ODsayApi-12", "새로운 api 호출 ");
+                                    totalApi(pathType12Data);
+                                    pathInfoList2.add(pathType12Data);
+                                    pathInfoStrings.add(pathType12Data.toString());
+                                    displayText.append(pathType12Data.toString()).append("\n");
+                                }
+
+                            }
+                        }
+                    }
+
+                    listViewadapter.clear();
+                    listViewadapter.addAll(pathInfoStrings);
+                    listViewadapter.notifyDataSetChanged();
                 }
             }
 
@@ -587,56 +663,147 @@ public class MainPage extends AppCompatActivity {
         });
     }
 
-    private void busLogic(OdsayData searchResult, CallApiData callApiData, PathInfo pathInfos) {
-        StringBuilder displayText = new StringBuilder();
-        List<String> pathInfoStrings = new ArrayList<>();
-        CallApiData call = new CallApiData();
-        int count = 0;
+        private void totalApi(PathType12Data pathType12Data) {
+            Log.d("ODsayApi - totlaApi", "TotalApi 실행");
+            CallApiData callApiData = new CallApiData();
+            // 첫 번째 API 호출
+            Log.d("OdsayApi - callNewApi1", "callNewApi1 실행");
+            callNewApi1(Mylocation.StartPlace.getX(), Mylocation.StartPlace.getY(),
+                    callApiData.getStartPointX(), callApiData.getStartPointY(),
+                    pathType12Data);
 
-        for (OdsayData.Path path : searchResult.getResult().getPath()) {
-            // 처음부터 pathType이 12가 아닌 경우에만 pathInfo 객체 생성
-            if (path.getPathType() != 12) {
-                PathInfo pathInfo = new PathInfo();
-                pathInfo.setTotalTime(path.getInfo().getTotalTime());
-                if (path.getPathType() == 2) {
-                    for (OdsayData.SubPath subPath : path.getSubPath()) {
-                        if (subPath.getTrafficType() == 2) { // 버스 경로인 경우
-                            List<String> busNos = subPath.getLane().stream()
-                                    .map(OdsayData.Lane::getBusNo)
-                                    .collect(Collectors.toList());
-                            pathInfo.addSubPath(busNos, subPath.getStartName(), subPath.getEndName());
+            // 두 번째 API 호출
+            Log.d("ODsayApi - callNewApi2", "callNewApi2 실행");
+            callNewApi2(callApiData.getEndPointX(), callApiData.getEndPointY(),
+                    Mylocation.GoalPlace.getX(), Mylocation.GoalPlace.getY(),
+                    pathType12Data);
+
+            // 결과 확인
+            Log.d("totalApi", "결과: " + pathType12Data.toString());
+        }
+        private void callNewApi1(double startX, double startY, double endX, double endY, PathType12Data pathType12Data) {
+            Log.d("ODsayApi - callNewApi1", "callNewApi1 시작");
+            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY); // 로그 수준 설정
+
+            CallApiData callApiData = new CallApiData();
+            StringBuilder displayText = new StringBuilder();
+            List<String> pathInfoStrings = new ArrayList<>();
+
+            // OkHttp 클라이언트에 로깅 인터셉터 추가
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .addInterceptor(loggingInterceptor)
+                    .build();
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(BASE_URL2)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(client)
+                    .build();
+            ODsayService odsayApi = retrofit.create(ODsayService.class);
+            Call<OdsayData> call2 = odsayApi.searchPublicTransitPath(OdsayAPI_KEY, startX, startY, endX, endY);
+            //두번쨰 api 호출
+            Log.d("ODsayApi - callNewApi1", " callNewApi1 api 호출");
+            call2.enqueue(new Callback<OdsayData>() {
+                @Override
+                public void onResponse(Call<OdsayData> call, Response<OdsayData> response) {
+                    if (response.isSuccessful()) {
+                        OdsayData searchResult = response.body();
+                        int count2 = 0;
+                        for (OdsayData.Path path : searchResult.getResult().getPath()) {
+                            if (path.getPathType() == 2) {
+                                // api 호출 데이터
+                                Log.d("OdsayApi - callNewApi1", "데이터 호출");
+                                pathType12Data.setTotalTime1(path.getInfo().getTotalTime());
+                                for (OdsayData.SubPath subPath : path.getSubPath()) {
+                                    if (subPath.getTrafficType() == 2) { // 버스 경로인 경우
+                                        List<String> busNos = subPath.getLane().stream()
+                                                .map(OdsayData.Lane::getBusNo)
+                                                .collect(Collectors.toList());
+                                        pathType12Data.addSubPath1(busNos, subPath.getStartName(), subPath.getEndName());
+                                    }
+                                }
+
+                                count2++; // 처리한 Path 객체의 수 증가
+                                if (count2 >= 3) {
+                                    break; // 최대 3개의 Path 객체만 처리하고 루프를 중단
+                                }
+                            }
                         }
-                    }
-
-                    pathInfoList.add(pathInfo);
-                    pathInfoStrings.add(pathInfo.toString());
-
-                    displayText.append(pathInfo.toString()).append("\n");
-
-                    count++; // 처리한 Path 객체의 수 증가
-                    if (count >= 3) {
-                        break; // 최대 3개의 Path 객체만 처리하고 루프를 중단
+                        //데이터 저장되었는지 확인
+                        Log.d("OdsayApi - callNewApi1 - callApi1", pathType12Data.toString1());
                     }
                 }
-            } else if (path.getPathType() == 12) {
-                for (OdsayData.SubPath subPath : path.getSubPath()) {
-                    // 저장 pathType에 대한 정보
-                    call.setStartName(subPath.getStartName());
-                    call.setEndName(subPath.getEndName());
-                    call.setStartX(subPath.getStartX());
-                    call.setStartY(subPath.getStartY());
-                    call.setEndX(subPath.getEndX());
-                    call.setEndY(subPath.getEndY());
-                    pathInfos.addPath12Names(call.getStartName(), call.getEndName());
-
-                    callApi(Mylocation.StartPlace.getX(), Mylocation.StartPlace.getY(), call.getStartX(), call.getStartY(), new CallApiData(), pathInfos);
-                    Log.d("path12", pathInfos.toString());
+                @Override
+                public void onFailure(Call<OdsayData> call, Throwable t) {
+                    t.printStackTrace();
+                    Log.d("odsay", "API call failed: " + t.getMessage());
                 }
-            }
+            });
         }
 
-        listViewadapter.clear();
-        listViewadapter.addAll(pathInfoStrings);
-        listViewadapter.notifyDataSetChanged();
+
+        private void callNewApi2(double startX, double startY, double endX, double endY, PathType12Data pathType12Data) {
+            Log.d("ODsayApi - callNewApi2", "callNewApi2 시작");
+            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY); // 로그 수준 설정
+
+            CallApiData callApiData = new CallApiData();
+            StringBuilder displayText = new StringBuilder();
+            List<String> pathInfoStrings = new ArrayList<>();
+
+            // OkHttp 클라이언트에 로깅 인터셉터 추가
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .addInterceptor(loggingInterceptor)
+                    .build();
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(BASE_URL2)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(client)
+                    .build();
+            ODsayService odsayApi = retrofit.create(ODsayService.class);
+            Call<OdsayData> call2 = odsayApi.searchPublicTransitPath(OdsayAPI_KEY, startX, startY, endX, endY);
+            //두번쨰 api 호출
+            Log.d("ODsayApi - callNewApi2", " callNewApi2 api 호출");
+            call2.enqueue(new Callback<OdsayData>() {
+                @Override
+                public void onResponse(Call<OdsayData> call, Response<OdsayData> response) {
+                    if (response.isSuccessful()) {
+                        OdsayData searchResult = response.body();
+                        int count2 = 0;
+                        Log.d("OdsayApi - callNewApi2", "데이터 호출");
+                        for (OdsayData.Path path : searchResult.getResult().getPath()) {
+                            if (path.getPathType() == 2) {
+                                PathType12Data pathType12Data = new PathType12Data();
+                                pathType12Data.setTotalTime1(path.getInfo().getTotalTime());
+                                for (OdsayData.SubPath subPath : path.getSubPath()) {
+                                    if (subPath.getTrafficType() == 2) { // 버스 경로인 경우
+                                        List<String> busNos = subPath.getLane().stream()
+                                                .map(OdsayData.Lane::getBusNo)
+                                                .collect(Collectors.toList());
+                                        pathType12Data.addSubPath2(busNos, subPath.getStartName(), subPath.getEndName());
+                                    }
+                                }
+//                                pathInfoList2.add(pathType12Data);
+//                                pathInfoStrings.add(pathType12Data.toString());
+//
+//                                displayText.append(pathType12Data.toString()).append("\n");
+
+                                count2++; // 처리한 Path 객체의 수 증가
+                                if (count2 >= 3) {
+                                    break; // 최대 3개의 Path 객체만 처리하고 루프를 중단
+                                }
+                            }
+                        }
+
+                        //데이터 저장되었는지 확인
+                        Log.d("OdsayApi - callNewApi2", pathType12Data.toString2());
+                    }
+                }
+                @Override
+                public void onFailure(Call<OdsayData> call, Throwable t) {
+                    t.printStackTrace();
+                    Log.d("odsay", "API call failed: " + t.getMessage());
+                }
+            });
+        }
     }
-}

@@ -5,15 +5,11 @@ public class CallApiData {
     double startPointY;
     double endPointX;
     double endPointY;
-    
-    //두번째 api 호출 데이터 저장
     String startName;
     String endName;
-    double startX;
-    double startY;
-    double endX;
-    double endY;
-    
+
+    int totalTime;
+
     public double getStartPointX() {
         return startPointX;
     }
@@ -62,35 +58,24 @@ public class CallApiData {
         this.endName = endName;
     }
 
-    public double getStartX() {
-        return startX;
+    public int getTotalTime() {
+        return totalTime;
     }
 
-    public void setStartX(double startX) {
-        this.startX = startX;
+    public void setTotalTime(int totalTime) {
+        this.totalTime = totalTime;
     }
 
-    public double getStartY() {
-        return startY;
-    }
-
-    public void setStartY(double startY) {
-        this.startY = startY;
-    }
-
-    public double getEndX() {
-        return endX;
-    }
-
-    public void setEndX(double endX) {
-        this.endX = endX;
-    }
-
-    public double getEndY() {
-        return endY;
-    }
-
-    public void setEndY(double endY) {
-        this.endY = endY;
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Start Name: ").append(startName).append("\n");
+        sb.append("End Name: ").append(endName).append("\n");
+        sb.append("Start Point X: ").append(startPointX).append("\n");
+        sb.append("Start Point Y: ").append(startPointY).append("\n");
+        sb.append("End Point X: ").append(endPointX).append("\n");
+        sb.append("End Point Y: ").append(endPointY).append("\n");
+        sb.append("Total Time: ").append(totalTime).append(" minutes\n");
+        return sb.toString();
     }
 }
