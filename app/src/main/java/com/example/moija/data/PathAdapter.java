@@ -1,4 +1,4 @@
-package com.example.moija;
+package com.example.moija.data;
 
 import android.content.Context;
 import android.view.LayoutInflater;

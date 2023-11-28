@@ -28,6 +28,7 @@ import com.example.moija.api.KakaoApi;
 import com.example.moija.api.ODsayService;
 import com.example.moija.data.CallApiData;
 import com.example.moija.data.OdsayData;
+import com.example.moija.data.PathAdapter;
 import com.example.moija.data.PathInfo;
 import com.example.moija.data.PathType12Data;
 import com.example.moija.fragment.MapFragment;
@@ -799,8 +800,8 @@ public class MainPage extends AppCompatActivity {
                     recordPlaceList.setVisibility(View.GONE);
                     searchPathListView.setVisibility(View.GONE);
                     searchPathListView2.setVisibility(View.VISIBLE);
-
-                    com.example.moija.PathAdapter pathAdapter = new com.example.moija.PathAdapter(getApplicationContext(), pathInfoList2);
+                    
+                    PathAdapter pathAdapter = new PathAdapter(getApplicationContext(), pathInfoList2);
                     searchPathListView2.setAdapter(pathAdapter);
                 }
             }
