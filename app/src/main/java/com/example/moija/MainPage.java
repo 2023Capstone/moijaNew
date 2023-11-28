@@ -112,7 +112,6 @@ public class MainPage extends AppCompatActivity {
         InputMethodManager Keyboardmanager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 
         listViewadapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<>());
-
         searchPathListView.setAdapter(listViewadapter);
         //데이터베이스 삭제
         dataclear.setOnClickListener(new View.OnClickListener() {
@@ -677,7 +676,7 @@ public class MainPage extends AppCompatActivity {
                     pathType12Data, callApiData, pathInfoStrings);
 
         }
-        private void callNewApi1(double startX, double startY, double endX, double endY, PathType12Data pathType12Data, CallApiData callApiData, List<String> pathInfoStrings) {
+        private void callNewApi1(double startX, double startY, double endX, double endY, PathType12Data pathType12Data, CallApiData callApiData, List<String> pathInfoStrings ) {
             Log.d("ODsayApi - callNewApi1", "13. callNewApi1 시작");
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
             loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY); // 로그 수준 설정
@@ -793,9 +792,8 @@ public class MainPage extends AppCompatActivity {
                     }
 
                     Log.d("ODsay-end", "22. 데이터 넘어갔나?");
-                    listViewadapter.clear();
-                    listViewadapter.addAll(pathInfoStrings);
-                    listViewadapter.notifyDataSetChanged();
+                    com.example.moija.PathAdapter pathAdapter = new com.example.moija.PathAdapter(getApplicationContext(), pathInfoList2);
+                    searchPathListView2.setAdapter(pathAdapter);
                 }
             }
             @Override
