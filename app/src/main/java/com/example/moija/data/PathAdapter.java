@@ -39,8 +39,8 @@ public class PathAdapter extends ArrayAdapter<PathType12Data> {
             InBusText.setText("");
             OutBusText.setText("");
             //장소 주소를 설정
-            int minBus = Math.min(path.getBusNos1().size(), path.getBusNos2().size());
-            for(int i=0; i<minBus; i++)
+//            int minBus = Math.min(path.getBusNos1().size(), path.getBusNos2().size());
+            for(int i=0; i<path.getBusNos1().size(); i++)
             {
                 InBusText.append("버스 번호: " + path.getBusNos1().get(i).toString() + "\n");
                 InBusText.append("승차: " + path.getStartNames1().get(i).toString() + "\n");
