@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.example.moija.data.PathType12Data;
+import com.example.moija.R;
 
 import java.util.List;
 

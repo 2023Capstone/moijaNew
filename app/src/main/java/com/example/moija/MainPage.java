@@ -28,7 +28,6 @@ import com.example.moija.api.KakaoApi;
 import com.example.moija.api.ODsayService;
 import com.example.moija.data.CallApiData;
 import com.example.moija.data.OdsayData;
-import com.example.moija.data.PathAdapter;
 import com.example.moija.data.PathInfo;
 import com.example.moija.data.PathType12Data;
 import com.example.moija.fragment.MapFragment;
@@ -650,6 +649,7 @@ public class MainPage extends AppCompatActivity {
                                     totalApi(pathType12Data, callApiData, pathInfoStrings);
                                 }
                             }
+                            pathInfoStrings.add(pathType12Data.toString());
                         }
                     }
                     Log.d("ODsay-listView", "데이터 출력");
@@ -796,13 +796,9 @@ public class MainPage extends AppCompatActivity {
                     Log.d("ODsay-end", "22. 데이터 넘어갔나?");
 
 
-                    resultListView.setVisibility(View.GONE);
-                    recordPlaceList.setVisibility(View.GONE);
-                    searchPathListView.setVisibility(View.GONE);
-                    searchPathListView2.setVisibility(View.VISIBLE);
-                    
-                    PathAdapter pathAdapter = new PathAdapter(getApplicationContext(), pathInfoList2);
-                    searchPathListView2.setAdapter(pathAdapter);
+                    listViewadapter.clear();
+                    listViewadapter.addAll(pathInfoStrings);
+                    listViewadapter.notifyDataSetChanged();
                 }
             }
             @Override
