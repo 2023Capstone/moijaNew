@@ -649,7 +649,6 @@ public class MainPage extends AppCompatActivity {
                                     totalApi(pathType12Data, callApiData, pathInfoStrings);
                                 }
                             }
-                            pathInfoStrings.add(pathType12Data.toString());
                         }
                     }
                     Log.d("ODsay-listView", "데이터 출력");
@@ -790,6 +789,7 @@ public class MainPage extends AppCompatActivity {
 
                             //데이터 저장되었는지 확인
                             Log.d("OdsayApi - callNewApi1",  "21. callNew1Data \n" + pathType12Data.toString2());
+                            pathInfoStrings.add(pathType12Data.toString());
                         }
                     }
 
