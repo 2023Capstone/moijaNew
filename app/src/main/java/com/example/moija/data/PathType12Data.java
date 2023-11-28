@@ -159,16 +159,15 @@ public class PathType12Data {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         int numSubPaths = Math.max(busNos1.size(), busNos2.size());// subPath의 수
-        
+
         // totalTime 리스트의 각 요소를 문자열로 변환하여 추가
         sb.append("TotalTime: ").append(totalTime1).append("\n");
         for (int i = 0; i < busNos1.size(); i++) {
             sb.append("Bus Nos: ").append(String.join(", ", busNos1.get(i))).append("\n");
             sb.append("Start: ").append(startNames1.get(i)).append("\n");
             sb.append("End: ").append(endNames1.get(i)).append("\n");
-            // 중간 경로 정보 (모든 데이터 블록에서 출력)
-            sb.append("Mid Route - Start: ").append(getMidStartName()).append("\n");
-            sb.append("End: ").append(getMidEndName()).append("\n");
+
+            // 각 메인 경로에 대한 중간 경로들을 처리합니다.
         }
 
             // 두 번째 경로의 하위 경로(subPath) 정보
