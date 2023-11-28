@@ -795,7 +795,7 @@ public class MainPage extends AppCompatActivity {
 
                     com.example.moija.PathAdapter pathAdapter = new com.example.moija.PathAdapter(getApplicationContext(), pathInfoList2);
                     Log.d("Odsay" ,"23. athAdapter" + pathAdapter);
-                    searchPathListView2.setAdapter(pathAdapter);
+                    searchPathListView2.setAdapter(pathAdapter.toString());
                 }
             }
             @Override
