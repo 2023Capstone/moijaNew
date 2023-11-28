@@ -38,19 +38,92 @@ public class PathType12Data {
     List<String> startNames2 = new ArrayList<>();
     List<String> endNames2 = new ArrayList<>();
 
+    public class SubPathData {
+        private List<String> busNos;
+        private String startName;
+        private String endName;
 
-
-    public void addSubPath1(List<String> busNos1, String startName1, String endName1) {
-        this.busNos1.add(busNos1);
-        this.startNames1.add(startName1);
-        this.endNames1.add(endName1);
+        public SubPathData(List<String> busNos, String startName, String endName) {
+            this.busNos = busNos;
+            this.startName = startName;
+            this.endName = endName;
+        }
     }
 
-    public void addSubPath2(List<String> busNos2, String startName2, String endName2) {
-        this.busNos2.add(busNos2);
-        this.startNames2.add(startName2);
-        this.endNames2.add(endName2);
+    public class PathData {
+        private List<SubPathData> subPaths;
+
+        private int totalTime;  // Path의 총 소요 시간을 저장할 필드
+
+        public PathData() {
+            this.subPaths = new ArrayList<>();
+        }
+
+        public void setTotalTime(int totalTime) {
+            this.totalTime = totalTime;
+        }
+
+        public void addSubPath(SubPathData subPath) {
+            subPaths.add(subPath);
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("TotalTime: ").append(totalTime).append("\n");
+            for (SubPathData subPath : subPaths) {
+                sb.append("Bus Nos: ").append(String.join(", ", subPath.busNos)).append("\n");
+                sb.append("Start: ").append(subPath.startName).append("\n");
+                sb.append("End: ").append(subPath.endName).append("\n");
+            }
+            return sb.toString();
+        }
+
     }
+
+    public class TravelRoute {
+        private List<PathData> paths;
+
+        public TravelRoute() {
+            this.paths = new ArrayList<>();
+        }
+
+        public void addPath(PathData path) {
+            paths.add(path);
+        }
+
+        // Getters, setters 및 toString 메서드 생략
+    }
+    // 첫 번째 API 호출에 대한 데이터 저장을 위한 필드
+    private List<PathData> api1Paths;
+
+    // 두 번째 API 호출에 대한 데이터 저장을 위한 필드
+    private List<PathData> api2Paths;
+
+    public PathType12Data() {
+        api1Paths = new ArrayList<>();
+        api2Paths = new ArrayList<>();
+    }
+
+    public void addApi1Path(PathData path) {
+        api1Paths.add(path);
+    }
+
+    public void addApi2Path(PathData path) {
+        api2Paths.add(path);
+    }
+    private List<SubPathData> subPaths1 = new ArrayList<>();
+    private List<SubPathData> subPaths2 = new ArrayList<>();
+
+//    public void addSubPath1( List<String> busNos, String startName, String endName) {
+//        SubPathData subPathData = new SubPathData(busNos, startName, endName);
+//        this.subPaths1.add(subPathData);
+//    }
+//
+//    public void addSubPath2( List<String> busNos, String startName, String endName) {
+//        SubPathData subPathData = new SubPathData(busNos, startName, endName);
+//        this.subPaths2.add(subPathData);
+//    }
 
     public CallApiData getCallApiData() {
         return callApiData;
@@ -131,53 +204,40 @@ public class PathType12Data {
         this.endNames2 = endNames2;
     }
 
-    public String toString1() {
-        StringBuilder sb = new StringBuilder();
-        // totalTime 리스트의 각 요소를 문자열로 변환하여 추가
-        sb.append("TotalTime: ").append(totalTime1).append("\n");
-        for (int i = 0; i < busNos1.size(); i++) {
-            sb.append("Bus Nos: ").append(String.join(", ", busNos1.get(i))).append("\n");
-            sb.append("Start: ").append(startNames1.get(i)).append("\n");
-            sb.append("End: ").append(endNames1.get(i)).append("\n");
-        }
-        return sb.toString();
-    }
-
-    public String toString2() {
-        StringBuilder sb = new StringBuilder();
-        // totalTime 리스트의 각 요소를 문자열로 변환하여 추가
-        sb.append("TotalTime: ").append(totalTime3).append("\n");
-        for (int i = 0; i < busNos2.size(); i++) {
-            sb.append("Bus Nos: ").append(String.join(", ", busNos2.get(i))).append("\n");
-            sb.append("Start: ").append(startNames2.get(i)).append("\n");
-            sb.append("End: ").append(endNames2.get(i)).append("\n");
-        }
-        return sb.toString();
-    }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        int numSubPaths = Math.max(busNos1.size(), busNos2.size());// subPath의 수
+        int minSize = Math.min(api1Paths.size(), api2Paths.size()); // 더 작은 사이즈를 기준으로 설정
 
-        // totalTime 리스트의 각 요소를 문자열로 변환하여 추가
-        sb.append("TotalTime: ").append(totalTime1).append("\n");
-        for (int i = 0; i < busNos1.size(); i++) {
-            sb.append("Bus Nos: ").append(String.join(", ", busNos1.get(i))).append("\n");
-            sb.append("Start: ").append(startNames1.get(i)).append("\n");
-            sb.append("End: ").append(endNames1.get(i)).append("\n");
+        for (int i = 0; i < minSize; i++) {
+            PathData api1Path = api1Paths.get(i);
+            PathData api2Path = api2Paths.get(i);
 
-            // 각 메인 경로에 대한 중간 경로들을 처리합니다.
+            // API 1의 경로 데이터
+            sb.append("Path ").append(i + 1).append("\n");
+            sb.append("TotalTime: ").append(api1Path.totalTime + totalTime2).append("\n");
+            for (SubPathData subPath : api1Path.subPaths) {
+                sb.append("- SubPath: Bus Nos: ")
+                        .append(String.join(", ", subPath.busNos))
+                        .append(", Start: ").append(subPath.startName)
+                        .append(", End: ").append(subPath.endName).append("\n");
+            }
+
+            // 중간 경로 데이터
+            sb.append("Mid Route: ").append(midStartName).append(" ->> ").append(midEndName).append("\n");
+
+            // API 2의 경로 데이터
+            sb.append("API 2 Paths:\n");
+            for (SubPathData subPath : api2Path.subPaths) {
+                sb.append("- SubPath: Bus Nos: ")
+                        .append(String.join(", ", subPath.busNos))
+                        .append(", Start: ").append(subPath.startName)
+                        .append(", End: ").append(subPath.endName).append("\n");
+            }
+
+            sb.append("\n"); // 경로 간 구분을 위한 줄바꿈
         }
 
-            // 두 번째 경로의 하위 경로(subPath) 정보
-        for (int i = 0; i < busNos2.size(); i++) {
-            sb.append("Bus Nos: ").append(String.join(", ", busNos2.get(i))).append("\n");
-            sb.append("Start: ").append(startNames2.get(i)).append("\n");
-            sb.append("End: ").append(endNames2.get(i)).append("\n");
-        }
-
-        sb.append("\n"); // 각 데이터 블록 간 구분을 위한 줄바꿈
         return sb.toString();
     }
 }
