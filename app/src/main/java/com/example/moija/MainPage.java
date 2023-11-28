@@ -614,6 +614,7 @@ public class MainPage extends AppCompatActivity {
                                 if (count >= 3) {
                                     break; // 최대 3개의 Path 객체만 처리하고 루프를 중단
                                 }
+                                //
                             } else if (path.getPathType() == 12) {
                                 Log.d("ODsayApi-12", "3. pathType12 실행");
                                 CallApiData callApiData = new CallApiData();
