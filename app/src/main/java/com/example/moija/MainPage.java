@@ -619,10 +619,9 @@ public class MainPage extends AppCompatActivity {
                                     Log.d("ODsayApi-12", "4. 정보를 callApiData에 저장한다.");
                                     if(subPath.getTrafficType() == 5 || subPath.getTrafficType() == 6){
                                         //중간 경로, 중간 경로의 totalTime 저장
-                                        pathType12Data.setMidStartName(subPath.getStartName());
-                                        pathType12Data.setMidEndName(subPath.getEndName());
-                                        pathType12Data.setTotalTime2(path.getInfo().getTotalTime());
-                                        //startPoint X Y, endPoint X Y 데이터 callApiData에 저장
+                                        callApiData.setStartName(subPath.getStartName());
+                                        callApiData.setEndName(subPath.getEndName());
+                                        callApiData.setTotalTime(path.getInfo().getTotalTime());
                                         callApiData.setStartPointX(subPath.getStartX());
                                         callApiData.setStartPointY(subPath.getStartY());
                                         callApiData.setEndPointX(subPath.getEndX());
@@ -636,9 +635,14 @@ public class MainPage extends AppCompatActivity {
                                     break;
                                 }
 
+                                pathType12Data.setMidStartName(callApiData.getStartName());
+                                pathType12Data.setMidEndName(callApiData.getEndName());
+                                pathType12Data.setTotalTime2(callApiData.getTotalTime());
+
                                 Log.d("ODsayApi-12", "5. 새로운 api 호출 ");
                                 Log.d("ODsayApi-mid", "6. 데이터 확인1\n" + pathType12Data.getMidStartName() + " >> "
                                         + pathType12Data.getMidEndName());
+                                Log.d("ODsayApi - mid", "7.데이터 확인2\n" + pathType12Data.getTotalTime2());
                                 Log.d("Odsay-totalApi", "7. callNewApi1 실행");
                                 callNewApi1(Mylocation.StartPlace.getX(), Mylocation.StartPlace.getY(),
                                         callApiData.getStartPointX(), callApiData.getStartPointY(),
@@ -707,13 +711,13 @@ public class MainPage extends AppCompatActivity {
                                     }
                                     travelRoute.addPath(pathData); // PathData 객체를 TravelRoute에 추가
                                     count2++; // 처리한 Path 객체의 수 증가
-                                    //Log.d("ODSay-2", "11. 데이터 확인 " + pathType12Data.toString1());
                                     if (count2 >= 3) {
                                         break; // 최대 3개의 Path 객체만 처리하고 루프를 중단
                                     }
                                 }
                             }
                         }
+
                         // 두 번째 API 호출
                         Log.d("ODsayApi - callNewApi2", "12. callNewApi2 실행");
                         callNewApi2(callApiData.getEndPointX(), callApiData.getEndPointY(),
@@ -732,6 +736,7 @@ public class MainPage extends AppCompatActivity {
 
 
     private void callNewApi2(double startX, double startY, double endX, double endY, PathType12Data pathType12Data, List<String> pathInfoStrings) {
+        PathType12Data pathType12Data2 = new PathType12Data();
         Log.d("ODsayApi - callNewApi2", "13. callNewApi2 시작");
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY); // 로그 수준 설정
@@ -776,7 +781,12 @@ public class MainPage extends AppCompatActivity {
                                     if (count3 >= 3) {
                                         break; // 최대 3개의 Path 객체만 처리하고 루프를 중단
                                     }
-                                pathInfoStrings.add(pathType12Data.toString());
+
+                                    int minSize = Math.min(pathType12Data.getApi1PathsSize(), pathType12Data.getApi2PathsSize());
+                                    for (int i = 0; i < minSize; i++) {
+                                        String pathDataString = pathType12Data.getIndividualPathString(i);
+                                        pathInfoStrings.add(pathDataString);
+                                    }
 
                             }
                         }
