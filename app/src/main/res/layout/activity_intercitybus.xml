@@ -1,72 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
-
-    <EditText
-        android:id="@+id/startStationEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Enter start station"/>
-
-    <EditText
-        android:id="@+id/endStationEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Enter end station"/>
+    tools:context=".schedule.IntercityBus">
 
     <Button
         android:id="@+id/getScheduleButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/endStationEditText"
         android:layout_marginTop="16dp"
-        android:text="시간표"/>
+        android:text="시간표"
+        />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
-        >
+        android:layout_below="@id/getScheduleButton"
+        android:gravity="center">
 
         <TextView
             android:id="@+id/startStationTextView"
-            android:layout_width="176dp"
-            android:layout_height="50dp"
+            android:layout_width="150dp"
+            android:layout_height="match_parent"
             android:layout_below="@id/getScheduleButton"
             android:gravity="center"
-            android:text="Start Terminal: "
+            android:text="출발지 터미널"
             android:textAlignment="center"
-            android:textSize="18sp" />
+            android:textSize="20sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
             android:gravity="center"
-            android:text="-->" />
+            android:text="-->"
+            android:textSize="30dp"/>
 
         <TextView
             android:id="@+id/destStationTextView"
-            android:layout_width="187dp"
+            android:layout_width="150dp"
             android:layout_height="match_parent"
             android:layout_below="@id/startStationTextView"
             android:gravity="center"
-            android:text="Destination Terminal: "
+            android:text="도착지 터미널"
             android:textAlignment="center"
-            android:textSize="18sp" />
-
+            android:textSize="20sp" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/busScheduleTextView"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/destStationTextView"
-        android:gravity="center"
-        android:layout_marginTop="16dp"
-        android:text="Bus Schedule: "
-        android:textAlignment="center"
-        android:textSize="30dp" />
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/busScheduleTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/destStationTextView"
+            android:layout_marginTop="16dp"
+            android:text="버스 일정"
+            android:textAlignment="center"
+            android:textSize="30dp"/>
+    </ScrollView>
 </LinearLayout>

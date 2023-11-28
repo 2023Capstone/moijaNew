@@ -25,8 +25,6 @@ import java.util.List;
 
 public class IntercityBus extends AppCompatActivity {
 
-    private EditText startStationEditText;
-    private EditText endStationEditText;
     private Button getScheduleButton;
     private TextView busScheduleTextView;
     private TextView startStationTextView;
@@ -37,8 +35,6 @@ public class IntercityBus extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intercitybus);
 
-        startStationEditText = findViewById(R.id.startStationEditText);
-        endStationEditText = findViewById(R.id.endStationEditText);
         getScheduleButton = findViewById(R.id.getScheduleButton);
         busScheduleTextView = findViewById(R.id.busScheduleTextView);
         startStationTextView = findViewById(R.id.startStationTextView);
@@ -47,29 +43,35 @@ public class IntercityBus extends AppCompatActivity {
         getScheduleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String startStation = startStationEditText.getText().toString().trim();
-                String endStation = endStationEditText.getText().toString().trim();
+                String startStationId = "4000159";
+                String destStationId = "4000064";
 
                 // AsyncTask를 사용하여 스케줄 데이터를 가져와 UI에 표시
-                new GetBusScheduleTask().execute(startStation, endStation);
+                new GetBusScheduleTask(startStationId, destStationId).execute();
             }
         });
     }
 
-    private class GetBusScheduleTask extends AsyncTask<String, Void, List<String>> {
+    private class GetBusScheduleTask extends AsyncTask<Void, Void, List<String>> {
         private String startTerminal;
         private String destTerminal;
+        private final String startStationId;
+        private final String destStationId;
+
+        public GetBusScheduleTask(String startStationId, String destStationId){
+            this.startStationId = startStationId;
+            this.destStationId = destStationId;
+        }
         @Override
-        protected List<String> doInBackground(String... params) {
+        protected List<String> doInBackground(Void... params) {
             List<String> scheduleList = new ArrayList<>();
 
             try {
-                String startStation = URLEncoder.encode(params[0], "UTF-8");
-                String endStation = URLEncoder.encode(params[1], "UTF-8");
+
                 String apiKey = "Bk3FXTpa4bUs3dxTOsUxSFvLGFYhTaoBDPKfSPOLdwI";
 
                 String apiUrl = "https://api.odsay.com/v1/api/intercityServiceTime?apiKey=" + apiKey +
-                        "&startStationID=" + startStation + "&endStationID=" + endStation;
+                        "&startStationID=" + startStationId + "&endStationID=" + destStationId;
 
                 URL url = new URL(apiUrl);
 
@@ -107,7 +109,7 @@ public class IntercityBus extends AppCompatActivity {
                     urlConnection.disconnect();
                 }
             } catch (Exception e) {
-                return null;
+                e.printStackTrace();
             }
 
             return scheduleList;
