@@ -106,6 +106,7 @@ public class MainPage extends AppCompatActivity {
         recordPlaceDB = new RecordPlaceDB(getApplicationContext());
         MapFragment = new MapFragment();
         recordPlaceList.setAdapter(recordAdapter);
+        searchPathListView2= findViewById(R.id.searchPathListView2);
         updateList();
         getSupportFragmentManager().beginTransaction().replace(R.id.Mapframe, MapFragment).commit();
         //키보드 제어
