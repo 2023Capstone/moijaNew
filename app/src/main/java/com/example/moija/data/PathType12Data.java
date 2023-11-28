@@ -159,27 +159,26 @@ public class PathType12Data {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         int numSubPaths = Math.max(busNos1.size(), busNos2.size());// subPath의 수
-
-        for (int i = 0; i < numSubPaths; i++) {
-            sb.append("Total Time: ").append(totalTime1 + totalTime2 + totalTime3).append("분\n");
-
-            // 첫 번째 경로의 하위 경로(subPath) 정보
-            sb.append("First Route - Bus Nos: ").append(String.join(", ", busNos1.get(i))).append("\n");
+        
+        // totalTime 리스트의 각 요소를 문자열로 변환하여 추가
+        sb.append("TotalTime: ").append(totalTime1).append("\n");
+        for (int i = 0; i < busNos1.size(); i++) {
+            sb.append("Bus Nos: ").append(String.join(", ", busNos1.get(i))).append("\n");
             sb.append("Start: ").append(startNames1.get(i)).append("\n");
             sb.append("End: ").append(endNames1.get(i)).append("\n");
-
             // 중간 경로 정보 (모든 데이터 블록에서 출력)
             sb.append("Mid Route - Start: ").append(getMidStartName()).append("\n");
             sb.append("End: ").append(getMidEndName()).append("\n");
-
-            // 두 번째 경로의 하위 경로(subPath) 정보
-            sb.append("Second Route - Bus Nos: ").append(String.join(", ", busNos2.get(i))).append("\n");
-            sb.append("Start: ").append(startNames2.get(i)).append("\n");
-            sb.append("End: ").append(endNames2.get(i)).append("\n");
-
-            sb.append("\n"); // 각 데이터 블록 간 구분을 위한 줄바꿈
         }
 
+            // 두 번째 경로의 하위 경로(subPath) 정보
+        for (int i = 0; i < busNos2.size(); i++) {
+            sb.append("Bus Nos: ").append(String.join(", ", busNos2.get(i))).append("\n");
+            sb.append("Start: ").append(startNames2.get(i)).append("\n");
+            sb.append("End: ").append(endNames2.get(i)).append("\n");
+        }
+
+        sb.append("\n"); // 각 데이터 블록 간 구분을 위한 줄바꿈
         return sb.toString();
     }
 }
