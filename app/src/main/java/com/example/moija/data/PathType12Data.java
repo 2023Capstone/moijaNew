@@ -158,7 +158,7 @@ public class PathType12Data {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        int numSubPaths = Math.min(busNos1.size(), busNos2.size());// subPath의 수
+        int numSubPaths = Math.max(busNos1.size(), busNos2.size());// subPath의 수
 
         for (int i = 0; i < numSubPaths; i++) {
             sb.append("Total Time: ").append(totalTime1 + totalTime2 + totalTime3).append("분\n");
