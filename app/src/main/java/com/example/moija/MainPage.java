@@ -793,8 +793,13 @@ public class MainPage extends AppCompatActivity {
 
                     Log.d("ODsay-end", "22. 데이터 넘어갔나?");
 
+
+                    resultListView.setVisibility(View.GONE);
+                    recordPlaceList.setVisibility(View.GONE);
+                    searchPathListView.setVisibility(View.GONE);
+                    searchPathListView2.setVisibility(View.VISIBLE);
+
                     com.example.moija.PathAdapter pathAdapter = new com.example.moija.PathAdapter(getApplicationContext(), pathInfoList2);
-                    Log.d("Odsay" ,"23. athAdapter" + pathAdapter.toString());
                     searchPathListView2.setAdapter(pathAdapter);
                 }
             }

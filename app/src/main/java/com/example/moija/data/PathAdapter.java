@@ -55,7 +55,7 @@ public class PathAdapter extends ArrayAdapter<PathType12Data> {
             }
 
         }
-
         return view;
     }
+
 }
