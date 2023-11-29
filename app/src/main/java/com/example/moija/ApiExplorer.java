@@ -99,7 +99,6 @@ public class ApiExplorer implements Runnable {
         while (isRunning && !Thread.currentThread().isInterrupted()) {
             try {
                 executeApiCall();
-                Thread.sleep(10000); // 10초 대기 후 다시 실행
 
                 // 데이터 로딩 완료 후 메시지 전송
                 Message msg = Message.obtain();
@@ -108,6 +107,8 @@ public class ApiExplorer implements Runnable {
                 bundle.putInt("totalCount", totalCount);
                 msg.setData(bundle);
                 handler.sendMessage(msg);
+
+                Thread.sleep(10000); // 10초 대기 후 다시 실행
 
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt(); // 스레드 중단

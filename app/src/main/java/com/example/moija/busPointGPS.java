@@ -23,8 +23,9 @@ import java.util.List;
          public void handleMessage(Message msg) {
              String nodeNames = msg.getData().getString("nodeNames");
              int totalCount = msg.getData().getInt("totalCount");
-             textViewResult.setText(nodeNames + " " + totalCount);
-             progressBar.setVisibility(View.GONE); // 데이터 로딩 후 프로그레스 바 숨기기
+
+             textViewResult.setText(nodeNames + "\n" + totalCount + "개의 시내버스가 운행되고 있습니다.");
+             progressBar.setVisibility(View.GONE);
          }
      };
 
