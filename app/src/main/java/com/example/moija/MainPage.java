@@ -724,7 +724,9 @@ public class MainPage extends AppCompatActivity {
                                         }
                                     }
                                     travelRoute.addPath(pathData); // PathData 객체를 TravelRoute에 추가
+
                                     count2++; // 처리한 Path 객체의 수 증가
+                                    Log.d("Odsay", "api1Data확인\n" + pathType12Data.toStringApi1());
                                     if (count2 >= 3) {
                                         break; // 최대 3개의 Path 객체만 처리하고 루프를 중단
                                     }
@@ -791,7 +793,7 @@ public class MainPage extends AppCompatActivity {
                                         }
                                     }
                                     count3++; // 처리한 Path 객체의 수 증가
-                                    //Log.d("ODSay-2", "15. 데이터 확인 " + pathType12Data.toString2());
+                                    Log.d("Odsay", "api1Data확인\n" + pathType12Data.toStringApi2());
                                     if (count3 >= 3) {
                                         break; // 최대 3개의 Path 객체만 처리하고 루프를 중단
                                     }

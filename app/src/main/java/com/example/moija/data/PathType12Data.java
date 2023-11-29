@@ -209,21 +209,21 @@ public class PathType12Data {
                 .append("끝: ").append(subPath.endName).append("\n");
     }
 
-    public String toStringApi1() {
-        StringBuilder sb = new StringBuilder();
-        for (PathData pathData : api1Paths) {
-            sb.append(pathData.toString()).append("\n");
+        public String toStringApi1() {
+            StringBuilder sb = new StringBuilder();
+            for (PathData pathData : api1Paths) {
+                sb.append(pathData.toString()).append("\n");
+            }
+            return sb.toString();
         }
-        return sb.toString();
-    }
 
-    public String toStringApi2() {
-        StringBuilder sb = new StringBuilder();
-        for (PathData pathData : api2Paths) {
-            sb.append(pathData.toString()).append("\n");
+        public String toStringApi2() {
+            StringBuilder sb = new StringBuilder();
+            for (PathData pathData : api2Paths) {
+                sb.append(pathData.toString()).append("\n");
+            }
+            return sb.toString();
         }
-        return sb.toString();
-    }
 
     @Override
     public String toString() {
