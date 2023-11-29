@@ -720,11 +720,10 @@ public class MainPage extends AppCompatActivity {
                                                     .collect(Collectors.toList());
                                             PathType12Data.SubPathData subPathData = pathType12Data.new SubPathData(busNos, subPath.getStartName(), subPath.getEndName());
                                             pathData.addSubPath(subPathData);
-                                            pathType12Data.addApi1Path(pathData);
                                         }
                                     }
                                     travelRoute.addPath(pathData); // PathData 객체를 TravelRoute에 추가
-
+                                    pathType12Data.addApi1Path(pathData);
                                     count2++; // 처리한 Path 객체의 수 증가
                                     Log.d("Odsay", "api1Data확인\n" + pathType12Data.toStringApi1());
                                     if (count2 >= 3) {
@@ -789,9 +788,9 @@ public class MainPage extends AppCompatActivity {
                                                     .collect(Collectors.toList());
                                             PathType12Data.SubPathData subPathData = pathType12Data.new SubPathData(busNos, subPath.getStartName(), subPath.getEndName());
                                             pathData.addSubPath(subPathData);
-                                            pathType12Data.addApi2Path(pathData);
                                         }
                                     }
+                                    pathType12Data.addApi2Path(pathData);
                                     count3++; // 처리한 Path 객체의 수 증가
                                     Log.d("Odsay", "api1Data확인\n" + pathType12Data.toStringApi2());
                                     if (count3 >= 3) {
