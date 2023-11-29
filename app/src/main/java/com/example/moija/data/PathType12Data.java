@@ -171,24 +171,19 @@ public class PathType12Data {
         return api2Paths.size();
     }
 
-    public int getTotalTimeForAllPaths() {
-        int totalApi1Time = api1Paths.stream().mapToInt(path -> path.totalTime).sum();
-        int totalApi2Time = api2Paths.stream().mapToInt(path -> path.totalTime).sum();
-
-        return totalApi1Time + totalTime2 + totalApi2Time + totalTime3;
-    }
 
     public String getIndividualPathString(int index) {
-        if (index >= api1Paths.size() || index >= api2Paths.size()) {
-            return "";  // 인덱스가 경로의 수를 초과하는 경우 빈 문자열 반환
-        }
+//        if (index >= api1Paths.size() || index >= api2Paths.size()) {
+//            return "";  // 인덱스가 경로의 수를 초과하는 경우 빈 문자열 반환
+//        }
 
         StringBuilder pathStringBuilder = new StringBuilder();
         PathData api1Path = api1Paths.get(index);
         PathData api2Path = api2Paths.get(index);
+        //총 시간
         int totalPathTime = api1Path.totalTime + getTotalTime2() + api2Path.totalTime;
         //pathStringBuilder.append("Total Time for Path ").append(index + 1).append(": ").append(totalPathTime).append("\n");
-        pathStringBuilder.append("Total ").append(": ").append(totalPathTime).append("\n");
+        pathStringBuilder.append("TotalTime ").append(": ").append(totalPathTime + "분").append("\n");
         // API 1 경로 정보
         // pathStringBuilder.append("Path ").append(index + 1).append(":\n");
         //pathStringBuilder.append("API 1 Path Total Time: ").append(api1Path.totalTime).append("\n");
@@ -197,7 +192,7 @@ public class PathType12Data {
         }
 
         // 중간 경로 정보
-        pathStringBuilder.append("Mid Route: ").append(midStartName).append(" -> ").append(midEndName).append("\n");
+        pathStringBuilder.append("- 시외버스 - \n").append(midStartName).append(" -> ").append(midEndName).append("\n");
 
         // API 2 경로 정보
         //pathStringBuilder.append("API 2 Path Total Time: ").append(api2Path.totalTime).append("\n");
@@ -209,9 +204,9 @@ public class PathType12Data {
     }
 
     private void appendSubPathInfo(StringBuilder sb, SubPathData subPath) {
-        sb.append(" - SubPath: Bus Nos: ").append(String.join(", ", subPath.busNos))
-                .append(", Start: ").append(subPath.startName)
-                .append(", End: ").append(subPath.endName).append("\n");
+        sb.append("  - 버스 번호: ").append(String.join(", ", subPath.busNos)).append("\n")
+                .append("시작: ").append(subPath.startName).append("\n")
+                .append("끝: ").append(subPath.endName).append("\n");
     }
 
     public String toStringApi1() {

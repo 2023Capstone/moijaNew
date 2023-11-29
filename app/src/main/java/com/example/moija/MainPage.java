@@ -30,6 +30,7 @@ import com.example.moija.data.CallApiData;
 import com.example.moija.data.OdsayData;
 import com.example.moija.data.PathInfo;
 import com.example.moija.data.PathType12Data;
+import com.example.moija.data.SelectData;
 import com.example.moija.fragment.MapFragment;
 import com.example.moija.map.Mylocation;
 import com.example.moija.map.Place;
@@ -85,6 +86,7 @@ public class MainPage extends AppCompatActivity {
     private List<PathInfo> pathInfoList = new ArrayList<>();
     private List<PathType12Data> pathInfoList2 = new ArrayList<>();
     private ArrayAdapter<String> listViewadapter;
+    SelectData selectedData = new SelectData();
 
     private ArrayAdapter<String> listViewadapter2;
 
@@ -108,6 +110,7 @@ public class MainPage extends AppCompatActivity {
         recordPlaceList.setAdapter(recordAdapter);
         searchPathListView2= findViewById(R.id.searchPathListView2);
         updateList();
+
         getSupportFragmentManager().beginTransaction().replace(R.id.Mapframe, MapFragment).commit();
         //키보드 제어
         InputMethodManager Keyboardmanager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
@@ -298,6 +301,17 @@ public class MainPage extends AppCompatActivity {
                     //위치에 따라 주소 찾고 설정하는 메서드 넣기
                     FindMyAddress();
                 }
+            }
+        });
+
+        searchPathListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String clickedItem = listViewadapter.getItem(position); // 클릭된 아이템의 데이터
+                selectedData.setData(clickedItem); // 선택된 데이터 객체에 데이터 저장
+
+                String data = selectedData.getData();
+                Log.d("ODsay", data);
             }
         });
 
