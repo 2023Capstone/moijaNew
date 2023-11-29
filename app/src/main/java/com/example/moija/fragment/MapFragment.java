@@ -1,7 +1,9 @@
 package com.example.moija.fragment;
 
+import com.example.moija.ApiExplorer;
 import com.example.moija.MainPage;
 import com.example.moija.R;
+import com.example.moija.busPointGPS;
 import com.example.moija.data.PathInfo;
 
 import android.content.Context;
@@ -187,7 +189,7 @@ public class MapFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // 인텐트 생성 및 액티비티 시작
-                Intent intent = new Intent(getContext(), MainPage.class);
+                Intent intent = new Intent(getContext(), busPointGPS.class);
                 startActivity(intent);
             }
         });
