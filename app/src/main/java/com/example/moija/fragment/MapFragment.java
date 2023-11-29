@@ -45,8 +45,6 @@ public class MapFragment extends Fragment {
     public boolean getLastLocation =true;
     //내 위치를 나타내는 마커(라벨)
     private Label MyLabel;
-    //처음에만 내 위치로 카메라가 이동되도록 하기 위한 변수
-    private boolean MovecameraFirst=false;
     //시작 위치를 나타내는 마커
     public Label startLabel;
     //도착 위치를 나타내는 마커
@@ -99,15 +97,6 @@ public class MapFragment extends Fragment {
                 thiskakaoMap=kakaoMap;
                 routeDrawer=new RouteDrawer(kakaoMap);
                 Draw();
-                if(Mylocation.Lastlocation!=null) {
-                    UpdateMarker();
-                    if(MovecameraFirst==false) {
-                        //카메라를 현재 위치로 바꿈
-                        CameraUpdate cameraUpdate = CameraUpdateFactory.newCenterPosition(LatLng.from(Mylocation.Lastlocation.getLatitude(), Mylocation.Lastlocation.getLongitude()));
-                        kakaoMap.moveCamera(cameraUpdate);
-                        MovecameraFirst=true;
-                    }
-                }
                 final LocationListener gpsLocationListener = new LocationListener() {
                     //장소가 바뀌었으면
                     public void onLocationChanged(Location location) {
@@ -119,14 +108,6 @@ public class MapFragment extends Fragment {
                                 UpdateMarker();
                             }
                         }
-                        //최초 내위치 카메라 이동
-                        if(MovecameraFirst==false)
-                        {
-                            CameraUpdate cameraUpdate = CameraUpdateFactory.newCenterPosition(LatLng.from(Mylocation.Lastlocation.getLatitude(), Mylocation.Lastlocation.getLongitude()));
-                            kakaoMap.moveCamera(cameraUpdate);
-                            MovecameraFirst=true;
-                        }
-
                     }
                     public void onStatusChanged(String provider, int status, Bundle extras) {
                     }
@@ -225,5 +206,10 @@ public class MapFragment extends Fragment {
         }
         AddGoalMarker();
         AddStartMarker();
+        //카메라를 현재 위치로 바꿈
+        double middlelatitude=(Mylocation.StartPlace.getY()+Mylocation.GoalPlace.getY())/2;
+        double middlelongitude=(Mylocation.StartPlace.getX()+Mylocation.GoalPlace.getX())/2;
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newCenterPosition(LatLng.from(middlelatitude, middlelongitude),5);
+        thiskakaoMap.moveCamera(cameraUpdate);
     }
 }

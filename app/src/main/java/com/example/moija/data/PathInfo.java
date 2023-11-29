@@ -58,7 +58,7 @@ public class PathInfo {
     public List<Double> getendy(){return endy;}
 
     public List<Integer> getTrafficType(){return trafficType;}
-    public void setSubPath( List<String> busNos, String startName, String endName,double startX,double startY,double endX,double endY,int trafficType) {
+    public void setSubPath(List<String> busNos, String startName, String endName,double startX,double startY,double endX,double endY,int trafficType) {
         this.busNos.add(busNos);
         this.startNames.add(startName);
         this.endNames.add(endName);
@@ -68,7 +68,19 @@ public class PathInfo {
         this.endy.add(endY);
         this.trafficType.add(trafficType);
     }
+    public void addPathinfo(PathInfo path,int index){
+        for(int i=0; i<path.getBusNos().size(); i++){
+            this.busNos.add(index,path.getBusNos().get(i));
+            this.startNames.add(index,path.getStartNames().get(i));
+            this.endNames.add(index,path.getEndNames().get(i));
+            this.startx.add(index,path.getstartx().get(i));
+            this.starty.add(index,path.getstarty().get(i));
+            this.endx.add(index,path.getendx().get(i));
+            this.endy.add(index,path.getendy().get(i));
+            this.trafficType.add(index,path.getTrafficType().get(i));
+        }
 
+    }
     public void addPath12Names(String startName, String endName) {
         this.path12StartNames.add(startName);
         this.path12EndNames.add(endName);

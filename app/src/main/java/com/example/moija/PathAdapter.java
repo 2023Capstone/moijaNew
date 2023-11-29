@@ -30,26 +30,25 @@ public class PathAdapter extends ArrayAdapter<PathInfo> {
         }
 
         TextView TotalTimeText= view.findViewById(R.id.TotalTimeText);
-        TextView InBusText = view.findViewById(R.id.InBusText);
-        TextView OutBusText=view.findViewById(R.id.OutBusText);
+        TextView BusText = view.findViewById(R.id.BusText);
         PathInfo path = getItem(position);
 
         if (path != null) {
             // 장소 이름을 텍스트뷰에 설정
             TotalTimeText.setText("소요 시간: "+path.getTotalTime());
-            InBusText.setText("");
-            OutBusText.setText("");
+            BusText.setText("");
             //장소 주소를 설정
             for(int i=0; i<path.getBusNos().size(); i++)
             {
                 if(!path.getBusNos().get(i).contains("도보") && !path.getBusNos().get(i).contains("시외버스")) {
-                    InBusText.append("버스 번호: " + path.getBusNos().get(i).toString() + "\n");
-                    InBusText.append("승차: " + path.getStartNames().get(i).toString() + "\n");
-                    InBusText.append("하차: " + path.getEndNames().get(i).toString() + "\n");
+                    BusText.append("버스 번호: " + path.getBusNos().get(i).toString() + "\n");
+                    BusText.append("승차: " + path.getStartNames().get(i).toString() + "\n");
+                    BusText.append("하차: " + path.getEndNames().get(i).toString() + "\n");
                 }
                 else if(path.getBusNos().get(i).contains("시외버스")){
-                    OutBusText.append("승차: " + path.getStartNames().get(i).toString() + "\n");
-                    OutBusText.append("하차: " + path.getEndNames().get(i).toString() + "\n");
+                    BusText.append("----시외버스 탑승----"+"\n");
+                    BusText.append("승차: " + path.getStartNames().get(i).toString() + "\n");
+                    BusText.append("하차: " + path.getEndNames().get(i).toString() + "\n");
                 }
             }
 

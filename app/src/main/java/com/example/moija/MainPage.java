@@ -57,7 +57,8 @@ public class MainPage extends AppCompatActivity {
     private int Searchcode = 0;
     public static final String API_KEY = "ab4624b190ebccd6369144de2502ad14";
 
-    public static final String OdsayAPI_KEY = "Bk3FXTpa4bUs3dxTOsUxSFvLGFYhTaoBDPKfSPOLdwI";
+    public boolean pathsearched=false;
+    public static final String OdsayAPI_KEY = "fXCWmI16V2ggA9Y9OhTrVMSiPw/YHkDXoHmKjpLG7l8";
     //api 기본 URL
     public static final String BASE_URL = "https://dapi.kakao.com/";
 
@@ -122,9 +123,11 @@ public class MainPage extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // 클릭한 아이템의 값을 가져와서 입력 필드에 표시
+                Startsearched=false;
+                Goalsearched=false;
                 String selectedItem = dataList.toArray(new String[0])[position];
                 String[] parts = selectedItem.split(" - ");
-
+                pathsearched=false;
                 if (parts.length == 2) {
                     searchAndSet(parts[0],"start",false);
                     searchAndSet(parts[1],"goal",false);
@@ -303,10 +306,11 @@ public class MainPage extends AppCompatActivity {
                 Log.d("mylog2", txt + txt2);
                 if (Goalsearched && Startsearched) {
                     Log.d("pathSearch", "searchpath is being called");
+                    searchpath();
+                    pathsearched=true;
                     resultListView.setVisibility(View.GONE);
                     recordPlaceList.setVisibility(View.GONE);
                     searchPathListView.setVisibility(View.VISIBLE);
-                    searchpath();
                 }
             }
         });
@@ -315,6 +319,7 @@ public class MainPage extends AppCompatActivity {
             public void onClick(View view) {
                 if (Mylocation.Lastlocation != null) {
                     //위치에 따라 주소 찾고 설정하는 메서드 넣기
+                    Mapframelayout.setVisibility(View.GONE);
                     FindMyAddress();
                 }
             }
@@ -438,8 +443,9 @@ public class MainPage extends AppCompatActivity {
                             setGoalPlace(places.get(0));
                         }
                     }
-                    if(Startsearched && Goalsearched){
+                    if(Startsearched && Goalsearched && !pathsearched){
                         searchpath();
+                        pathsearched=true;
                         resultListView.setVisibility(View.GONE);
                         recordPlaceList.setVisibility(View.GONE);
                         searchPathListView.setVisibility(View.VISIBLE);
@@ -575,14 +581,12 @@ public class MainPage extends AppCompatActivity {
     public void searchpath() {
         //처음은 출발지, 도착지 | 위도 경도를 받는다
         callApi(Mylocation.StartPlace.getX(), Mylocation.StartPlace.getY(),
-                Mylocation.GoalPlace.getX(), Mylocation.GoalPlace.getY(),
-                new CallApiData(), new PathInfo());
+                Mylocation.GoalPlace.getX(), Mylocation.GoalPlace.getY()
+                , null);
     }
-
-    private void callApi(double startX, double startY, double endX, double endY, CallApiData callApiData, PathInfo pathInfo) {
-        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+    private void callApi(double startX, double startY, double endX, double endY, PathInfo MypathInfo) {
+       HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY); // 로그 수준 설정
-
         // OkHttp 클라이언트에 로깅 인터셉터 추가
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(loggingInterceptor)
@@ -599,7 +603,7 @@ public class MainPage extends AppCompatActivity {
             @Override
             public void onResponse(Call<OdsayData> call, Response<OdsayData> response) {
                 if (response.isSuccessful()) {
-
+                    pathInfoList.clear();
                     OdsayData searchResult = response.body();
                     busLogic(searchResult);
                 }
@@ -613,78 +617,174 @@ public class MainPage extends AppCompatActivity {
         });
     }
 
-    private void busLogic(OdsayData searchResult) {
-        StringBuilder displayText = new StringBuilder();
-        List<String> pathInfoStrings = new ArrayList<>();
-        CallApiData call = new CallApiData();
-        pathInfoList.clear();
+    private void callApi1(double startX, double startY, double endX, double endY, PathInfo MypathInfo) {
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL2)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        ODsayService odsayApi = retrofit.create(ODsayService.class);
+
+        Call<OdsayData> call = odsayApi.searchPublicTransitPath(OdsayAPI_KEY, startX, startY, endX, endY);
+        call.enqueue(new Callback<OdsayData>() {
+            @Override
+            public void onResponse(Call<OdsayData> call, Response<OdsayData> response) {
+                if (response.isSuccessful()) {
+                    OdsayData searchResult = response.body();
+                    Gson json=new Gson();
+                    String j=json.toJson(searchResult);
+                    Log.d("mylog",j);
+
+                    busLogicAdd(searchResult,MypathInfo,"start");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<OdsayData> call, Throwable t) {
+                t.printStackTrace();
+                Log.d("odsay", "API call failed: " + t.getMessage());
+            }
+        });
+    }
+    private void callApi2(double startX, double startY, double endX, double endY, PathInfo MypathInfo) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL2)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        ODsayService odsayApi = retrofit.create(ODsayService.class);
+        Call<OdsayData> call = odsayApi.searchPublicTransitPath(OdsayAPI_KEY, startX, startY, endX, endY);
+        call.enqueue(new Callback<OdsayData>() {
+            @Override
+            public void onResponse(Call<OdsayData> call, Response<OdsayData> response) {
+                if (response.isSuccessful()) {
+                    OdsayData searchResult = response.body();
+                    Gson json=new Gson();
+                    String j=json.toJson(searchResult);
+                    Log.d("mylog",j);
+
+                    busLogicAdd(searchResult,MypathInfo,"end");
+                }
+            }
+            @Override
+            public void onFailure(Call<OdsayData> call, Throwable t) {
+                t.printStackTrace();
+                Log.d("odsay", "API call failed: " + t.getMessage());
+            }
+        });
+    }
+    private void busLogicAdd(OdsayData searchResult,PathInfo myPathInfo,String startorend) {
         int count = 0;
-        for (OdsayData.Path path : searchResult.getResult().getPath()) {
-            // 도시내 길찾기의 경우
-            if (searchResult.getResult().getSearchType()==0) {
-                PathInfo pathInfo = new PathInfo();
-                Gson gson2=new Gson();
-                String subjson2=gson2.toJson(path);
-                Log.d("mylog",subjson2);
-                pathInfo.setTotalTime(path.getInfo().getTotalTime());
-                    for (int i=0; i<path.getSubPath().size();i++) {
-                        if(path.getSubPath().get(i).getTrafficType()==3){//도보
-                            List<String> busNos=new ArrayList<>();
+            PathInfo pathInfo = new PathInfo();
+            for (OdsayData.Path path : searchResult.getResult().getPath()) {
+                if (path.getPathType() == 2) {
+                    pathInfo.setTotalTime(path.getInfo().getTotalTime());
+                    for (int i = 0; i < path.getSubPath().size(); i++) {
+                        if (path.getSubPath().get(i).getTrafficType() == 3) {//도보
+                            List<String> busNos = new ArrayList<>();
                             busNos.add("도보");
                             //도보는 x,y값은 없고 시간만 나타내고 있음
                             //따라서, x,y값을 받으려면 for문으로 index값을 통하여 x,y값을 받아오는 수밖에 없음
-                            if(i==0){
-                                pathInfo.setSubPath(busNos, Mylocation.StartPlace.getPlaceName(), path.getSubPath().get(i+1).getStartName(), Mylocation.StartPlace.getX(),Mylocation.StartPlace.getY(),path.getSubPath().get(i+1).getStartX(),path.getSubPath().get(i+1).getStartY(),path.getSubPath().get(i).getTrafficType());
+                            if (i == 0) {
+                                if (startorend == "start") {
+                                    pathInfo.setSubPath(busNos, Mylocation.StartPlace.getPlaceName(), path.getSubPath().get(i + 1).getStartName(), Mylocation.StartPlace.getX(), Mylocation.StartPlace.getY(), path.getSubPath().get(i + 1).getStartX(), path.getSubPath().get(i + 1).getStartY(), path.getSubPath().get(i).getTrafficType());
+                                }
+                                if (startorend == "end") {
+                                    pathInfo.setSubPath(busNos, myPathInfo.getEndNames().get(myPathInfo.getEndNames().size() - 1), path.getSubPath().get(i + 1).getStartName(), myPathInfo.getendx().get(myPathInfo.getendx().size() - 1),
+                                            myPathInfo.getendy().get(myPathInfo.getendy().size() - 1), path.getSubPath().get(i + 1).getStartX(), path.getSubPath().get(i + 1).getStartY(), path.getSubPath().get(i).getTrafficType());
+                                }
+                            } else if (i == path.getSubPath().size() - 1) {
+                                if (startorend == "start") {
+                                    pathInfo.setSubPath(busNos, path.getSubPath().get(i - 1).getEndName(), myPathInfo.getStartNames().get(0), path.getSubPath().get(i - 1).getEndX(), path.getSubPath().get(i - 1).getEndY(), myPathInfo.getstartx().get(0), myPathInfo.getstarty().get(0), path.getSubPath().get(i).getTrafficType());
+                                }
+                                if (startorend == "end") {
+                                    pathInfo.setSubPath(busNos, path.getSubPath().get(i - 1).getEndName(), Mylocation.GoalPlace.getPlaceName(), path.getSubPath().get(i - 1).getEndX(), path.getSubPath().get(i - 1).getEndY(), Mylocation.GoalPlace.getX(), Mylocation.GoalPlace.getY(), path.getSubPath().get(i).getTrafficType());
+                                }
+                            } else {
+                                pathInfo.setSubPath(busNos, path.getSubPath().get(i - 1).getEndName(), path.getSubPath().get(i + 1).getStartName(), path.getSubPath().get(i - 1).getEndX(), path.getSubPath().get(i - 1).getEndY(), path.getSubPath().get(i + 1).getStartX(), path.getSubPath().get(i + 1).getStartY(), path.getSubPath().get(i).getTrafficType());
                             }
-                            else if(i==path.getSubPath().size()-1){
-                                pathInfo.setSubPath(busNos,path.getSubPath().get(i-1).getEndName(),Mylocation.GoalPlace.getPlaceName(),path.getSubPath().get(i - 1).getEndX(), path.getSubPath().get(i-1).getEndY(),Mylocation.GoalPlace.getX(),Mylocation.GoalPlace.getY(),path.getSubPath().get(i).getTrafficType());
-                            }
-                            else {
-                                pathInfo.setSubPath(busNos, path.getSubPath().get(i - 1).getEndName(), path.getSubPath().get(i + 1).getStartName(), path.getSubPath().get(i - 1).getEndX(), path.getSubPath().get(i-1).getEndY(),path.getSubPath().get(i+1).getStartX(),path.getSubPath().get(i+1).getStartY(),path.getSubPath().get(i).getTrafficType());
-                            }
-                        }
-                        else if (path.getSubPath().get(i).getTrafficType()==2) { // 버스 경로인 경우
-                            Gson gson=new Gson();
-                            String subjson=gson.toJson(path.getSubPath().get(i));
-                            Log.d("mylog",subjson);
+                            count++;
+                        } else if (path.getSubPath().get(i).getTrafficType() == 2) { // 버스 경로인 경우
                             List<String> busNos = path.getSubPath().get(i).getLane().stream()
                                     .map(OdsayData.Lane::getBusNo)
                                     .collect(Collectors.toList());
-                            Log.d("mylog",busNos.toString());
-                            Log.d("mylog",Double.toString(path.getSubPath().get(i).getStartX()));
-                            pathInfo.setSubPath(busNos, path.getSubPath().get(i).getStartName(), path.getSubPath().get(i).getEndName(),path.getSubPath().get(i).getStartX(),path.getSubPath().get(i).getStartY(),path.getSubPath().get(i).getEndX(),path.getSubPath().get(i).getEndY(),path.getSubPath().get(i).getTrafficType());
-                            pathInfoList.add(pathInfo);
+                            pathInfo.setSubPath(busNos, path.getSubPath().get(i).getStartName(), path.getSubPath().get(i).getEndName(), path.getSubPath().get(i).getStartX(), path.getSubPath().get(i).getStartY(), path.getSubPath().get(i).getEndX(), path.getSubPath().get(i).getEndY(), path.getSubPath().get(i).getTrafficType());
+                            count++;
+                        }
+                    }
+                    if (startorend.equals("start")) {
+                        myPathInfo.addPathinfo(pathInfo, 0);
+                    } else if (startorend.equals("end")) {
+                        myPathInfo.addPathinfo(pathInfo, myPathInfo.getBusNos().size());
+                        pathInfoList.add(myPathInfo);
+                    }
+
+                    if (count >= 3) {
+                        break; // 최대 3개의 Path 객체만 처리하고 루프를 중단
+                    }
+                }
+            }
+        PathAdapter pathadapter=new PathAdapter(this,pathInfoList);
+        searchPathListView.setAdapter(pathadapter);
+    }
+    private void busLogic(OdsayData searchResult) {
+        pathInfoList.clear();
+        int count = 0;
+        for (OdsayData.Path path : searchResult.getResult().getPath()) {
+            PathInfo pathInfo=new PathInfo();
+            // 도시내 길찾기의 경우
+            if (searchResult.getResult().getSearchType()==0) {
+                pathInfo.setTotalTime(path.getInfo().getTotalTime());
+                if (path.getPathType() == 2) {
+                    for (int i = 0; i < path.getSubPath().size(); i++) {
+                        if (path.getSubPath().get(i).getTrafficType() == 3) {//도보
+                            List<String> busNos = new ArrayList<>();
+                            busNos.add("도보");
+                            //도보는 x,y값은 없고 시간만 나타내고 있음
+                            //따라서, x,y값을 받으려면 for문으로 index값을 통하여 x,y값을 받아오는 수밖에 없음
+                            if (i == 0) {
+                                pathInfo.setSubPath(busNos, Mylocation.StartPlace.getPlaceName(), path.getSubPath().get(i + 1).getStartName(), Mylocation.StartPlace.getX(), Mylocation.StartPlace.getY(), path.getSubPath().get(i + 1).getStartX(), path.getSubPath().get(i + 1).getStartY(), path.getSubPath().get(i).getTrafficType());
+                            } else if (i == path.getSubPath().size() - 1) {
+                                pathInfo.setSubPath(busNos, path.getSubPath().get(i - 1).getEndName(), Mylocation.GoalPlace.getPlaceName(), path.getSubPath().get(i - 1).getEndX(), path.getSubPath().get(i - 1).getEndY(), Mylocation.GoalPlace.getX(), Mylocation.GoalPlace.getY(), path.getSubPath().get(i).getTrafficType());
+                            } else {
+                                pathInfo.setSubPath(busNos, path.getSubPath().get(i - 1).getEndName(), path.getSubPath().get(i + 1).getStartName(), path.getSubPath().get(i - 1).getEndX(), path.getSubPath().get(i - 1).getEndY(), path.getSubPath().get(i + 1).getStartX(), path.getSubPath().get(i + 1).getStartY(), path.getSubPath().get(i).getTrafficType());
+                            }
+
+                        } else if (path.getSubPath().get(i).getTrafficType() == 2) { // 버스 경로인 경우
+                            List<String> busNos = path.getSubPath().get(i).getLane().stream()
+                                    .map(OdsayData.Lane::getBusNo)
+                                    .collect(Collectors.toList());
+                            pathInfo.setSubPath(busNos, path.getSubPath().get(i).getStartName(), path.getSubPath().get(i).getEndName(), path.getSubPath().get(i).getStartX(), path.getSubPath().get(i).getStartY(), path.getSubPath().get(i).getEndX(), path.getSubPath().get(i).getEndY(), path.getSubPath().get(i).getTrafficType());
+
 
                         }
-
-                    }
-                count++;
-                //도시간 길찾기의 경우
-            } else if (searchResult.getResult().getSearchType() == 1) {
-                Gson json=new Gson();
-                String pathinf=json.toJson(searchResult);
-
-                Log.d("mylog",pathinf);
-                PathInfo pathInfo = new PathInfo();
-                pathInfo.setTotalTime(path.getInfo().getTotalTime());
-                //시외/고속버스 경로일때
-                if(path.getPathType()==12) {
-                    for (OdsayData.SubPath subPath : path.getSubPath()) {
-                            List<String> busNos=new ArrayList<>();
-                            busNos.add("시외버스");
-                            pathInfo.setSubPath(busNos, subPath.getStartName(), subPath.getEndName(), subPath.getStartX(), subPath.getStartY(), subPath.getEndX(), subPath.getEndY(), subPath.getTrafficType());
                     }
                     pathInfoList.add(pathInfo);
                     count++;
+                    //도시간 길찾기의 경우
                 }
-            }
+            }else if (searchResult.getResult().getSearchType() == 1) {
+                pathInfo.setTotalTime(path.getInfo().getTotalTime());
+                //시외/고속버스 경로일때
+                if(path.getPathType()==12) {
+                    List<OdsayData.SubPath> subPath=path.getSubPath();
+                    for (int i=0; i<subPath.size(); i++) {
+                        List<String> busNos=new ArrayList<>();
+                        busNos.add("시외버스");
+                        pathInfo.setSubPath(busNos, subPath.get(i).getStartName(), subPath.get(i).getEndName(), subPath.get(i).getStartX(), subPath.get(i).getStartY(), subPath.get(i).getEndX(), subPath.get(i).getEndY(), subPath.get(i).getTrafficType());
+                    }
+                    pathInfoList.clear();
+                    callApi1(Mylocation.StartPlace.getX(), Mylocation.StartPlace.getY(), pathInfo.getstartx().get(0), pathInfo.getstarty().get(0), pathInfo);
+                    callApi2(pathInfo.getendx().get(pathInfo.getendx().size()-1),pathInfo.getendy().get(pathInfo.getendy().size()-1),Mylocation.GoalPlace.getX(),Mylocation.GoalPlace.getY(),pathInfo);
+                    count++;
+                }
+                }
+
             // 처리한 Path 객체의 수 증가
             if (count >= 3) {
                 break; // 최대 3개의 Path 객체만 처리하고 루프를 중단
             }
-
         }
-        PathAdapter pathadapter=new PathAdapter(this,pathInfoList);
+        PathAdapter pathadapter = new PathAdapter(this, pathInfoList);
         searchPathListView.setAdapter(pathadapter);
     }
 
