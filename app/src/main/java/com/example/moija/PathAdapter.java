@@ -53,7 +53,7 @@ public class PathAdapter extends ArrayAdapter<PathInfo> {
             }
 
         }
-
+        notifyDataSetChanged();
         return view;
     }
 }

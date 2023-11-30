@@ -310,7 +310,7 @@ public class MainPage extends AppCompatActivity {
                     pathsearched=true;
                     resultListView.setVisibility(View.GONE);
                     recordPlaceList.setVisibility(View.GONE);
-                    searchPathListView.setVisibility(View.VISIBLE);
+
                 }
             }
         });
@@ -448,7 +448,7 @@ public class MainPage extends AppCompatActivity {
                         pathsearched=true;
                         resultListView.setVisibility(View.GONE);
                         recordPlaceList.setVisibility(View.GONE);
-                        searchPathListView.setVisibility(View.VISIBLE);
+
                     }
                 }
             }
@@ -723,8 +723,9 @@ public class MainPage extends AppCompatActivity {
                     }
                 }
             }
-        PathAdapter pathadapter=new PathAdapter(this,pathInfoList);
+        PathAdapter pathadapter = new PathAdapter(this, pathInfoList);
         searchPathListView.setAdapter(pathadapter);
+        searchPathListView.setVisibility(View.VISIBLE);
     }
     private void busLogic(OdsayData searchResult) {
         pathInfoList.clear();
@@ -786,6 +787,7 @@ public class MainPage extends AppCompatActivity {
         }
         PathAdapter pathadapter = new PathAdapter(this, pathInfoList);
         searchPathListView.setAdapter(pathadapter);
+        searchPathListView.setVisibility(View.VISIBLE);
     }
 
 }
