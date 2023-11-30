@@ -1,17 +1,13 @@
 package com.example.moija.data;
 
 public class SelectData {
-    private String data;
+    private PathType12Data.PathData pathData;
 
-    public SelectData() {
-        // 기본 생성자
+    public void setPathData(PathType12Data.PathData pathData) {
+        this.pathData = pathData;
     }
 
-    public void setData(String data) {
-        this.data = data;
-    }
-
-    public String getData() {
-        return data;
+    public PathType12Data.PathData getPathData() {
+        return pathData;
     }
 }

@@ -141,15 +141,24 @@ public class PathType12Data {
         private List<String> busNos;
         private String startName;
         private String endName;
+        private int trafficType; // 교통 수단 유형
+        private List<Integer> busId; // 버스 ID
         private double startX; // 도보 이동 시작점의 X 좌표
         private double startY; // 도보 이동 시작점의 Y 좌표
         private double endX; // 도보 이동 끝점의 X 좌표
         private double endY; // 도보 이동 끝점의 Y 좌표
 
-        public SubPathData(List<String> busNos, String startName, String endName) {
+        public SubPathData(int trafficType) {
+            this.trafficType = trafficType;
+        }
+        public SubPathData(List<String> busNos, String startName, String endName, double startX, double startY, List<Integer> busId, int trafficType) {
             this.busNos = busNos;
             this.startName = startName;
             this.endName = endName;
+            this.startX = startX;
+            this.startY = startY;
+            this.busId = busId;
+            this.trafficType = trafficType;
         }
 
         public List<String> getBusNos() {

@@ -304,14 +304,12 @@ public class MainPage extends AppCompatActivity {
             }
         });
 
+        // SelectedPathData 인스턴스 생성 (이 인스턴스를 다른 곳으로 전달하거나 사용할 수 있음)
+
         searchPathListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String clickedItem = listViewadapter.getItem(position); // 클릭된 아이템의 데이터
-                selectedData.setData(clickedItem); // 선택된 데이터 객체에 데이터 저장
 
-                String data = selectedData.getData();
-                Log.d("ODsay", data);
             }
         });
 
@@ -599,6 +597,7 @@ public class MainPage extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     OdsayData searchResult = response.body();
                     List<String> pathInfoStrings = new ArrayList<>();
+                    List<PathType12Data.PathData> pathDataList = new ArrayList<>();
                     PathType12Data pathType12Data = new PathType12Data();
                     CallApiData callApiData = new CallApiData();
 
@@ -718,11 +717,20 @@ public class MainPage extends AppCompatActivity {
                                     pathData.setTotalTime(path.getInfo().getTotalTime());
                                     pathType12Data.setTotalTime1(path.getInfo().getTotalTime());
                                     for (OdsayData.SubPath subPath : path.getSubPath()) {
+                                        if (subPath.getTrafficType() == 3) { // 도보 경로
+                                            PathType12Data.SubPathData subPathData = pathType12Data.new SubPathData(subPath.getTrafficType());
+                                            pathData.addSubPath(subPathData);
+                                        }
                                         if (subPath.getTrafficType() == 2) { // 버스 경로인 경우
                                             List<String> busNos = subPath.getLane().stream()
                                                     .map(OdsayData.Lane::getBusNo)
                                                     .collect(Collectors.toList());
-                                            PathType12Data.SubPathData subPathData = pathType12Data.new SubPathData(busNos, subPath.getStartName(), subPath.getEndName());
+                                            List<Integer> busId = subPath.getLane().stream()
+                                                    .map(OdsayData.Lane::getBusID)
+                                                    .collect(Collectors.toList());
+
+                                            PathType12Data.SubPathData subPathData = pathType12Data.new
+                                                    SubPathData(busNos, subPath.getStartName(), subPath.getEndName(), subPath.getStartX(), subPath.getStartY(), busId, subPath.getTrafficType());
                                             pathData.addSubPath(subPathData);
                                         }
                                     }
@@ -785,11 +793,19 @@ public class MainPage extends AppCompatActivity {
                                     pathData.setTotalTime(path.getInfo().getTotalTime());
                                     pathType12Data.setTotalTime3(path.getInfo().getTotalTime());
                                     for (OdsayData.SubPath subPath : path.getSubPath()) {
+                                        if (subPath.getTrafficType() == 3) { // 도보 경로
+                                            PathType12Data.SubPathData subPathData = pathType12Data.new SubPathData(subPath.getTrafficType());
+                                            pathData.addSubPath(subPathData);
+                                        }
                                         if (subPath.getTrafficType() == 2) { // 버스 경로인 경우
                                             List<String> busNos = subPath.getLane().stream()
                                                     .map(OdsayData.Lane::getBusNo)
                                                     .collect(Collectors.toList());
-                                            PathType12Data.SubPathData subPathData = pathType12Data.new SubPathData(busNos, subPath.getStartName(), subPath.getEndName());
+                                            List<Integer> busId = subPath.getLane().stream()
+                                                    .map(OdsayData.Lane::getBusID)
+                                                    .collect(Collectors.toList());
+                                            PathType12Data.SubPathData subPathData = pathType12Data.new
+                                                    SubPathData(busNos, subPath.getStartName(), subPath.getEndName(), subPath.getStartX(), subPath.getStartY(), busId, subPath.getTrafficType());
                                             pathData.addSubPath(subPathData);
                                         }
                                     }
