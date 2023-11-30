@@ -649,9 +649,14 @@ public class MainPage extends AppCompatActivity {
                                     break;
                                 }
 
+                                //midRoute 정보 pathType12Data에 다 저장(1개만 필요함)
                                 pathType12Data.setMidStartName(callApiData.getStartName());
                                 pathType12Data.setMidEndName(callApiData.getEndName());
                                 pathType12Data.setTotalTime2(callApiData.getTotalTime());
+                                pathType12Data.setMidStartX(callApiData.getStartPointX());
+                                pathType12Data.setMidStartY(callApiData.getStartPointY());
+                                pathType12Data.setMidEndX(callApiData.getEndPointX());
+                                pathType12Data.setMidEndY(callApiData.getEndPointY());
 
                                 Log.d("ODsayApi-12", "5. 새로운 api 호출 ");
                                 Log.d("ODsayApi-mid", "6. 데이터 확인1\n" + pathType12Data.getMidStartName() + " >> "
@@ -701,7 +706,6 @@ public class MainPage extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<OdsayData> call, Response<OdsayData> response) {
 
-                    PathType12Data.TravelRoute travelRoute = pathType12Data.new TravelRoute(); // TravelRoute 인스턴스 생성
                     if (response.isSuccessful()) {
                         OdsayData searchResult = response.body();
                         int count2 = 0;
@@ -722,7 +726,6 @@ public class MainPage extends AppCompatActivity {
                                             pathData.addSubPath(subPathData);
                                         }
                                     }
-                                    travelRoute.addPath(pathData); // PathData 객체를 TravelRoute에 추가
                                     pathType12Data.addApi1Path(pathData);
                                     count2++; // 처리한 Path 객체의 수 증가
                                     Log.d("Odsay", "api1Data확인\n" + pathType12Data.toStringApi1());
@@ -790,31 +793,32 @@ public class MainPage extends AppCompatActivity {
                                             pathData.addSubPath(subPathData);
                                         }
                                     }
-                                    pathType12Data.addApi2Path(pathData);
                                     count3++; // 처리한 Path 객체의 수 증가
-                                    Log.d("Odsay", "api1Data확인\n" + pathType12Data.toStringApi2());
+                                    pathType12Data.addApi2Path(pathData);
+                                    }
+                                Log.d("Odsay", "api1Data확인\n" + pathType12Data.toStringApi2());
                                     if (count3 >= 3) {
                                         break; // 최대 3개의 Path 객체만 처리하고 루프를 중단
                                     }
 
-                                    int minSize = Math.min(pathType12Data.getApi1PathsSize(), pathType12Data.getApi2PathsSize());
-                                    for (int i = 0; i < minSize; i++) {
-                                        String pathDataString = pathType12Data.getIndividualPathString(i);
-                                        pathInfoStrings.add(pathDataString);
-                                    }
-
+                                    Log.d("Odsay-api", "데이터확인12" + pathInfoStrings.toString());
                             }
                         }
                     }
 
                     Log.d("ODsay-end", "16. 데이터 넘어갔나?");
-
+                    int minSize = Math.min(pathType12Data.getApi1PathsSize(), pathType12Data.getApi2PathsSize());
+                    for (int i = 0; i < minSize; i++) {
+                        String pathDataString = pathType12Data.getIndividualPathString(i);
+                        pathInfoStrings.add(pathDataString);
+                    }
+                    Log.d("Odsay", "api1Data확인\n" + pathType12Data.toString());
 
                     listViewadapter.clear();
                     listViewadapter.addAll(pathInfoStrings);
                     listViewadapter.notifyDataSetChanged();
                 }
-            }
+
             @Override
             public void onFailure(Call<OdsayData> call, Throwable t) {
                 t.printStackTrace();
