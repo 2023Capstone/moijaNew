@@ -677,7 +677,7 @@ public class MainPage extends AppCompatActivity {
             PathInfo pathInfo = new PathInfo();
             for (OdsayData.Path path : searchResult.getResult().getPath()) {
                 if (path.getPathType() == 2) {
-                    pathInfo.setTotalTime(path.getInfo().getTotalTime());
+                    myPathInfo.addTotalTime(path.getInfo().getTotalTime());
                     for (int i = 0; i < path.getSubPath().size(); i++) {
                         if (path.getSubPath().get(i).getTrafficType() == 3) {//도보
                             List<String> busNos = new ArrayList<>();

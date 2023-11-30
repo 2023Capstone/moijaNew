@@ -27,6 +27,8 @@ public class PathInfo {
         this.totalTime = totalTime;
     }
 
+    public void addTotalTime(int totalTime){this.totalTime+=totalTime;}
+
     public List<List<String>> getBusNos() {
         return busNos;
     }
