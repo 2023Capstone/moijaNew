@@ -9,6 +9,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -25,6 +26,7 @@ public class busPointGPS extends AppCompatActivity{
     private List<Integer> BusCityCode;
     private List<String> BusLocalBlID;
     private CustomAdapter adapter; // 커스텀 어댑터
+    private Button minus, plus;
 
     // UI 스레드에서 메시지를 처리할 Handler 구현
     private Handler handler = new Handler(Looper.getMainLooper()) {
@@ -35,8 +37,28 @@ public class busPointGPS extends AppCompatActivity{
             adapter = new CustomAdapter(busPointGPS.this, nodeNames, nodeNames);
             listView.setAdapter(adapter); // 어댑터 설정
 
+            // 버튼 초기화
+            minus = findViewById(R.id.minus);
+            plus = findViewById(R.id.plus);
+
             textViewResult.setText(totalCount + "개의 시내버스가 운행되고 있습니다.");
             progressBar.setVisibility(View.GONE);
+
+            // "-" 버튼 클릭 이벤트
+            minus.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    apiExplorer.decreaseCount();
+                }
+            });
+
+            // "+" 버튼 클릭 이벤트
+            plus.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    apiExplorer.increaseCount();
+                }
+            });
         }
     };
 
