@@ -29,7 +29,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class ApiExplorer implements Runnable {
-    private int count = 0; // 조작할 숫자
     private Handler handler;  // Handler 추가
     private volatile boolean isRunning = false; // 스레드 실행 상태 플래그
     private Thread thread; // 스레드 인스턴스
@@ -42,20 +41,6 @@ public class ApiExplorer implements Runnable {
 
     private List<String> nodeNames;
     private int totalCount;
-
-    // 숫자를 증가시키는 메서드
-    public synchronized void increaseCount() {
-        count++;
-        Log.d("ApiExplorer", "Count increased: " + count); // 로그 출력
-        // 변경된 숫자를 처리하는 로직 추가 (예: UI 업데이트, 로그 출력 등)
-    }
-
-    // 숫자를 감소시키는 메서드
-    public synchronized void decreaseCount() {
-        count--;
-        Log.d("ApiExplorer", "Count increased: " + count); // 로그 출력
-        // 변경된 숫자를 처리하는 로직 추가
-    }
 
     public ApiExplorer(Handler handler) {
         this.handler = handler;
