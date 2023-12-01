@@ -249,7 +249,6 @@ public class MapFragment extends Fragment {
         BusOrder.clear();
         BusCityCode.clear();
         BusLocalBlID.clear();
-        Log.d("BusCityCode",Selectedpath.getBusCityCodes().toString());
         for(int i=0; i<Selectedpath.getBusNos().size(); i++)
         {
             if(!Selectedpath.getBusNos().get(i).contains("도보")){
