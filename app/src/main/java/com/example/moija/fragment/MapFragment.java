@@ -47,6 +47,7 @@ import com.kakao.vectormap.label.LabelStyle;
 import com.kakao.vectormap.label.LabelStyles;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MapFragment extends Fragment {
@@ -213,6 +214,8 @@ public class MapFragment extends Fragment {
                 addBusInfo(R.drawable.intercity_bus, bus.second, addArrow);
             }
         }
+
+        Log.d("mylog", Arrays.toString(busList.toArray()));
 
         return rootview;
     }
