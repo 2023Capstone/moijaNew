@@ -40,9 +40,13 @@ public class CustomAdapter extends ArrayAdapter<String> {
         imageView.setLayoutParams(imageLayoutParams);
 
         // 이미지 설정 및 가시성
+        if (/* 여기에 조건 로직 */) {
         imageView.setVisibility(View.VISIBLE);
         imageView.setImageResource(R.drawable.city_bus);
         imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        } else {
+            imageView.setVisibility(View.GONE);
+        }
 
         return convertView;
     }
