@@ -33,6 +33,7 @@ public class ApiExplorer implements Runnable {
 
 
     private Map<Integer, Integer> cityCodes;
+
     private List<String> nodeNames;
     private int totalCount;
 
@@ -100,11 +101,9 @@ public class ApiExplorer implements Runnable {
         while (isRunning && !Thread.currentThread().isInterrupted()) {
             try {
                 executeApiCall();
-
                 // 데이터 로딩 완료 후 메시지 전송
                 Message msg = Message.obtain();
                 Bundle bundle = new Bundle();
-//                bundle.putString("nodeNames", nodeNames.toString());
                 bundle.putStringArrayList("nodeNames", new ArrayList<>(nodeNames));
                 bundle.putInt("totalCount", totalCount);
                 msg.setData(bundle);
