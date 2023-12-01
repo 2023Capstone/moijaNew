@@ -58,6 +58,7 @@ public class OdsayData {
             return pathType;
         }
 
+
         public void setPathType(int pathType) {
             this.pathType = pathType;
         }
@@ -245,6 +246,12 @@ public class OdsayData {
         @SerializedName("busID")
         private int busID;
 
+        @SerializedName("busLocalBlID")
+        private String busLocalBlID;
+
+        @SerializedName("busCityCode")
+        private int busCityCode;
+
         public String getBusNo() {
             return busNo;
         }
@@ -252,7 +259,8 @@ public class OdsayData {
         public void setBusNo(String busNo) {
             this.busNo = busNo;
         }
-
+        public String getBusLocalBlID(){return busLocalBlID;}
+        public int getBusCityCode(){return busCityCode;}
         public int getBusID() {
             return busID;
         }

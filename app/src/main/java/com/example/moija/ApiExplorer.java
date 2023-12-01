@@ -25,11 +25,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
+import com.example.moija.fragment.MapFragment;
 public class ApiExplorer implements Runnable {
     private Handler handler;  // Handler 추가
     private volatile boolean isRunning = false; // 스레드 실행 상태 플래그
     private Thread thread; // 스레드 인스턴스
+
 
     private Map<Integer, Integer> cityCodes;
     private List<String> nodeNames;
@@ -120,6 +121,8 @@ public class ApiExplorer implements Runnable {
     }
 
     private void executeApiCall() throws IOException {
+
+
         StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/1613000/BusLcInfoInqireService/getRouteAcctoBusLcList"); /*URL*/
         urlBuilder.append("?" + URLEncoder.encode("serviceKey","UTF-8") + "=oN5Nb0f8GC1%2FULPYTW0DMcWIjmNQ2VxOvGBkQatyEDrIrvdOO%2F4Z3dmPKP15PJbt9tBv%2FRO%2BHKJULbGs2UHsJg%3D%3D"); /*Service Key*/
         urlBuilder.append("&" + URLEncoder.encode("pageNo","UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지번호*/

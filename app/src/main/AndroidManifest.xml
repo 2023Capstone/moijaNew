@@ -33,13 +33,6 @@
             android:name="com.example.moija.Location.Location"
             android:exported="false" />
         <activity
-
-            android:name="com.example.moija.fragment.ChatFragment"
-            android:exported="false" />
-        <activity
-            android:name="com.example.moija.chat.Chat"
-            android:exported="true" />
-        <activity
             android:name=".busPointGPS"
             android:exported="false" />
 

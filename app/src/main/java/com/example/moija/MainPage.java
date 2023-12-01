@@ -34,6 +34,7 @@ import com.example.moija.map.Place;
 import com.example.moija.map.SearchResults;
 import com.google.gson.Gson;
 
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,7 +57,7 @@ public class MainPage extends AppCompatActivity {
     public static final String API_KEY = "ab4624b190ebccd6369144de2502ad14";
 
     public boolean pathsearched=false;
-    public static final String OdsayAPI_KEY = "fXCWmI16V2ggA9Y9OhTrVMSiPw/YHkDXoHmKjpLG7l8";
+    public static final String OdsayAPI_KEY = "Bk3FXTpa4bUs3dxTOsUxSFvLGFYhTaoBDPKfSPOLdwI";
     //api 기본 URL
     public static final String BASE_URL = "https://dapi.kakao.com/";
 
@@ -253,7 +254,7 @@ public class MainPage extends AppCompatActivity {
                 mf.BusOrder.clear();
                 mf.BusNo.clear();
 
-
+                mf.busInfoLayout.removeAllViews();
 
                 if(mf.routeDrawer!=null) {
                     mf.routeDrawer.clearRouteLines();
@@ -348,26 +349,33 @@ public class MainPage extends AppCompatActivity {
 
     //검색기록 추가
     public void addRecord() {
-
         String start = startEditText.getText().toString();
         String end = goalEditText.getText().toString();
 
         SQLiteDatabase database = recordPlaceDB.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("startPlace", start);
-        values.put("endPlace", end);
-        values.put("time", getCurrentDateTime());
-        long newRowId = database.insert("recordPlace_DB", null, values);
 
-        if (newRowId == -1) {
-            // 데이터베이스에 추가 실패한 경우
-            Toast.makeText(getApplicationContext(), "데이터베이스에 정보를 추가하는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+        // 중복 데이터 확인
+        if (!isRecordExist(database, start, end)) {
+            ContentValues values = new ContentValues();
+            values.put("startPlace", start);
+            values.put("endPlace", end);
+            values.put("time", getCurrentDateTime());
+
+            long newRowId = database.insert("recordPlace_DB", null, values);
+
+            if (newRowId == -1) {
+                // 데이터베이스에 추가 실패한 경우
+                Toast.makeText(getApplicationContext(), "데이터베이스에 정보를 추가하는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+            } else {
+                // 데이터베이스에 성공적으로 추가한 경우
+                Toast.makeText(getApplicationContext(), "데이터베이스에 정보를 추가했습니다.", Toast.LENGTH_SHORT).show();
+                dataMaxRows(database);
+                // 데이터베이스 업데이트 후 리스트 업데이트
+                updateList();
+            }
         } else {
-            // 데이터베이스에 성공적으로 추가한 경우
-            Toast.makeText(getApplicationContext(), "데이터베이스에 정보를 추가했습니다.", Toast.LENGTH_SHORT).show();
-            dataMaxRows(database);
-            // 데이터베이스 업데이트 후 리스트 업데이트
-            updateList();
+            // 중복된 데이터가 있을 경우
+            return;
         }
     }
 
@@ -713,7 +721,13 @@ public class MainPage extends AppCompatActivity {
                             List<Integer> busIDs = path.getSubPath().get(i).getLane().stream()
                                     .map(OdsayData.Lane::getBusID)
                                     .collect(Collectors.toList());
-                            pathInfo.setSubPath(busNos,busIDs, path.getSubPath().get(i).getStartName(), path.getSubPath().get(i).getEndName(), path.getSubPath().get(i).getStartX(), path.getSubPath().get(i).getStartY(), path.getSubPath().get(i).getEndX(), path.getSubPath().get(i).getEndY(), path.getSubPath().get(i).getTrafficType());
+                            List<String> busLocalBlIDs = path.getSubPath().get(i).getLane().stream()
+                                    .map(OdsayData.Lane::getBusLocalBlID)
+                                    .collect(Collectors.toList());
+                            List<Integer> busCityCodes = path.getSubPath().get(i).getLane().stream()
+                                    .map(OdsayData.Lane::getBusCityCode)
+                                    .collect(Collectors.toList());
+                            pathInfo.setSubPath(busNos,busIDs, busLocalBlIDs,busCityCodes,path.getSubPath().get(i).getStartName(), path.getSubPath().get(i).getEndName(), path.getSubPath().get(i).getStartX(), path.getSubPath().get(i).getStartY(), path.getSubPath().get(i).getEndX(), path.getSubPath().get(i).getEndY(), path.getSubPath().get(i).getTrafficType());
                             count++;
                         }
                     }
@@ -763,8 +777,14 @@ public class MainPage extends AppCompatActivity {
                             List<Integer> busIDs=path.getSubPath().get(i).getLane().stream()
                                             .map(OdsayData.Lane::getBusID)
                                             .collect(Collectors.toList());
+                            List<String> busLocalBlIDs=path.getSubPath().get(i).getLane().stream()
+                                    .map(OdsayData.Lane::getBusLocalBlID)
+                                    .collect(Collectors.toList());
+                            List<Integer> busCityCodes=path.getSubPath().get(i).getLane().stream()
+                                    .map(OdsayData.Lane::getBusCityCode)
+                                    .collect(Collectors.toList());
 
-                            pathInfo.setSubPath(busNos,busIDs, path.getSubPath().get(i).getStartName(), path.getSubPath().get(i).getEndName(), path.getSubPath().get(i).getStartX(), path.getSubPath().get(i).getStartY(), path.getSubPath().get(i).getEndX(), path.getSubPath().get(i).getEndY(), path.getSubPath().get(i).getTrafficType());
+                            pathInfo.setSubPath(busNos,busIDs, busLocalBlIDs,busCityCodes,path.getSubPath().get(i).getStartName(), path.getSubPath().get(i).getEndName(), path.getSubPath().get(i).getStartX(), path.getSubPath().get(i).getStartY(), path.getSubPath().get(i).getEndX(), path.getSubPath().get(i).getEndY(), path.getSubPath().get(i).getTrafficType());
                         }
                     }
                     pathInfoList.add(pathInfo);
@@ -797,5 +817,23 @@ public class MainPage extends AppCompatActivity {
         searchPathListView.setAdapter(pathadapter);
         searchPathListView.setVisibility(View.VISIBLE);
     }
+    private boolean isRecordExist(SQLiteDatabase database, String start, String end) {
+        String selection = "startPlace = ? AND endPlace = ?";
+        String[] selectionArgs = {start, end};
 
+        Cursor cursor = database.query(
+                "recordPlace_DB",
+                null,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null
+        );
+
+        int count = cursor.getCount();
+        cursor.close();
+
+        return count > 0;
+    }
 }

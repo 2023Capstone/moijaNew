@@ -43,10 +43,6 @@ public class PathAdapter extends ArrayAdapter<PathInfo> {
 
                 if(!path.getBusNos().get(i).contains("도보") && !path.getBusNos().get(i).contains("시외버스")) {
                    BusText.append("버스 번호: " + path.getBusNos().get(i).get(0).toString() + "\n");
-                   if(!path.getBusNos().get(i).get(0).contains("도보") && !path.getBusNos().get(i).contains("시외버스")) {
-                       BusText.append("버스 ID: " + path.getBusIDs().get(busidno).get(0) + "\n");
-                       busidno++;
-                   }
                     BusText.append("승차: " + path.getStartNames().get(i).toString() + "\n");
                     BusText.append("하차: " + path.getEndNames().get(i).toString() + "\n");
                 }

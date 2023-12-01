@@ -61,8 +61,11 @@ public class MapFragment extends Fragment {
     public Label startLabel;
     //도착 위치를 나타내는 마커
     public Label goalLabel;
-    private LinearLayout busInfoLayout;
+    public LinearLayout busInfoLayout;
     public List<String> BusNo=new ArrayList<>();
+    public List<String> BusLocalBlID=new ArrayList<>();
+
+    public List<Integer> BusCityCode=new ArrayList<>();
     public List<Integer> BusOrder=new ArrayList<>();
     public PathInfo Selectedpath;
     //길 그려주는 RouteDrawer 클래스 선언
@@ -158,10 +161,13 @@ public class MapFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // 인텐트 생성 및 액티비티 시작
+
                 Intent intent = new Intent(getContext(), busPointGPS.class);
                 startActivity(intent);
             }
         });
+
+
 
         return rootview;
     }
@@ -225,6 +231,13 @@ public class MapFragment extends Fragment {
     //시작점 좌표,도착점 좌표와 대중교통 종류에 따라 그리기 예시
     //오디세이 결과값에 따라 그리도록 수정 필요함
     public void Draw(){
+
+        int j=0;
+        busList.clear();
+        BusNo.clear();
+        BusOrder.clear();
+        BusCityCode.clear();
+        BusLocalBlID.clear();
         for(int i=0; i<Selectedpath.getBusNos().size(); i++)
         {
             if(!Selectedpath.getBusNos().get(i).contains("도보")){
@@ -237,7 +250,17 @@ public class MapFragment extends Fragment {
                 BusOrder.add(Selectedpath.getTrafficType().get(i));
             }
         }
-
+        for(int i=0; i<BusOrder.size();i++)
+        {
+            if(BusOrder.get(i)==2){
+                BusLocalBlID.add(Selectedpath.getBusLocalBlIDs().get(j).get(0));
+                BusCityCode.add(Selectedpath.getBusCityCodes().get(j).get(0));
+                j++;
+            }else if(BusOrder.get(i)==6){
+                BusLocalBlID.add("시외버스");
+                BusCityCode.add(0);
+            }
+        }
         for(int i=0; i<BusOrder.size();i++){
             if(BusOrder.get(i)==2){
                 busList.add(new Pair<>("city",BusNo.get(i).toString()));
@@ -263,6 +286,8 @@ public class MapFragment extends Fragment {
         Log.d("youlog",BusOrder.toString());
         Log.d("youlog",BusNo.toString());
         Log.d("youlog",busList.toString());
+        Log.d("youlog",BusLocalBlID.toString());
+        Log.d("youlog",BusCityCode.toString());
         for(int i = 0; i< Selectedpath.getBusNos().size(); i++)
         {
             if(routeDrawer!=null) {

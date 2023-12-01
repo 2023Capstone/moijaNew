@@ -1,11 +1,16 @@
 package com.example.moija.data;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class PathInfo {
     private List<Integer> trafficType=new ArrayList<>();
     List<List<String>> busNos = new ArrayList<>();
+    List<List<String>> busLocalBlIDs = new ArrayList<>();
+    List<List<Integer>> busCityCodes=new ArrayList<>();
+
     List<List<Integer>> busIDs=new ArrayList<>();
     List<String> startNames = new ArrayList<>();
     List<String> endNames = new ArrayList<>();
@@ -20,6 +25,9 @@ public class PathInfo {
 
 
 
+    public List<List<String>> getBusLocalBlIDs(){return busLocalBlIDs;}
+
+    public List<List<Integer>> getBusCityCodes(){return busCityCodes;}
     public List<List<Integer>> getBusIDs(){return busIDs;}
 
     public int getTotalTime() {
@@ -63,11 +71,11 @@ public class PathInfo {
     public List<Double> getendy(){return endy;}
 
     public List<Integer> getTrafficType(){return trafficType;}
-    public void setSubPath(List<String> busNos,List<Integer> busIDs,String startName, String endName,double startX,double startY,double endX,double endY,int trafficType) {
+    public void setSubPath(List<String> busNos,List<Integer> busIDs,List<String> busLocalBlIDs,List<Integer> busCityCodes,String startName, String endName,double startX,double startY,double endX,double endY,int trafficType) {
         this.busNos.add(busNos);
-        if(busIDs!=null) {
-            this.busIDs.add(busIDs);
-        }
+        this.busIDs.add(busIDs);
+        this.busLocalBlIDs.add(busLocalBlIDs);
+        this.busCityCodes.add(busCityCodes);
         this.startNames.add(startName);
         this.endNames.add(endName);
         this.startx.add(startX);
@@ -89,9 +97,9 @@ public class PathInfo {
     public void addPathinfo(PathInfo path,int index){
         for(int i=0; i<path.getBusNos().size(); i++){
             this.busNos.add(index,path.getBusNos().get(i));
-            if(path.getTrafficType().get(i) ==2) {
-                this.busIDs.add(path.getBusIDs().get(0));
-            }
+            this.busIDs.add(path.getBusIDs().get(0));
+            this.busLocalBlIDs.add(path.getBusLocalBlIDs().get(0));
+            this.busCityCodes.add(path.getBusCityCodes().get(0));
             this.startNames.add(index,path.getStartNames().get(i));
             this.endNames.add(index,path.getEndNames().get(i));
             this.startx.add(index,path.getstartx().get(i));
@@ -106,21 +114,4 @@ public class PathInfo {
         this.path12StartNames.add(startName);
         this.path12EndNames.add(endName);
     }
-
-    /*@Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        // totalTime 리스트의 각 요소를 문자열로 변환하여 추가
-        sb.append("TotalTime: ").append(totalTime + "분").append("\n");
-        for (int i = 0; i < busNos.size(); i++) {
-            sb.append("Bus Nos: ").append(String.join(", ", busNos.get(i))).append("\n");
-            sb.append("Start: ").append(startNames.get(i)).append("\n");
-            sb.append("End: ").append(endNames.get(i)).append("\n");
-        }
-        for (int i = 0; i < path12StartNames.size(); i++) {
-            sb.append("Path12 Start: ").append(path12StartNames.get(i)).append(">");
-            sb.append("Path12 End: ").append(path12EndNames.get(i)).append("\n");
-        }
-        return sb.toString();
-    }*/
 }
