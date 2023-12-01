@@ -25,13 +25,11 @@ import java.util.List;
      private Handler handler = new Handler(Looper.getMainLooper()) {
          @Override
          public void handleMessage(Message msg) {
-//             String nodeNames = msg.getData().getString("nodeNames");
-             List<String> nodeNames = msg.getData().getStringArrayList("nodeNames");
+             List<String> nodeNames = apiExplorer.getNodeNames(); // ApiExplorer에서 nodeNames 가져오기
              int totalCount = msg.getData().getInt("totalCount");
 
-             adapter.clear();
-             adapter.addAll(nodeNames); // 어댑터에 데이터 추가
-             adapter.notifyDataSetChanged(); // 리스트뷰 업데이트
+             adapter = new CustomAdapter(busPointGPS.this, nodeNames, nodeNames);
+             listView.setAdapter(adapter); // 어댑터 설정
 
              textViewResult.setText(totalCount + "개의 시내버스가 운행되고 있습니다.");
              progressBar.setVisibility(View.GONE);
@@ -46,10 +44,6 @@ import java.util.List;
         textViewResult = findViewById(R.id.textViewResult);
         progressBar = findViewById(R.id.progressBar); // 프로그레스 바 찾기
         listView = findViewById(R.id.listView);
-
-        // 커스텀 어댑터 초기화 및 리스트뷰에 설정
-        adapter = new CustomAdapter(this, new ArrayList<String>());
-        listView.setAdapter(adapter);
 
         apiExplorer = new ApiExplorer(handler);  // Handler 전달
         progressBar.setVisibility(View.VISIBLE); // 데이터 로딩 전 프로그레스 바 표시
