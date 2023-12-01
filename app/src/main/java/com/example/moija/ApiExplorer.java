@@ -3,6 +3,7 @@ package com.example.moija;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -20,6 +21,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.checkerframework.checker.units.qual.A;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -31,8 +33,11 @@ public class ApiExplorer implements Runnable {
     private volatile boolean isRunning = false; // 스레드 실행 상태 플래그
     private Thread thread; // 스레드 인스턴스
 
+    public List<Integer> BusCityCode=new ArrayList<>();
+    public List<String> BusLocalBlIDs=new ArrayList<>();
 
     private Map<Integer, Integer> cityCodes;
+
 
     private List<String> nodeNames;
     private int totalCount;
@@ -121,14 +126,14 @@ public class ApiExplorer implements Runnable {
 
     private void executeApiCall() throws IOException {
 
-
+        Log.d("ApiLog",BusCityCode.toString());
         StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/1613000/BusLcInfoInqireService/getRouteAcctoBusLcList"); /*URL*/
         urlBuilder.append("?" + URLEncoder.encode("serviceKey","UTF-8") + "=oN5Nb0f8GC1%2FULPYTW0DMcWIjmNQ2VxOvGBkQatyEDrIrvdOO%2F4Z3dmPKP15PJbt9tBv%2FRO%2BHKJULbGs2UHsJg%3D%3D"); /*Service Key*/
         urlBuilder.append("&" + URLEncoder.encode("pageNo","UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지번호*/
         urlBuilder.append("&" + URLEncoder.encode("numOfRows","UTF-8") + "=" + URLEncoder.encode("10", "UTF-8")); /*한 페이지 결과 수*/
         urlBuilder.append("&" + URLEncoder.encode("_type","UTF-8") + "=" + URLEncoder.encode("xml", "UTF-8")); /*데이터 타입(xml, json)*/
-        urlBuilder.append("&" + URLEncoder.encode("cityCode","UTF-8") + "=" + URLEncoder.encode(cityCodes.get(3000).toString(), "UTF-8")); /*도시코드 [상세기능3 도시코드 목록 조회]에서 조회 가능*/
-        urlBuilder.append("&" + URLEncoder.encode("routeId","UTF-8") + "=" + URLEncoder.encode("DJB30300052", "UTF-8")); /*노선ID [국토교통부(TAGO)_버스노선정보]에서 조회가능*/
+        urlBuilder.append("&" + URLEncoder.encode("cityCode","UTF-8") + "=" + URLEncoder.encode(cityCodes.get(BusCityCode.get(0)).toString(), "UTF-8")); /*도시코드 [상세기능3 도시코드 목록 조회]에서 조회 가능*/
+        urlBuilder.append("&" + URLEncoder.encode("routeId","UTF-8") + "=" + URLEncoder.encode(BusLocalBlIDs.get(0), "UTF-8")); /*노선ID [국토교통부(TAGO)_버스노선정보]에서 조회가능*/
         URL url = new URL(urlBuilder.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");

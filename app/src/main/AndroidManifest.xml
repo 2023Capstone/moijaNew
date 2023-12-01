@@ -26,9 +26,6 @@
             android:name="com.example.moija.MainPage"
             android:exported="false" />
         <activity
-            android:name="com.example.moija.fragment.MapFragment"
-            android:exported="false" />
-        <activity
 
             android:name="com.example.moija.Location.Location"
             android:exported="false" />
