@@ -21,7 +21,8 @@ import java.util.List;
      private Handler handler = new Handler(Looper.getMainLooper()) {
          @Override
          public void handleMessage(Message msg) {
-             String nodeNames = msg.getData().getString("nodeNames");
+//             String nodeNames = msg.getData().getString("nodeNames");
+             List<String> nodeNames = msg.getData().getStringArrayList("nodeNames");
              int totalCount = msg.getData().getInt("totalCount");
 
              textViewResult.setText(nodeNames + "\n" + totalCount + "개의 시내버스가 운행되고 있습니다.");
