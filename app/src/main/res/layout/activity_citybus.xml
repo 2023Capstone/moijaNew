@@ -3,18 +3,42 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="16dp"
-    android:paddingTop="16dp"
-    android:paddingRight="16dp"
-    android:paddingBottom="16dp"
     tools:context=".schedule.CityBus">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#8BC34A"/>
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="29dp"
+        android:layout_gravity="center"
+        android:layout_marginLeft="175dp"
+        android:layout_marginTop="15dp"
+        android:contentDescription="Title Image"
+        android:src="@drawable/bus" />
+    <!-- 뒤로가기 버튼 -->
+    <ImageButton
+        android:id="@+id/backBtn"
+        style="@style/TransparentButtonStyle"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginLeft="10dp"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:layout_gravity="center"
+        android:src="@drawable/arrow3" />
 
     <Button
         android:id="@+id/getStationNamesButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Get Station Names"
-        android:layout_centerHorizontal="true"/>
+        android:layout_marginLeft="300dp"
+        android:layout_marginTop="10dp"
+
+        android:text="버스 노선" />
 
     <TextView
         android:id="@+id/busInfoTextView"
@@ -35,8 +59,3 @@
         android:divider="@android:color/darker_gray"
         android:dividerHeight="1dp"/>
 </RelativeLayout>
-
-
-
-
-

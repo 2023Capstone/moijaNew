@@ -1,10 +1,12 @@
 package com.example.moija.schedule;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -22,13 +24,13 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class CityBus extends AppCompatActivity {
-
+    private ImageButton backBtn;
     private Button getStationNamesButton;
     private TextView busInfoTextView;
     private ListView stationNamesListView;
 
     // TODO: 사용자가 발급받은 odsay lab API 키를 입력하세요.
-    private static final String API_KEY = "Bk3FXTpa4bUs3dxTOsUxSFvLGFYhTaoBDPKfSPOLdwI";
+    private static final String API_KEY = "fXCWmI16V2ggA9Y9OhTrVMSiPw/YHkDXoHmKjpLG7l8";
 
     @Override
 
@@ -36,9 +38,18 @@ public class CityBus extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_citybus);
 
+        backBtn = findViewById(R.id.backBtn);
         getStationNamesButton = findViewById(R.id.getStationNamesButton);
         busInfoTextView = findViewById(R.id.busInfoTextView);
         stationNamesListView = findViewById(R.id.stationNamesListView);
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(CityBus.this,CityBus2.class);
+                startActivity(intent);
+            }
+        });
 
         getStationNamesButton.setOnClickListener(new View.OnClickListener() {
             @Override
