@@ -3,15 +3,22 @@ package com.example.moija.fragment;
 import com.example.moija.R;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+import android.util.Pair;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,10 +26,12 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.example.moija.busPointGPS;
 import com.example.moija.data.PathInfo;
 import com.example.moija.map.Mylocation;
 import com.example.moija.map.RouteDrawer;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
 import com.kakao.vectormap.KakaoMap;
 import com.kakao.vectormap.KakaoMapReadyCallback;
 import com.kakao.vectormap.LatLng;
@@ -35,6 +44,9 @@ import com.kakao.vectormap.label.LabelLayer;
 import com.kakao.vectormap.label.LabelOptions;
 import com.kakao.vectormap.label.LabelStyle;
 import com.kakao.vectormap.label.LabelStyles;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MapFragment extends Fragment {
 
@@ -49,22 +61,25 @@ public class MapFragment extends Fragment {
     public Label startLabel;
     //도착 위치를 나타내는 마커
     public Label goalLabel;
-
-
-    public PathInfo DrawingPath;
+    private LinearLayout busInfoLayout;
+    public List<String> BusNo=new ArrayList<>();
+    public List<Integer> BusOrder=new ArrayList<>();
+    public PathInfo Selectedpath;
     //길 그려주는 RouteDrawer 클래스 선언
     public RouteDrawer routeDrawer;
     LabelStyles styles;
     LabelOptions options;
     LabelLayer layer;
-
+    List<Pair<String, String>> busList=new ArrayList<>();
     KakaoMap thiskakaoMap;
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         ViewGroup rootview = (ViewGroup)inflater.inflate(R.layout.activity_map_fragment,container,false);
         context=requireContext();
+
         MapView mapView = rootview.findViewById(R.id.map_view);
+        busInfoLayout = rootview.findViewById(R.id.bus_info_layout);
         RemoveMarkerbtn=rootview.findViewById(R.id.removemarkerbtn);
         RemoveMarkerbtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,6 +152,17 @@ public class MapFragment extends Fragment {
                 }
             }
         });
+
+        // busInfoLayout에 OnClickListener 설정
+        busInfoLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 인텐트 생성 및 액티비티 시작
+                Intent intent = new Intent(getContext(), busPointGPS.class);
+                startActivity(intent);
+            }
+        });
+
         return rootview;
     }
     public void AddStartMarker(){
@@ -195,13 +221,52 @@ public class MapFragment extends Fragment {
         MyLabel.scaleTo(0.15f, 0.15f);
 
     }
+    // 버스 정보를 추가하는 메서
     //시작점 좌표,도착점 좌표와 대중교통 종류에 따라 그리기 예시
     //오디세이 결과값에 따라 그리도록 수정 필요함
     public void Draw(){
-        for(int i=0;i<DrawingPath.getBusNos().size();i++)
+        for(int i=0; i<Selectedpath.getBusNos().size(); i++)
+        {
+            if(!Selectedpath.getBusNos().get(i).contains("도보")){
+                BusNo.add(Selectedpath.getBusNos().get(i).get(0));
+            }
+        }
+        for(int i=0; i<Selectedpath.getTrafficType().size(); i++)
+        {
+            if(Selectedpath.getTrafficType().get(i).equals(2) || Selectedpath.getTrafficType().get(i).equals(6)){
+                BusOrder.add(Selectedpath.getTrafficType().get(i));
+            }
+        }
+
+        for(int i=0; i<BusOrder.size();i++){
+            if(BusOrder.get(i)==2){
+                busList.add(new Pair<>("city",BusNo.get(i).toString()));
+                Log.d("mylog", BusOrder.get(i).toString());
+            }
+            else if(BusOrder.get(i)==6){
+                busList.add(new Pair<>("intercity","시외버스"));
+            }
+        }
+
+        for (int i = 0; i < busList.size(); i++) {
+            Pair<String, String> bus = busList.get(i);
+            // ">" 기호를 추가할지 결정 (마지막 버스 정보가 아닌 경우에만 추가)
+            boolean addArrow = i < busList.size() - 1;
+            if ("city".equals(bus.first)) {
+                // 도시 버스일 경우의 처리
+                addBusInfo(R.drawable.colorful_city_bus, bus.second, addArrow);
+            } else if ("intercity".equals(bus.first)) {
+                // 시외 버스일 경우의 처리
+                addBusInfo(R.drawable.intercity_bus, bus.second, addArrow);
+            }
+        }
+        Log.d("youlog",BusOrder.toString());
+        Log.d("youlog",BusNo.toString());
+        Log.d("youlog",busList.toString());
+        for(int i = 0; i< Selectedpath.getBusNos().size(); i++)
         {
             if(routeDrawer!=null) {
-                routeDrawer.draw(DrawingPath.getstartx().get(i), DrawingPath.getstarty().get(i), DrawingPath.getendx().get(i), DrawingPath.getendy().get(i), DrawingPath.getTrafficType().get(i));
+                routeDrawer.draw(Selectedpath.getstartx().get(i), Selectedpath.getstarty().get(i), Selectedpath.getendx().get(i), Selectedpath.getendy().get(i), Selectedpath.getTrafficType().get(i));
             }
         }
         AddGoalMarker();
@@ -211,5 +276,55 @@ public class MapFragment extends Fragment {
         double middlelongitude=(Mylocation.StartPlace.getX()+Mylocation.GoalPlace.getX())/2;
         CameraUpdate cameraUpdate = CameraUpdateFactory.newCenterPosition(LatLng.from(middlelatitude, middlelongitude),5);
         thiskakaoMap.moveCamera(cameraUpdate);
+    }
+    // 버스 정보를 추가하는 메서드
+    private void addBusInfo(int imageResId, String busNumber, boolean addArrow) {
+        if (busInfoLayout != null) {
+            // 각 버스 정보를 담을 새로운 수직 LinearLayout 생성
+            LinearLayout busItemLayout = new LinearLayout(getContext());
+            busItemLayout.setOrientation(LinearLayout.VERTICAL);
+            busItemLayout.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            ));
+            busItemLayout.setGravity(Gravity.CENTER_HORIZONTAL);
+
+            // 버스 이미지 뷰 생성 및 설정
+            ImageView imageView = new ImageView(getContext());
+            imageView.setImageResource(imageResId);
+            imageView.setLayoutParams(new LinearLayout.LayoutParams(
+                    getResources().getDimensionPixelSize(R.dimen.bus_image_width),
+                    getResources().getDimensionPixelSize(R.dimen.bus_image_height)
+            ));
+            imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            busItemLayout.addView(imageView);
+
+            // 버스 번호 텍스트 뷰 생성 및 설정
+            TextView textView = new TextView(getContext());
+            textView.setText(busNumber);
+            textView.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            ));
+            textView.setGravity(Gravity.CENTER);
+            busItemLayout.addView(textView);
+
+            // 생성된 busItemLayout을 부모 busInfoLayout에 추가
+            busInfoLayout.addView(busItemLayout);
+
+            // ">" 기호를 추가해야 하는 경우
+            if (addArrow) {
+                TextView arrowTextView = new TextView(getContext());
+                arrowTextView.setText(" > ");
+                arrowTextView.setLayoutParams(new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                ));
+                arrowTextView.setGravity(Gravity.CENTER);
+                busInfoLayout.addView(arrowTextView);
+            }
+        } else {
+            Log.e("MapFragment", "busInfoLayout is null");
+        }
     }
 }

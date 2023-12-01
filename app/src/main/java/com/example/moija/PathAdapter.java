@@ -16,7 +16,6 @@ import java.util.List;
 
 public class PathAdapter extends ArrayAdapter<PathInfo> {
     private LayoutInflater inflater;
-
     public PathAdapter(Context context, List<PathInfo> paths) {
         super(context, R.layout.pathlist_item_place, paths);
         inflater = LayoutInflater.from(context);
@@ -38,10 +37,16 @@ public class PathAdapter extends ArrayAdapter<PathInfo> {
             TotalTimeText.setText("소요 시간: "+path.getTotalTime());
             BusText.setText("");
             //장소 주소를 설정
+            int busidno=0;
             for(int i=0; i<path.getBusNos().size(); i++)
             {
+
                 if(!path.getBusNos().get(i).contains("도보") && !path.getBusNos().get(i).contains("시외버스")) {
-                    BusText.append("버스 번호: " + path.getBusNos().get(i).toString() + "\n");
+                   BusText.append("버스 번호: " + path.getBusNos().get(i).get(0).toString() + "\n");
+                   if(!path.getBusNos().get(i).get(0).contains("도보") && !path.getBusNos().get(i).contains("시외버스")) {
+                       BusText.append("버스 ID: " + path.getBusIDs().get(busidno).get(0) + "\n");
+                       busidno++;
+                   }
                     BusText.append("승차: " + path.getStartNames().get(i).toString() + "\n");
                     BusText.append("하차: " + path.getEndNames().get(i).toString() + "\n");
                 }

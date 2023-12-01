@@ -6,6 +6,7 @@ import java.util.List;
 public class PathInfo {
     private List<Integer> trafficType=new ArrayList<>();
     List<List<String>> busNos = new ArrayList<>();
+    List<List<Integer>> busIDs=new ArrayList<>();
     List<String> startNames = new ArrayList<>();
     List<String> endNames = new ArrayList<>();
     private int totalTime;
@@ -18,6 +19,8 @@ public class PathInfo {
     List<String> path12EndNames = new ArrayList<>();
 
 
+
+    public List<List<Integer>> getBusIDs(){return busIDs;}
 
     public int getTotalTime() {
         return totalTime;
@@ -60,7 +63,20 @@ public class PathInfo {
     public List<Double> getendy(){return endy;}
 
     public List<Integer> getTrafficType(){return trafficType;}
-    public void setSubPath(List<String> busNos, String startName, String endName,double startX,double startY,double endX,double endY,int trafficType) {
+    public void setSubPath(List<String> busNos,List<Integer> busIDs,String startName, String endName,double startX,double startY,double endX,double endY,int trafficType) {
+        this.busNos.add(busNos);
+        if(busIDs!=null) {
+            this.busIDs.add(busIDs);
+        }
+        this.startNames.add(startName);
+        this.endNames.add(endName);
+        this.startx.add(startX);
+        this.starty.add(startY);
+        this.endx.add(endX);
+        this.endy.add(endY);
+        this.trafficType.add(trafficType);
+    }
+    public void WalkSetSubPath(List<String> busNos,String startName, String endName,double startX,double startY,double endX,double endY,int trafficType) {
         this.busNos.add(busNos);
         this.startNames.add(startName);
         this.endNames.add(endName);
@@ -73,6 +89,9 @@ public class PathInfo {
     public void addPathinfo(PathInfo path,int index){
         for(int i=0; i<path.getBusNos().size(); i++){
             this.busNos.add(index,path.getBusNos().get(i));
+            if(path.getTrafficType().get(i) ==2) {
+                this.busIDs.add(path.getBusIDs().get(0));
+            }
             this.startNames.add(index,path.getStartNames().get(i));
             this.endNames.add(index,path.getEndNames().get(i));
             this.startx.add(index,path.getstartx().get(i));

@@ -39,6 +39,10 @@
         <activity
             android:name="com.example.moija.chat.Chat"
             android:exported="true" />
+        <activity
+            android:name=".busPointGPS"
+            android:exported="false" />
+
 
 
         <activity

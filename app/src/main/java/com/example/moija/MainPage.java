@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -27,7 +26,6 @@ import androidx.fragment.app.Fragment;
 
 import com.example.moija.api.KakaoApi;
 import com.example.moija.api.ODsayService;
-import com.example.moija.data.CallApiData;
 import com.example.moija.data.OdsayData;
 import com.example.moija.data.PathInfo;
 import com.example.moija.fragment.MapFragment;
@@ -251,7 +249,12 @@ public class MainPage extends AppCompatActivity {
                 PathInfo selectedpath=(PathInfo) searchPathListView.getItemAtPosition(position);
                 Mapframelayout.setVisibility(View.VISIBLE);
                 MapFragment mf = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.Mapframe);
-                mf.DrawingPath=selectedpath;
+                mf.Selectedpath =selectedpath;
+                mf.BusOrder.clear();
+                mf.BusNo.clear();
+
+
+
                 if(mf.routeDrawer!=null) {
                     mf.routeDrawer.clearRouteLines();
 
@@ -686,28 +689,31 @@ public class MainPage extends AppCompatActivity {
                             //따라서, x,y값을 받으려면 for문으로 index값을 통하여 x,y값을 받아오는 수밖에 없음
                             if (i == 0) {
                                 if (startorend == "start") {
-                                    pathInfo.setSubPath(busNos, Mylocation.StartPlace.getPlaceName(), path.getSubPath().get(i + 1).getStartName(), Mylocation.StartPlace.getX(), Mylocation.StartPlace.getY(), path.getSubPath().get(i + 1).getStartX(), path.getSubPath().get(i + 1).getStartY(), path.getSubPath().get(i).getTrafficType());
+                                    pathInfo.WalkSetSubPath(busNos, Mylocation.StartPlace.getPlaceName(), path.getSubPath().get(i + 1).getStartName(), Mylocation.StartPlace.getX(), Mylocation.StartPlace.getY(), path.getSubPath().get(i + 1).getStartX(), path.getSubPath().get(i + 1).getStartY(), path.getSubPath().get(i).getTrafficType());
                                 }
                                 if (startorend == "end") {
-                                    pathInfo.setSubPath(busNos, myPathInfo.getEndNames().get(myPathInfo.getEndNames().size() - 1), path.getSubPath().get(i + 1).getStartName(), myPathInfo.getendx().get(myPathInfo.getendx().size() - 1),
+                                    pathInfo.WalkSetSubPath(busNos, myPathInfo.getEndNames().get(myPathInfo.getEndNames().size() - 1), path.getSubPath().get(i + 1).getStartName(), myPathInfo.getendx().get(myPathInfo.getendx().size() - 1),
                                             myPathInfo.getendy().get(myPathInfo.getendy().size() - 1), path.getSubPath().get(i + 1).getStartX(), path.getSubPath().get(i + 1).getStartY(), path.getSubPath().get(i).getTrafficType());
                                 }
                             } else if (i == path.getSubPath().size() - 1) {
                                 if (startorend == "start") {
-                                    pathInfo.setSubPath(busNos, path.getSubPath().get(i - 1).getEndName(), myPathInfo.getStartNames().get(0), path.getSubPath().get(i - 1).getEndX(), path.getSubPath().get(i - 1).getEndY(), myPathInfo.getstartx().get(0), myPathInfo.getstarty().get(0), path.getSubPath().get(i).getTrafficType());
+                                    pathInfo.WalkSetSubPath(busNos, path.getSubPath().get(i - 1).getEndName(), myPathInfo.getStartNames().get(0), path.getSubPath().get(i - 1).getEndX(), path.getSubPath().get(i - 1).getEndY(), myPathInfo.getstartx().get(0), myPathInfo.getstarty().get(0), path.getSubPath().get(i).getTrafficType());
                                 }
                                 if (startorend == "end") {
-                                    pathInfo.setSubPath(busNos, path.getSubPath().get(i - 1).getEndName(), Mylocation.GoalPlace.getPlaceName(), path.getSubPath().get(i - 1).getEndX(), path.getSubPath().get(i - 1).getEndY(), Mylocation.GoalPlace.getX(), Mylocation.GoalPlace.getY(), path.getSubPath().get(i).getTrafficType());
+                                    pathInfo.WalkSetSubPath(busNos, path.getSubPath().get(i - 1).getEndName(), Mylocation.GoalPlace.getPlaceName(), path.getSubPath().get(i - 1).getEndX(), path.getSubPath().get(i - 1).getEndY(), Mylocation.GoalPlace.getX(), Mylocation.GoalPlace.getY(), path.getSubPath().get(i).getTrafficType());
                                 }
                             } else {
-                                pathInfo.setSubPath(busNos, path.getSubPath().get(i - 1).getEndName(), path.getSubPath().get(i + 1).getStartName(), path.getSubPath().get(i - 1).getEndX(), path.getSubPath().get(i - 1).getEndY(), path.getSubPath().get(i + 1).getStartX(), path.getSubPath().get(i + 1).getStartY(), path.getSubPath().get(i).getTrafficType());
+                                pathInfo.WalkSetSubPath(busNos, path.getSubPath().get(i - 1).getEndName(), path.getSubPath().get(i + 1).getStartName(), path.getSubPath().get(i - 1).getEndX(), path.getSubPath().get(i - 1).getEndY(), path.getSubPath().get(i + 1).getStartX(), path.getSubPath().get(i + 1).getStartY(), path.getSubPath().get(i).getTrafficType());
                             }
                             count++;
                         } else if (path.getSubPath().get(i).getTrafficType() == 2) { // 버스 경로인 경우
                             List<String> busNos = path.getSubPath().get(i).getLane().stream()
                                     .map(OdsayData.Lane::getBusNo)
                                     .collect(Collectors.toList());
-                            pathInfo.setSubPath(busNos, path.getSubPath().get(i).getStartName(), path.getSubPath().get(i).getEndName(), path.getSubPath().get(i).getStartX(), path.getSubPath().get(i).getStartY(), path.getSubPath().get(i).getEndX(), path.getSubPath().get(i).getEndY(), path.getSubPath().get(i).getTrafficType());
+                            List<Integer> busIDs = path.getSubPath().get(i).getLane().stream()
+                                    .map(OdsayData.Lane::getBusID)
+                                    .collect(Collectors.toList());
+                            pathInfo.setSubPath(busNos,busIDs, path.getSubPath().get(i).getStartName(), path.getSubPath().get(i).getEndName(), path.getSubPath().get(i).getStartX(), path.getSubPath().get(i).getStartY(), path.getSubPath().get(i).getEndX(), path.getSubPath().get(i).getEndY(), path.getSubPath().get(i).getTrafficType());
                             count++;
                         }
                     }
@@ -743,20 +749,22 @@ public class MainPage extends AppCompatActivity {
                             //도보는 x,y값은 없고 시간만 나타내고 있음
                             //따라서, x,y값을 받으려면 for문으로 index값을 통하여 x,y값을 받아오는 수밖에 없음
                             if (i == 0) {
-                                pathInfo.setSubPath(busNos, Mylocation.StartPlace.getPlaceName(), path.getSubPath().get(i + 1).getStartName(), Mylocation.StartPlace.getX(), Mylocation.StartPlace.getY(), path.getSubPath().get(i + 1).getStartX(), path.getSubPath().get(i + 1).getStartY(), path.getSubPath().get(i).getTrafficType());
+                                pathInfo.WalkSetSubPath(busNos, Mylocation.StartPlace.getPlaceName(), path.getSubPath().get(i + 1).getStartName(), Mylocation.StartPlace.getX(), Mylocation.StartPlace.getY(), path.getSubPath().get(i + 1).getStartX(), path.getSubPath().get(i + 1).getStartY(), path.getSubPath().get(i).getTrafficType());
                             } else if (i == path.getSubPath().size() - 1) {
-                                pathInfo.setSubPath(busNos, path.getSubPath().get(i - 1).getEndName(), Mylocation.GoalPlace.getPlaceName(), path.getSubPath().get(i - 1).getEndX(), path.getSubPath().get(i - 1).getEndY(), Mylocation.GoalPlace.getX(), Mylocation.GoalPlace.getY(), path.getSubPath().get(i).getTrafficType());
+                                pathInfo.WalkSetSubPath(busNos, path.getSubPath().get(i - 1).getEndName(), Mylocation.GoalPlace.getPlaceName(), path.getSubPath().get(i - 1).getEndX(), path.getSubPath().get(i - 1).getEndY(), Mylocation.GoalPlace.getX(), Mylocation.GoalPlace.getY(), path.getSubPath().get(i).getTrafficType());
                             } else {
-                                pathInfo.setSubPath(busNos, path.getSubPath().get(i - 1).getEndName(), path.getSubPath().get(i + 1).getStartName(), path.getSubPath().get(i - 1).getEndX(), path.getSubPath().get(i - 1).getEndY(), path.getSubPath().get(i + 1).getStartX(), path.getSubPath().get(i + 1).getStartY(), path.getSubPath().get(i).getTrafficType());
+                                pathInfo.WalkSetSubPath(busNos, path.getSubPath().get(i - 1).getEndName(), path.getSubPath().get(i + 1).getStartName(), path.getSubPath().get(i - 1).getEndX(), path.getSubPath().get(i - 1).getEndY(), path.getSubPath().get(i + 1).getStartX(), path.getSubPath().get(i + 1).getStartY(), path.getSubPath().get(i).getTrafficType());
                             }
 
                         } else if (path.getSubPath().get(i).getTrafficType() == 2) { // 버스 경로인 경우
                             List<String> busNos = path.getSubPath().get(i).getLane().stream()
                                     .map(OdsayData.Lane::getBusNo)
                                     .collect(Collectors.toList());
-                            pathInfo.setSubPath(busNos, path.getSubPath().get(i).getStartName(), path.getSubPath().get(i).getEndName(), path.getSubPath().get(i).getStartX(), path.getSubPath().get(i).getStartY(), path.getSubPath().get(i).getEndX(), path.getSubPath().get(i).getEndY(), path.getSubPath().get(i).getTrafficType());
+                            List<Integer> busIDs=path.getSubPath().get(i).getLane().stream()
+                                            .map(OdsayData.Lane::getBusID)
+                                            .collect(Collectors.toList());
 
-
+                            pathInfo.setSubPath(busNos,busIDs, path.getSubPath().get(i).getStartName(), path.getSubPath().get(i).getEndName(), path.getSubPath().get(i).getStartX(), path.getSubPath().get(i).getStartY(), path.getSubPath().get(i).getEndX(), path.getSubPath().get(i).getEndY(), path.getSubPath().get(i).getTrafficType());
                         }
                     }
                     pathInfoList.add(pathInfo);
@@ -771,7 +779,7 @@ public class MainPage extends AppCompatActivity {
                     for (int i=0; i<subPath.size(); i++) {
                         List<String> busNos=new ArrayList<>();
                         busNos.add("시외버스");
-                        pathInfo.setSubPath(busNos, subPath.get(i).getStartName(), subPath.get(i).getEndName(), subPath.get(i).getStartX(), subPath.get(i).getStartY(), subPath.get(i).getEndX(), subPath.get(i).getEndY(), subPath.get(i).getTrafficType());
+                        pathInfo.WalkSetSubPath(busNos,subPath.get(i).getStartName(), subPath.get(i).getEndName(), subPath.get(i).getStartX(), subPath.get(i).getStartY(), subPath.get(i).getEndX(), subPath.get(i).getEndY(), subPath.get(i).getTrafficType());
                     }
                     pathInfoList.clear();
                     callApi1(Mylocation.StartPlace.getX(), Mylocation.StartPlace.getY(), pathInfo.getstartx().get(0), pathInfo.getstarty().get(0), pathInfo);
