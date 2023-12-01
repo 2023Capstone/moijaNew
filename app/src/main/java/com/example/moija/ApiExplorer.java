@@ -103,7 +103,8 @@ public class ApiExplorer implements Runnable {
                 // 데이터 로딩 완료 후 메시지 전송
                 Message msg = Message.obtain();
                 Bundle bundle = new Bundle();
-                bundle.putString("nodeNames", nodeNames.toString());
+//                bundle.putString("nodeNames", nodeNames.toString());
+                bundle.putStringArrayList("nodeNames", new ArrayList<>(nodeNames));
                 bundle.putInt("totalCount", totalCount);
                 msg.setData(bundle);
                 handler.sendMessage(msg);
