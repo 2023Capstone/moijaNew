@@ -1,4 +1,4 @@
-package com.example.moija;
+package com.example.moija.map;
 
 import android.location.Location;
 
