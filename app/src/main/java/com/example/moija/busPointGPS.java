@@ -25,7 +25,12 @@ import java.util.List;
              List<String> nodeNames = msg.getData().getStringArrayList("nodeNames");
              int totalCount = msg.getData().getInt("totalCount");
 
-             textViewResult.setText(nodeNames + "\n" + totalCount + "개의 시내버스가 운행되고 있습니다.");
+             StringBuilder sb = new StringBuilder();
+             for (String nodeName : nodeNames) {
+                 sb.append(nodeName).append("\n");
+             }
+
+             textViewResult.setText(sb.toString() + totalCount + "개의 시내버스가 운행되고 있습니다.");
              progressBar.setVisibility(View.GONE);
          }
      };
