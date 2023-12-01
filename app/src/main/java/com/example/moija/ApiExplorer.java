@@ -25,7 +25,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import com.example.moija.fragment.MapFragment;
+
 public class ApiExplorer implements Runnable {
     private Handler handler;  // Handler 추가
     private volatile boolean isRunning = false; // 스레드 실행 상태 플래그

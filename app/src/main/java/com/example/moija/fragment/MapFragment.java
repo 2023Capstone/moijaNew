@@ -31,7 +31,6 @@ import com.example.moija.data.PathInfo;
 import com.example.moija.map.Mylocation;
 import com.example.moija.map.RouteDrawer;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.gson.Gson;
 import com.kakao.vectormap.KakaoMap;
 import com.kakao.vectormap.KakaoMapReadyCallback;
 import com.kakao.vectormap.LatLng;
@@ -45,11 +44,11 @@ import com.kakao.vectormap.label.LabelOptions;
 import com.kakao.vectormap.label.LabelStyle;
 import com.kakao.vectormap.label.LabelStyles;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MapFragment extends Fragment {
-
     FloatingActionButton RemoveMarkerbtn;
     //kakaoMap을 OnMapReady가 아닌 다른곳에서도 호출할 수 있게 선언
     public static Context context;
@@ -75,12 +74,26 @@ public class MapFragment extends Fragment {
     LabelLayer layer;
     List<Pair<String, String>> busList=new ArrayList<>();
     KakaoMap thiskakaoMap;
+
+    public static class BusData implements Serializable {
+        private List<Integer> integerList;
+        private List<String> busLocalBlID;
+        public BusData(List<Integer> integerList,List<String> busLocalBlID) {
+            this.integerList = integerList;
+            this.busLocalBlID = busLocalBlID;
+        }
+
+        public List<Integer> getIntegerList() {
+            return integerList;
+        }
+        public List<String> getBusLocalBlID() {
+            return busLocalBlID;
+        }
+    }
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         ViewGroup rootview = (ViewGroup)inflater.inflate(R.layout.activity_map_fragment,container,false);
         context=requireContext();
-
         MapView mapView = rootview.findViewById(R.id.map_view);
         busInfoLayout = rootview.findViewById(R.id.bus_info_layout);
         RemoveMarkerbtn=rootview.findViewById(R.id.removemarkerbtn);
@@ -160,15 +173,13 @@ public class MapFragment extends Fragment {
         busInfoLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                BusData busData = new BusData(BusCityCode,BusLocalBlID);
                 // 인텐트 생성 및 액티비티 시작
-
-                Intent intent = new Intent(getContext(), busPointGPS.class);
-                startActivity(intent);
+                Intent intent2 = new Intent(getActivity(), busPointGPS.class);
+                intent2.putExtra("key", busData);
+                startActivity(intent2);
             }
         });
-
-
-
         return rootview;
     }
     public void AddStartMarker(){

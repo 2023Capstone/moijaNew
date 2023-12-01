@@ -83,6 +83,8 @@ public class PathInfo {
         this.endx.add(endX);
         this.endy.add(endY);
         this.trafficType.add(trafficType);
+        Log.d("localblid",this.busLocalBlIDs.toString());
+        Log.d("localbuscitycodes",this.busCityCodes.toString());
     }
     public void WalkSetSubPath(List<String> busNos,String startName, String endName,double startX,double startY,double endX,double endY,int trafficType) {
         this.busNos.add(busNos);
@@ -95,11 +97,15 @@ public class PathInfo {
         this.trafficType.add(trafficType);
     }
     public void addPathinfo(PathInfo path,int index){
+
+        for(int i=0; i<path.getBusLocalBlIDs().size();i++){
+                this.busLocalBlIDs.add(path.getBusLocalBlIDs().get(i));
+                this.busCityCodes.add(path.getBusCityCodes().get(i));
+        }
         for(int i=0; i<path.getBusNos().size(); i++){
             this.busNos.add(index,path.getBusNos().get(i));
             this.busIDs.add(path.getBusIDs().get(0));
-            this.busLocalBlIDs.add(path.getBusLocalBlIDs().get(0));
-            this.busCityCodes.add(path.getBusCityCodes().get(0));
+
             this.startNames.add(index,path.getStartNames().get(i));
             this.endNames.add(index,path.getEndNames().get(i));
             this.startx.add(index,path.getstartx().get(i));
@@ -108,6 +114,8 @@ public class PathInfo {
             this.endy.add(index,path.getendy().get(i));
             this.trafficType.add(index,path.getTrafficType().get(i));
         }
+        Log.d("localblid",this.busLocalBlIDs.toString());
+        Log.d("localbuscitycodes",this.busCityCodes.toString());
 
     }
     public void addPath12Names(String startName, String endName) {

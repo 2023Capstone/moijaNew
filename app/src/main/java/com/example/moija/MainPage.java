@@ -34,7 +34,6 @@ import com.example.moija.map.Place;
 import com.example.moija.map.SearchResults;
 import com.google.gson.Gson;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -783,7 +782,8 @@ public class MainPage extends AppCompatActivity {
                             List<Integer> busCityCodes=path.getSubPath().get(i).getLane().stream()
                                     .map(OdsayData.Lane::getBusCityCode)
                                     .collect(Collectors.toList());
-
+                            Log.d("dd",busLocalBlIDs.toString());
+                            Log.d("dd",busCityCodes.toString());
                             pathInfo.setSubPath(busNos,busIDs, busLocalBlIDs,busCityCodes,path.getSubPath().get(i).getStartName(), path.getSubPath().get(i).getEndName(), path.getSubPath().get(i).getStartX(), path.getSubPath().get(i).getStartY(), path.getSubPath().get(i).getEndX(), path.getSubPath().get(i).getEndY(), path.getSubPath().get(i).getTrafficType());
                         }
                     }
