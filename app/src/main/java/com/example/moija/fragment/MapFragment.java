@@ -195,7 +195,7 @@ public class MapFragment extends Fragment {
         });
 
         List<Pair<String, String>> busList = new ArrayList<>();
-
+        
         busList.add(new Pair<>("city", "160"));
         busList.add(new Pair<>("city", "290"));
         busList.add(new Pair<>("intercity", "진주행"));
