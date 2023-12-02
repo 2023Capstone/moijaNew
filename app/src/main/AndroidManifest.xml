@@ -38,6 +38,10 @@
             android:exported="true" />
 
         <activity
+            android:name=".schedule.IntercityBus"
+            android:exported="true" />
+
+        <activity
             android:name="com.example.moija.IntroActivity"
             android:exported="true">
             <intent-filter>
