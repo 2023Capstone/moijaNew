@@ -20,6 +20,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.example.moija.ApiExplorer;
 import com.example.moija.CustomAdapter;
+import com.example.moija.MainPage;
 import com.example.moija.R;
 import com.example.moija.fragment.MapFragment;
 
@@ -173,10 +174,7 @@ public class IntercityBus extends AppCompatActivity {
 
             try {
 
-//                String apiKey = "fXCWmI16V2ggA9Y9OhTrVMSiPw/YHkDXoHmKjpLG7l8";
-                String apiKey = "6WN7AcWOFR1SJnfFVFKVtoIBidc4AoB2nj6qPmjXbPc";
-
-                String apiUrl = "https://api.odsay.com/v1/api/intercityServiceTime?apiKey=" + apiKey +
+                String apiUrl = "https://api.odsay.com/v1/api/intercityServiceTime?apiKey=" + MainPage.OdsayAPI_KEY +
                         "&startStationID=" + startStationId + "&endStationID=" + destStationId;
 
                 URL url = new URL(apiUrl);

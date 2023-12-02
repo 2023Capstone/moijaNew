@@ -58,7 +58,7 @@ public class MainPage extends AppCompatActivity {
     public boolean pathsearched=false;
     /*예비 fXCWmI16V2ggA9Y9OhTrVMSiPw/YHkDXoHmKjpLG7l8
     * 	6WN7AcWOFR1SJnfFVFKVtoIBidc4AoB2nj6qPmjXbPc*/
-    public static final String OdsayAPI_KEY = "6WN7AcWOFR1SJnfFVFKVtoIBidc4AoB2nj6qPmjXbPc";
+    public static final String OdsayAPI_KEY = "fXCWmI16V2ggA9Y9OhTrVMSiPw/YHkDXoHmKjpLG7l8";
     //api 기본 URL
     public static final String BASE_URL = "https://dapi.kakao.com/";
     public static final String BASE_URL2 = "https://api.odsay.com/";

@@ -56,13 +56,27 @@
             android:textSize="18sp"
             android:textColor="@android:color/black"/>
         <Button
-            android:id="@+id/getStationNamesButton"
+            android:id="@+id/getBusScheduleButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.05"
             android:text="버스 시간표" />
     </LinearLayout>
-
+    <ScrollView
+        android:id="@+id/busScheduleView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="400dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/busScheduleTextView"
+        android:gravity="center_horizontal"
+        android:layout_centerVertical="true"
+        android:visibility="gone"/>
+    </ScrollView>
     <ListView
         android:id="@+id/stationNamesListView"
         android:layout_width="match_parent"

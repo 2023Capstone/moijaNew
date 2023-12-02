@@ -118,7 +118,7 @@ public class ApiExplorer implements Runnable {
                 msg.setData(bundle);
                 handler.sendMessage(msg);
 
-                Thread.sleep(10000); // 10초 대기 후 다시 실행
+                Thread.sleep(10000);
 
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt(); // 스레드 중단

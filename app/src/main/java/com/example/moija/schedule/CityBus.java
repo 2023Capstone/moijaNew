@@ -10,13 +10,12 @@ import android.os.Message;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,24 +24,30 @@ import com.example.moija.ApiExplorer;
 import com.example.moija.CustomAdapter;
 import com.example.moija.MainPage;
 import com.example.moija.R;
-import com.example.moija.busPointGPS;
-import com.example.moija.data.PathInfo;
 import com.example.moija.fragment.MapFragment;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class CityBus extends AppCompatActivity {
+
     private ImageButton backBtn;
-    private Button getStationNamesButton;
+    private Button getBusScheduleButton;
     private TextView busInfoTextView;
+    private TextView busScheduleTextView;
+    private ScrollView busScheduleView;
     private ListView stationNamesListView;
     private CustomAdapter adapter; // 커스텀 어댑터
     private ApiExplorer apiExplorer;
@@ -51,18 +56,75 @@ public class CityBus extends AppCompatActivity {
     private List<String> BusLocalBlID;
     private List<String> BusNo;
     Integer index;
-
+    int state;
     private List<Integer> BusID;
+
+    boolean isBusSchedule=false;
+
+    class BusSchedule {
+
+        private String firstTime;
+        private String lastTime;
+        private String interval;
+
+        public String getFirstTime() {
+            return firstTime;
+        }
+
+        public void setFirstTime(String firstTime) {
+            this.firstTime = firstTime;
+        }
+
+        public String getLastTime() {
+            return lastTime;
+        }
+
+        public void setLastTime(String lastTime) {
+            this.lastTime = lastTime;
+        }
+
+        public String getInterval() {
+            return interval;
+        }
+
+        public void setInterval(String interval) {
+            this.interval = interval;
+        }
+    }
+
+    class BusInfo {
+        private String busNo;
+        private ArrayList<String> stationNames;
+
+        public String getBusNo() {
+            return busNo;
+        }
+
+        public void setBusNo(String busNo) {
+            this.busNo = busNo;
+        }
+
+        public ArrayList<String> getStationNames() {
+            return stationNames;
+        }
+
+        public void setStationNames(ArrayList<String> stationNames) {
+            this.stationNames = stationNames;
+        }
+    }
     private Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
             List<String> nodeNames = apiExplorer.getNodeNames(); // ApiExplorer에서 nodeNames 가져오기
             int totalCount = msg.getData().getInt("totalCount");
             if(Station!=null && nodeNames!=null) {
+                state=stationNamesListView.getFirstVisiblePosition();
                 adapter = new CustomAdapter(CityBus.this, Station, nodeNames);
                 Log.d("hMessage", Station.toString());
                 Log.d("hMessage", nodeNames.toString());
                 stationNamesListView.setAdapter(adapter);
+                stationNamesListView.setSelection(state);
+                adapter.notifyDataSetChanged();
             }
         }
     };
@@ -72,9 +134,6 @@ public class CityBus extends AppCompatActivity {
         return (int) (dp * context.getResources().getDisplayMetrics().density);
     }
 
-    // TODO: 사용자가 발급받은 odsay lab API 키를 입력하세요.
-//    private static final String API_KEY = "fXCWmI16V2ggA9Y9OhTrVMSiPw/YHkDXoHmKjpLG7l8";
-    private static final String API_KEY = "6WN7AcWOFR1SJnfFVFKVtoIBidc4AoB2nj6qPmjXbPc";
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,10 +141,11 @@ public class CityBus extends AppCompatActivity {
         setContentView(R.layout.activity_citybus);
 
         backBtn = findViewById(R.id.backBtn);
-        getStationNamesButton = findViewById(R.id.getStationNamesButton);
+        getBusScheduleButton = findViewById(R.id.getBusScheduleButton);
         busInfoTextView = findViewById(R.id.busInfoTextView);
         stationNamesListView = findViewById(R.id.stationNamesListView);
-
+        busScheduleTextView = findViewById(R.id.busScheduleTextView);
+        busScheduleView=findViewById(R.id.busScheduleView);
         Intent intent = getIntent();
         MapFragment.BusData busData = (MapFragment.BusData) intent.getSerializableExtra("key");
         index = intent.getIntExtra("index", 0);
@@ -177,11 +237,18 @@ public class CityBus extends AppCompatActivity {
             }
         });
 
-        getStationNamesButton.setOnClickListener(new View.OnClickListener() {
+        getBusScheduleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // AsyncTask를 사용하여 stationName 데이터를 가져와 UI에 표시
-//                new GetStationNamesTask().execute();
+                if(!isBusSchedule){
+                    new GetBusScheduleTask().execute();
+                    isBusSchedule=true;
+                    getBusScheduleButton.setText("버스 정류장");
+                }else{
+                    new GetStationNamesTask().execute();
+                    isBusSchedule=false;
+                    getBusScheduleButton.setText("버스 시간표");
+                }
             }
         });
     }
@@ -197,6 +264,94 @@ public class CityBus extends AppCompatActivity {
         super.onStop();
         apiExplorer.stop(); // 액티비티 중단 시 스레드 중단
     }
+    private class GetBusScheduleTask extends AsyncTask<Void, Void, BusSchedule> {
+        @Override
+
+        protected BusSchedule doInBackground(Void... voids) {
+            try {
+
+                String busID = BusID.get(index).toString();
+                String apiUrl = "https://api.odsay.com/v1/api/busLaneDetail?lang=&busID=" + busID + "&apiKey=" + MainPage.OdsayAPI_KEY;
+                URL url = new URL(apiUrl);
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                try {int responseCode = urlConnection.getResponseCode();
+                    if (responseCode != HttpURLConnection.HTTP_OK) {
+                        return null;
+                    }
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                    StringBuilder stringBuilder = new StringBuilder();
+                    String line;
+
+                    while ((line = bufferedReader.readLine()) != null) {
+                        stringBuilder.append(line).append("\n");
+                    }
+                    JSONObject jsonResponse = new JSONObject(stringBuilder.toString());
+                    JSONObject result = jsonResponse.getJSONObject("result");
+                    if(result == null){
+                        return null;
+                    }
+                    String firstTime = result.optString("busFirstTime", "N/A");
+                    String lastTime = result.optString("busLastTime", "N/A");
+                    String interval = result.optString("busInterval", "N/A");
+                    BusSchedule busSchedule = new BusSchedule();
+                    busSchedule.setFirstTime(firstTime);
+                    busSchedule.setLastTime(lastTime);
+                    busSchedule.setInterval(interval);
+                    return busSchedule;
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
+                    return null;
+                } finally {
+                    urlConnection.disconnect();
+                }
+            }catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        public ArrayList<String> generateBusSchedule(String busFirstTime, String busLastTime, String busInterval) {
+            // 시간 형식을 파싱하여 Date 객체로 변환
+            SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
+            Date firstTime;
+            Date lastTime;
+            try {
+                firstTime = dateFormat.parse(busFirstTime);
+                lastTime = dateFormat.parse(busLastTime);
+            } catch (ParseException e) {
+                e.printStackTrace();
+                return null;
+            }
+
+            // 운행 간격을 분 단위로 변환
+            int interval = Integer.parseInt(busInterval);
+
+            ArrayList<String> busSchedule = new ArrayList<>();
+            Date currentTime = new Date(firstTime.getTime());
+            while (currentTime.compareTo(lastTime) <= 0) {
+                busSchedule.add(dateFormat.format(currentTime)+"\n");
+                currentTime.setTime(currentTime.getTime() + interval * 60 * 1000);
+            }
+
+            return busSchedule;
+        }
+
+        @Override
+
+        protected void onPostExecute(BusSchedule result) {
+
+
+            if (result != null) {
+                stationNamesListView.setVisibility(View.GONE);
+                ArrayList<String> resultSchedule = generateBusSchedule(result.getFirstTime(), result.getLastTime(), result.getInterval());
+                busScheduleTextView.setText(resultSchedule.toString());
+                busScheduleView.setVisibility(View.VISIBLE);
+                busScheduleTextView.setVisibility(View.VISIBLE);
+            } else {
+                // Handle the case where data retrieval failed
+            }
+        }
+    }
 
     private class GetStationNamesTask extends AsyncTask<Void, Void, BusInfo> {
         @Override
@@ -206,7 +361,7 @@ public class CityBus extends AppCompatActivity {
                 String busID = BusID.get(index).toString();
 
                 // API 호출을 위한 URL
-                String apiUrl = "https://api.odsay.com/v1/api/busLaneDetail?lang=&busID=" + busID + "&apiKey=" + API_KEY;
+                String apiUrl = "https://api.odsay.com/v1/api/busLaneDetail?lang=&busID=" + busID + "&apiKey=" + MainPage.OdsayAPI_KEY;
 
                 URL url = new URL(apiUrl);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
@@ -255,11 +410,16 @@ public class CityBus extends AppCompatActivity {
         protected void onPostExecute(BusInfo result) {
             // UI에 결과를 표시
             if (result != null) {
+                busScheduleView.setVisibility(View.GONE);
+                busScheduleTextView.setVisibility(View.GONE);
+
                 busInfoTextView.setText("Bus No: " + result.getBusNo());
                 Station = result.getStationNames();
                 Log.d("CityBus",result.getStationNames().toString());
                 adapter = new CustomAdapter(CityBus.this, Station, Station);
                 stationNamesListView.setAdapter(adapter);
+
+                stationNamesListView.setVisibility(View.VISIBLE);
             } else {
                 // Handle the case where data retrieval failed
             }
@@ -268,23 +428,4 @@ public class CityBus extends AppCompatActivity {
 }
 
 
-class BusInfo {
-    private String busNo;
-    private ArrayList<String> stationNames;
 
-    public String getBusNo() {
-        return busNo;
-    }
-
-    public void setBusNo(String busNo) {
-        this.busNo = busNo;
-    }
-
-    public ArrayList<String> getStationNames() {
-        return stationNames;
-    }
-
-    public void setStationNames(ArrayList<String> stationNames) {
-        this.stationNames = stationNames;
-    }
-}

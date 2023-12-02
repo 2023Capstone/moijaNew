@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
@@ -28,19 +29,26 @@ public class busPointGPS extends AppCompatActivity{
     private List<Integer> BusID;
     private CustomAdapter adapter; // 커스텀 어댑터
 
+    Parcelable state; // 상태 저장 변수
+
+
+
     // UI 스레드에서 메시지를 처리할 Handler 구현
     private Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
             List<String> nodeNames = apiExplorer.getNodeNames(); // ApiExplorer에서 nodeNames 가져오기
             int totalCount = msg.getData().getInt("totalCount");
-            adapter = new CustomAdapter(busPointGPS.this, nodeNames, nodeNames);
             listView.setAdapter(adapter); // 어댑터 설정
             textViewResult.setText(totalCount + "개의 시내버스가 운행되고 있습니다.");
+
+            if (state != null) { // 리스트뷰 상태가 있는 경우
+                listView.onRestoreInstanceState(state);// 리스트뷰 스크롤 위치 복구
+            }else{state = listView.onSaveInstanceState();}
+
             progressBar.setVisibility(View.GONE);
         }
     };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
