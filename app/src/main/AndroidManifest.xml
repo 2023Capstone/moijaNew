@@ -33,7 +33,9 @@
             android:name=".busPointGPS"
             android:exported="false" />
 
-
+        <activity
+            android:name=".schedule.CityBus"
+            android:exported="true" />
 
         <activity
             android:name="com.example.moija.IntroActivity"
