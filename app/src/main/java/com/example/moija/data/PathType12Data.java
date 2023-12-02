@@ -18,6 +18,7 @@ public class PathType12Data {
 
 
 
+
     // PathData를 저장한다.
     private List<PathData> api1Paths = new ArrayList<>();
     private List<PathData> api2Paths = new ArrayList<>();
@@ -294,21 +295,21 @@ public class PathType12Data {
                 .append("    끝: ").append(subPath.endName).append("\n");
     }
 
-        public String toStringApi1() {
-            StringBuilder sb = new StringBuilder();
-            for (PathData pathData : api1Paths) {
-                sb.append(pathData.toString()).append("\n");
-            }
-            return sb.toString();
+    public String toStringApi1() {
+        StringBuilder sb = new StringBuilder();
+        for (PathData pathData : api1Paths) {
+            sb.append(pathData.toString()).append("\n");
         }
+        return sb.toString();
+    }
 
-        public String toStringApi2() {
-            StringBuilder sb = new StringBuilder();
-            for (PathData pathData : api2Paths) {
-                sb.append(pathData.toString()).append("\n");
-            }
-            return sb.toString();
+    public String toStringApi2() {
+        StringBuilder sb = new StringBuilder();
+        for (PathData pathData : api2Paths) {
+            sb.append(pathData.toString()).append("\n");
         }
+        return sb.toString();
+    }
 
     @Override
     public String toString() {

@@ -27,6 +27,7 @@ import androidx.fragment.app.Fragment;
 import com.example.moija.api.KakaoApi;
 import com.example.moija.api.ODsayService;
 import com.example.moija.data.CallApiData;
+import com.example.moija.data.CombinedPathData;
 import com.example.moija.data.OdsayData;
 import com.example.moija.data.PathInfo;
 import com.example.moija.data.PathType12Data;
@@ -309,7 +310,14 @@ public class MainPage extends AppCompatActivity {
         searchPathListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                CombinedPathData clickedItem = listViewadapter.getItem(position);
 
+                // 클릭된 데이터를 SelectData 객체나 다른 메커니즘에 저장
+                SelectData selectData = new SelectData();
+                selectData.setPathData(clickedItem); // CombinedPathData 객체 저장
+
+                // 필요에 따라 selectData 객체를 다른 액티비티나 프래그먼트로 전달하거나 사용
+                // 예: Intent를 사용하여 다른 액티비티에 selectData 객체 전달
             }
         });
 
@@ -811,28 +819,28 @@ public class MainPage extends AppCompatActivity {
                                     }
                                     count3++; // 처리한 Path 객체의 수 증가
                                     pathType12Data.addApi2Path(pathData);
-                                    }
+                                }
                                 Log.d("Odsay", "api1Data확인\n" + pathType12Data.toStringApi2());
-                                    if (count3 >= 3) {
-                                        break; // 최대 3개의 Path 객체만 처리하고 루프를 중단
-                                    }
+                                if (count3 >= 3) {
+                                    break; // 최대 3개의 Path 객체만 처리하고 루프를 중단
+                                }
 
-                                    Log.d("Odsay-api", "데이터확인12" + pathInfoStrings.toString());
+                                Log.d("Odsay-api", "데이터확인12" + pathInfoStrings.toString());
                             }
                         }
                     }
 
-                    Log.d("ODsay-end", "16. 데이터 넘어갔나?");
+                    List<CombinedPathData> combinedPathDataList = new ArrayList<>();
                     int minSize = Math.min(pathType12Data.getApi1PathsSize(), pathType12Data.getApi2PathsSize());
                     for (int i = 0; i < minSize; i++) {
-                        String pathDataString = pathType12Data.getIndividualPathString(i);
-                        pathInfoStrings.add(pathDataString);
+                        combinedPathDataList.add(new CombinedPathData(
+                                pathType12Data.getApi1Paths().get(i),
+                                pathType12Data.getApi2Paths().get(i),
+                                pathType12Data.getTotalTime2(),
+                                pathType12Data.getMidStartName(),
+                                pathType12Data.getMidEndName()
+                        ));
                     }
-                    Log.d("Odsay", "api1Data확인\n" + pathType12Data.toString());
-
-                    listViewadapter.clear();
-                    listViewadapter.addAll(pathInfoStrings);
-                    listViewadapter.notifyDataSetChanged();
                 }
 
             @Override
