@@ -51,16 +51,18 @@ public class CityBus extends AppCompatActivity {
         public void handleMessage(Message msg) {
             List<String> nodeNames = apiExplorer.getNodeNames(); // ApiExplorer에서 nodeNames 가져오기
             int totalCount = msg.getData().getInt("totalCount");
-            adapter = new CustomAdapter(CityBus.this, Station, nodeNames);
-            stationNamesListView.setAdapter(adapter);
-            Log.d("hMessage", Station.toString());
-            Log.d("hMessage", nodeNames.toString());
+            if(Station!=null && nodeNames!=null) {
+                adapter = new CustomAdapter(CityBus.this, Station, nodeNames);
+                Log.d("hMessage", Station.toString());
+                Log.d("hMessage", nodeNames.toString());
+                stationNamesListView.setAdapter(adapter);
+            }
         }
     };
 
     // TODO: 사용자가 발급받은 odsay lab API 키를 입력하세요.
 //    private static final String API_KEY = "fXCWmI16V2ggA9Y9OhTrVMSiPw/YHkDXoHmKjpLG7l8";
-    private static final String API_KEY = "Bk3FXTpa4bUs3dxTOsUxSFvLGFYhTaoBDPKfSPOLdwI";
+    private static final String API_KEY = "6WN7AcWOFR1SJnfFVFKVtoIBidc4AoB2nj6qPmjXbPc";
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -177,6 +179,7 @@ public class CityBus extends AppCompatActivity {
             if (result != null) {
                 busInfoTextView.setText("Bus No: " + result.getBusNo());
                 Station = result.getStationNames();
+                Log.d("CityBus",result.getStationNames().toString());
                 adapter = new CustomAdapter(CityBus.this, Station, Station);
                 stationNamesListView.setAdapter(adapter);
             } else {

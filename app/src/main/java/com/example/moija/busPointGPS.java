@@ -60,6 +60,7 @@ public class busPointGPS extends AppCompatActivity{
         apiExplorer = new ApiExplorer(handler);  // Handler 전달
         apiExplorer.BusCityCode=BusCityCode;
         apiExplorer.BusLocalBlIDs=BusLocalBlID;
+
         progressBar.setVisibility(View.VISIBLE); // 데이터 로딩 전 프로그레스 바 표시
         // ApiExplorer 스레드 시작
         new Thread(apiExplorer).start();

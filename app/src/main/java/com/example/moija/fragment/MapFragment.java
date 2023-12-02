@@ -307,9 +307,7 @@ public class MapFragment extends Fragment {
                 addBusInfo(R.drawable.intercity_bus, bus.second, addArrow);
             }
         }
-        Collections.reverse(BusLocalBlID);
-        Collections.reverse(BusCityCode);
-        Collections.reverse(BusID);
+
         Log.d("youlog",BusOrder.toString());
         Log.d("youlog",BusNo.toString());
         Log.d("youlog",busList.toString());

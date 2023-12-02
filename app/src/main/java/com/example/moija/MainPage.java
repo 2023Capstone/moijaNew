@@ -56,7 +56,9 @@ public class MainPage extends AppCompatActivity {
     public static final String API_KEY = "ab4624b190ebccd6369144de2502ad14";
 
     public boolean pathsearched=false;
-    public static final String OdsayAPI_KEY = "Bk3FXTpa4bUs3dxTOsUxSFvLGFYhTaoBDPKfSPOLdwI";
+    /*예비 fXCWmI16V2ggA9Y9OhTrVMSiPw/YHkDXoHmKjpLG7l8
+    * 	6WN7AcWOFR1SJnfFVFKVtoIBidc4AoB2nj6qPmjXbPc*/
+    public static final String OdsayAPI_KEY = "6WN7AcWOFR1SJnfFVFKVtoIBidc4AoB2nj6qPmjXbPc";
     //api 기본 URL
     public static final String BASE_URL = "https://dapi.kakao.com/";
     public static final String BASE_URL2 = "https://api.odsay.com/";
@@ -723,15 +725,26 @@ public class MainPage extends AppCompatActivity {
                             List<Integer> busCityCodes = path.getSubPath().get(i).getLane().stream()
                                     .map(OdsayData.Lane::getBusCityCode)
                                     .collect(Collectors.toList());
+                            Log.d("dddasdf",startorend+busIDs.toString()+busLocalBlIDs.toString()+busCityCodes.toString());
                             pathInfo.setSubPath(busNos,busIDs, busLocalBlIDs,busCityCodes,path.getSubPath().get(i).getStartName(), path.getSubPath().get(i).getEndName(), path.getSubPath().get(i).getStartX(), path.getSubPath().get(i).getStartY(), path.getSubPath().get(i).getEndX(), path.getSubPath().get(i).getEndY(), path.getSubPath().get(i).getTrafficType());
                             count++;
                         }
+                        Gson gson=new Gson();
+                        Log.d("dddasdf2",gson.toJson(pathInfo));
                     }
                     if (startorend.equals("start")) {
+                        Gson gson=new Gson();
+                        Log.d("dddasdf3","Start"+gson.toJson(pathInfo));
                         myPathInfo.addPathinfo(pathInfo, 0);
+                        Log.d("dddasdf3","Startplus"+gson.toJson(myPathInfo));
                     } else if (startorend.equals("end")) {
-                        myPathInfo.addPathinfo(pathInfo, myPathInfo.getBusNos().size());
+                        Gson gson=new Gson();
+
+                        Log.d("dddasdf3","End"+gson.toJson(pathInfo));
+                        myPathInfo.addPathinfo(pathInfo, 1);
                         pathInfoList.add(myPathInfo);
+
+                        Log.d("dddasdf3","Endplus"+gson.toJson(myPathInfo));
                     }
 
                     if (count >= 3) {
