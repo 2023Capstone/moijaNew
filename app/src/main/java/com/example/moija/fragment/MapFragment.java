@@ -47,6 +47,7 @@ import com.kakao.vectormap.label.LabelStyles;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MapFragment extends Fragment {
@@ -276,12 +277,12 @@ public class MapFragment extends Fragment {
                 BusCityCode.add(Selectedpath.getBusCityCodes().get(blidcitycodeindex).get(0));
                 BusID.add(Selectedpath.getBusIDs().get(busidindex).get(0));
                 blidcitycodeindex++;
-                busidindex++;
+                busidindex+=3;
             }else if(BusOrder.get(i)==6){
                 BusLocalBlID.add("시외버스");
                 BusID.add(0);
                 BusCityCode.add(0);
-                busidindex++;
+
             }
         }
         for(int i=0; i<BusOrder.size();i++){
@@ -306,6 +307,9 @@ public class MapFragment extends Fragment {
                 addBusInfo(R.drawable.intercity_bus, bus.second, addArrow);
             }
         }
+        Collections.reverse(BusLocalBlID);
+        Collections.reverse(BusCityCode);
+        Collections.reverse(BusID);
         Log.d("youlog",BusOrder.toString());
         Log.d("youlog",BusNo.toString());
         Log.d("youlog",busList.toString());

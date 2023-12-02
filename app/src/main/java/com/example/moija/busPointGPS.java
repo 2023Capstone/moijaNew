@@ -36,7 +36,6 @@ public class busPointGPS extends AppCompatActivity{
             int totalCount = msg.getData().getInt("totalCount");
             adapter = new CustomAdapter(busPointGPS.this, nodeNames, nodeNames);
             listView.setAdapter(adapter); // 어댑터 설정
-
             textViewResult.setText(totalCount + "개의 시내버스가 운행되고 있습니다.");
             progressBar.setVisibility(View.GONE);
         }

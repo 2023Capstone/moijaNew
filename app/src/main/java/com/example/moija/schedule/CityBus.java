@@ -45,6 +45,7 @@ public class CityBus extends AppCompatActivity {
     private List<Integer> BusCityCode;
     private List<String> BusLocalBlID;
 
+    private List<Integer> BusID;
     private Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
@@ -75,6 +76,7 @@ public class CityBus extends AppCompatActivity {
         MapFragment.BusData busData = (MapFragment.BusData) intent.getSerializableExtra("key");
         BusCityCode = busData.getIntegerList();
         BusLocalBlID = busData.getBusLocalBlID();
+        BusID=busData.getBusID();
         Log.d("yourlog", BusCityCode.toString());
         Log.d("yourlog", BusLocalBlID.toString());
         apiExplorer = new ApiExplorer(handler);  // Handler 전달
@@ -121,7 +123,7 @@ public class CityBus extends AppCompatActivity {
         protected BusInfo doInBackground(Void... voids) {
             try {
                 // TODO: 여기에 버스 노선 상세 조회에서 얻은 busID를 입력하세요.
-                String busID = "2040148";
+                String busID = BusID.get(0).toString();
 
                 // API 호출을 위한 URL
                 String apiUrl = "https://api.odsay.com/v1/api/busLaneDetail?lang=&busID=" + busID + "&apiKey=" + API_KEY;
@@ -174,8 +176,6 @@ public class CityBus extends AppCompatActivity {
             // UI에 결과를 표시
             if (result != null) {
                 busInfoTextView.setText("Bus No: " + result.getBusNo());
-//                ArrayAdapter<String> adapter = new ArrayAdapter<>(CityBus.this, android.R.layout.simple_list_item_1, result.getStationNames());
-//                stationNamesListView.setAdapter(adapter);
                 Station = result.getStationNames();
                 adapter = new CustomAdapter(CityBus.this, Station, Station);
                 stationNamesListView.setAdapter(adapter);

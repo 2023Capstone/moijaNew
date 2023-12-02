@@ -5,6 +5,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.example.moija.schedule.CityBus;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -39,6 +41,7 @@ public class ApiExplorer implements Runnable {
     private Map<Integer, Integer> cityCodes;
 
 
+    public CityBus cityBus;
     private List<String> nodeNames;
     private int totalCount;
 
@@ -173,10 +176,9 @@ public class ApiExplorer implements Runnable {
                     nodeNames.add(nodenm);
                 }
             }
-
+            Log.d("ApiLog",nodeNames.toString());
             String totalCountStr = doc.getElementsByTagName("totalCount").item(0).getTextContent();
             totalCount = Integer.parseInt(totalCountStr);
-
         } catch (ParserConfigurationException | SAXException | NumberFormatException e) {
             e.printStackTrace();
         }
