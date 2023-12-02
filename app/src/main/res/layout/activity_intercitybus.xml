@@ -164,9 +164,9 @@
             android:id="@+id/busScheduleTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="버스일정"
             android:textAlignment="center"
-            android:textSize="40dp"
-            android:text="버스일정"/>
+            android:textSize="40dp" />
 
     </ScrollView>
 

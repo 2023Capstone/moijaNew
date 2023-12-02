@@ -30,7 +30,7 @@ public class CityBus extends AppCompatActivity {
     private ListView stationNamesListView;
 
     // TODO: 사용자가 발급받은 odsay lab API 키를 입력하세요.
-    private static final String API_KEY = "fXCWmI16V2ggA9Y9OhTrVMSiPw/YHkDXoHmKjpLG7l8";
+    private static final String API_KEY = "Bk3FXTpa4bUs3dxTOsUxSFvLGFYhTaoBDPKfSPOLdwI";
 
     @Override
 
@@ -68,7 +68,6 @@ public class CityBus extends AppCompatActivity {
             try {
                 // TODO: 여기에 버스 노선 상세 조회에서 얻은 busID를 입력하세요.
                 String busID = "2040148";
-
                 // API 호출을 위한 URL
                 String apiUrl = "https://api.odsay.com/v1/api/busLaneDetail?lang=&busID=" + busID + "&apiKey=" + API_KEY;
 
@@ -128,7 +127,6 @@ public class CityBus extends AppCompatActivity {
         }
     }
 }
-
 
 class BusInfo {
     private String busNo;

@@ -24,6 +24,8 @@ public class busPointGPS extends AppCompatActivity{
     private ListView listView;
     private List<Integer> BusCityCode;
     private List<String> BusLocalBlID;
+
+    private List<Integer> BusID;
     private CustomAdapter adapter; // 커스텀 어댑터
 
     // UI 스레드에서 메시지를 처리할 Handler 구현
@@ -52,8 +54,10 @@ public class busPointGPS extends AppCompatActivity{
         MapFragment.BusData busData = (MapFragment.BusData) intent.getSerializableExtra("key");
         BusCityCode= busData.getIntegerList();
         BusLocalBlID = busData.getBusLocalBlID();
+        BusID=busData.getBusID();
         Log.d("yourlog",BusCityCode.toString());
         Log.d("yourlog",BusLocalBlID.toString());
+        Log.d("yourlog",BusID.toString());
         apiExplorer = new ApiExplorer(handler);  // Handler 전달
         apiExplorer.BusCityCode=BusCityCode;
         apiExplorer.BusLocalBlIDs=BusLocalBlID;

@@ -64,6 +64,7 @@ public class MapFragment extends Fragment {
     public List<String> BusNo=new ArrayList<>();
     public List<String> BusLocalBlID=new ArrayList<>();
 
+    public List<Integer> BusID=new ArrayList<>();
     public List<Integer> BusCityCode=new ArrayList<>();
     public List<Integer> BusOrder=new ArrayList<>();
     public PathInfo Selectedpath;
@@ -78,9 +79,11 @@ public class MapFragment extends Fragment {
     public static class BusData implements Serializable {
         private List<Integer> integerList;
         private List<String> busLocalBlID;
-        public BusData(List<Integer> integerList,List<String> busLocalBlID) {
+        private List<Integer> busID;
+        public BusData(List<Integer> integerList,List<String> busLocalBlID,List<Integer> busID) {
             this.integerList = integerList;
             this.busLocalBlID = busLocalBlID;
+            this.busID=busID;
         }
 
         public List<Integer> getIntegerList() {
@@ -89,6 +92,7 @@ public class MapFragment extends Fragment {
         public List<String> getBusLocalBlID() {
             return busLocalBlID;
         }
+        public List<Integer> getBusID(){return busID;}
     }
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -173,7 +177,7 @@ public class MapFragment extends Fragment {
         busInfoLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BusData busData = new BusData(BusCityCode,BusLocalBlID);
+                BusData busData = new BusData(BusCityCode,BusLocalBlID,BusID);
                 // 인텐트 생성 및 액티비티 시작
                 Intent intent2 = new Intent(getActivity(), busPointGPS.class);
                 intent2.putExtra("key", busData);
@@ -243,12 +247,15 @@ public class MapFragment extends Fragment {
     //오디세이 결과값에 따라 그리도록 수정 필요함
     public void Draw(){
 
-        int j=0;
+        int blidcitycodeindex=0;
+        int busidindex=0;
         busList.clear();
         BusNo.clear();
         BusOrder.clear();
         BusCityCode.clear();
         BusLocalBlID.clear();
+        BusID.clear();
+        Log.d("busids",Selectedpath.getBusIDs().toString());
         for(int i=0; i<Selectedpath.getBusNos().size(); i++)
         {
             if(!Selectedpath.getBusNos().get(i).contains("도보")){
@@ -264,12 +271,16 @@ public class MapFragment extends Fragment {
         for(int i=0; i<BusOrder.size();i++)
         {
             if(BusOrder.get(i)==2){
-                BusLocalBlID.add(Selectedpath.getBusLocalBlIDs().get(j).get(0));
-                BusCityCode.add(Selectedpath.getBusCityCodes().get(j).get(0));
-                j++;
+                BusLocalBlID.add(Selectedpath.getBusLocalBlIDs().get(blidcitycodeindex).get(0));
+                BusCityCode.add(Selectedpath.getBusCityCodes().get(blidcitycodeindex).get(0));
+                BusID.add(Selectedpath.getBusIDs().get(busidindex).get(0));
+                blidcitycodeindex++;
+                busidindex++;
             }else if(BusOrder.get(i)==6){
                 BusLocalBlID.add("시외버스");
+                BusID.add(0);
                 BusCityCode.add(0);
+                busidindex++;
             }
         }
         for(int i=0; i<BusOrder.size();i++){
@@ -298,6 +309,7 @@ public class MapFragment extends Fragment {
         Log.d("youlog",BusNo.toString());
         Log.d("youlog",busList.toString());
         Log.d("youlog",BusLocalBlID.toString());
+        Log.d("youlog",BusID.toString());
         Log.d("youlog",BusCityCode.toString());
         for(int i = 0; i< Selectedpath.getBusNos().size(); i++)
         {

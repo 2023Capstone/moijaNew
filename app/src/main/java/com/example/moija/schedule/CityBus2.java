@@ -29,7 +29,7 @@ public class CityBus2 extends AppCompatActivity {
 
     private TextView busScheduleTextView;
 
-    private static final String API_KEY = "fXCWmI16V2ggA9Y9OhTrVMSiPw/YHkDXoHmKjpLG7l8";
+    private static final String API_KEY = "Bk3FXTpa4bUs3dxTOsUxSFvLGFYhTaoBDPKfSPOLdwI";
 
     @Override
 

@@ -59,7 +59,6 @@ public class MainPage extends AppCompatActivity {
     public static final String OdsayAPI_KEY = "Bk3FXTpa4bUs3dxTOsUxSFvLGFYhTaoBDPKfSPOLdwI";
     //api 기본 URL
     public static final String BASE_URL = "https://dapi.kakao.com/";
-
     public static final String BASE_URL2 = "https://api.odsay.com/";
     public static final String OdsayBASE_URL = "https://api.odsay.com/";
     private ImageButton mylocbtn;
@@ -252,12 +251,10 @@ public class MainPage extends AppCompatActivity {
                 mf.Selectedpath =selectedpath;
                 mf.BusOrder.clear();
                 mf.BusNo.clear();
-
+                mf.BusID.clear();
                 mf.busInfoLayout.removeAllViews();
-
                 if(mf.routeDrawer!=null) {
                     mf.routeDrawer.clearRouteLines();
-
                     mf.Draw();
                 }else if(mf.routeDrawer==null){
                     return;
