@@ -30,6 +30,7 @@ import com.example.moija.busPointGPS;
 import com.example.moija.data.PathInfo;
 import com.example.moija.map.Mylocation;
 import com.example.moija.map.RouteDrawer;
+import com.example.moija.schedule.CityBus;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.kakao.vectormap.KakaoMap;
 import com.kakao.vectormap.KakaoMapReadyCallback;
@@ -175,7 +176,7 @@ public class MapFragment extends Fragment {
             public void onClick(View v) {
                 BusData busData = new BusData(BusCityCode,BusLocalBlID);
                 // 인텐트 생성 및 액티비티 시작
-                Intent intent2 = new Intent(getActivity(), busPointGPS.class);
+                Intent intent2 = new Intent(getActivity(), CityBus.class);
                 intent2.putExtra("key", busData);
                 startActivity(intent2);
             }

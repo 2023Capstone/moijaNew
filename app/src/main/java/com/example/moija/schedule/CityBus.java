@@ -3,16 +3,26 @@ package com.example.moija.schedule;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.moija.ApiExplorer;
+import com.example.moija.CustomAdapter;
 import com.example.moija.R;
+import com.example.moija.busPointGPS;
+import com.example.moija.data.PathInfo;
+import com.example.moija.fragment.MapFragment;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -22,12 +32,30 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 public class CityBus extends AppCompatActivity {
     private ImageButton backBtn;
     private Button getStationNamesButton;
     private TextView busInfoTextView;
     private ListView stationNamesListView;
+    private CustomAdapter adapter; // 커스텀 어댑터
+    private ApiExplorer apiExplorer;
+    ArrayList Station;
+    private List<Integer> BusCityCode;
+    private List<String> BusLocalBlID;
+
+    private Handler handler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message msg) {
+            List<String> nodeNames = apiExplorer.getNodeNames(); // ApiExplorer에서 nodeNames 가져오기
+            int totalCount = msg.getData().getInt("totalCount");
+            adapter = new CustomAdapter(CityBus.this, Station, nodeNames);
+            stationNamesListView.setAdapter(adapter);
+            Log.d("hMessage", Station.toString());
+            Log.d("hMessage", nodeNames.toString());
+        }
+    };
 
     // TODO: 사용자가 발급받은 odsay lab API 키를 입력하세요.
 //    private static final String API_KEY = "fXCWmI16V2ggA9Y9OhTrVMSiPw/YHkDXoHmKjpLG7l8";
@@ -43,6 +71,22 @@ public class CityBus extends AppCompatActivity {
         busInfoTextView = findViewById(R.id.busInfoTextView);
         stationNamesListView = findViewById(R.id.stationNamesListView);
 
+        Intent intent = getIntent();
+        MapFragment.BusData busData = (MapFragment.BusData) intent.getSerializableExtra("key");
+        BusCityCode = busData.getIntegerList();
+        BusLocalBlID = busData.getBusLocalBlID();
+        Log.d("yourlog", BusCityCode.toString());
+        Log.d("yourlog", BusLocalBlID.toString());
+        apiExplorer = new ApiExplorer(handler);  // Handler 전달
+        apiExplorer.BusCityCode = BusCityCode;
+        apiExplorer.BusLocalBlIDs = BusLocalBlID;
+
+        Log.d("hMessage", BusCityCode.toString());
+        Log.d("hMessage", BusLocalBlID.toString());
+
+        new Thread(apiExplorer).start();
+        new GetStationNamesTask().execute();
+
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -55,12 +99,22 @@ public class CityBus extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // AsyncTask를 사용하여 stationName 데이터를 가져와 UI에 표시
-                new GetStationNamesTask().execute();
+//                new GetStationNamesTask().execute();
             }
         });
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        apiExplorer.start(); // 액티비티 시작 시 스레드 시작
+    }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        apiExplorer.stop(); // 액티비티 중단 시 스레드 중단
+    }
 
     private class GetStationNamesTask extends AsyncTask<Void, Void, BusInfo> {
         @Override
@@ -120,7 +174,10 @@ public class CityBus extends AppCompatActivity {
             // UI에 결과를 표시
             if (result != null) {
                 busInfoTextView.setText("Bus No: " + result.getBusNo());
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(CityBus.this, android.R.layout.simple_list_item_1, result.getStationNames());
+//                ArrayAdapter<String> adapter = new ArrayAdapter<>(CityBus.this, android.R.layout.simple_list_item_1, result.getStationNames());
+//                stationNamesListView.setAdapter(adapter);
+                Station = result.getStationNames();
+                adapter = new CustomAdapter(CityBus.this, Station, Station);
                 stationNamesListView.setAdapter(adapter);
             } else {
                 // Handle the case where data retrieval failed
