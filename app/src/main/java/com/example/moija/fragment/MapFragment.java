@@ -82,10 +82,12 @@ public class MapFragment extends Fragment {
         private List<Integer> integerList;
         private List<String> busLocalBlID;
         private List<Integer> busID;
-        public BusData(List<Integer> integerList,List<String> busLocalBlID,List<Integer> busID) {
+        private List<String> BusNo;
+        public BusData(List<Integer> integerList,List<String> busLocalBlID,List<Integer> busID, List<String> BusNo) {
             this.integerList = integerList;
             this.busLocalBlID = busLocalBlID;
             this.busID=busID;
+            this.BusNo=BusNo;
         }
 
         public List<Integer> getIntegerList() {
@@ -95,6 +97,7 @@ public class MapFragment extends Fragment {
             return busLocalBlID;
         }
         public List<Integer> getBusID(){return busID;}
+        public List<String> getBusNo() { return BusNo;}
     }
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -179,11 +182,18 @@ public class MapFragment extends Fragment {
         busInfoLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BusData busData = new BusData(BusCityCode,BusLocalBlID,BusID);
+                BusData busData = new BusData(BusCityCode,BusLocalBlID,BusID,BusNo);
                 // 인텐트 생성 및 액티비티 시작
-                Intent intent2 = new Intent(getActivity(), CityBus.class);
-                intent2.putExtra("key", busData);
-                startActivity(intent2);
+                if(BusOrder.get(0) == 2) {
+                    Intent intent2 = new Intent(getActivity(), CityBus.class);
+                    intent2.putExtra("key", busData);
+                    intent2.putExtra("index", 0);
+                    startActivity(intent2);
+                }else if(BusOrder.get(0) == 6) {
+                    Intent intent2 = new Intent(getActivity(), CityBus.class);
+                    intent2.putExtra("key", busData);
+                    startActivity(intent2);
+                }
             }
         });
         return rootview;
