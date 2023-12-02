@@ -31,30 +31,43 @@
         android:layout_gravity="center"
         android:src="@drawable/arrow3" />
 
-    <Button
-        android:id="@+id/getStationNamesButton"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/busLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="300dp"
-        android:layout_marginTop="10dp"
+        android:layout_below="@id/toolbar"
+        android:orientation="horizontal">
+    </LinearLayout>
 
-        android:text="버스 노선" />
-
-    <TextView
-        android:id="@+id/busInfoTextView"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/info"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/getStationNamesButton"
-        android:layout_marginTop="16dp"
-        android:text=""
-        android:textSize="18sp"
-        android:textColor="@android:color/black"/>
+        android:layout_below="@id/busLayout"
+        android:orientation="horizontal"
+        android:weightSum="1">
+        <TextView
+            android:id="@+id/busInfoTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_weight="0.95"
+            android:text=""
+            android:textSize="18sp"
+            android:textColor="@android:color/black"/>
+        <Button
+            android:id="@+id/getStationNamesButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.05"
+            android:text="버스 시간표" />
+    </LinearLayout>
 
     <ListView
         android:id="@+id/stationNamesListView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/busInfoTextView"
+        android:layout_below="@id/info"
         android:layout_marginTop="16dp"
         android:divider="@android:color/darker_gray"
         android:dividerHeight="1dp"/>
