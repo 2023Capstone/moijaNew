@@ -33,6 +33,7 @@ import com.example.moija.map.RouteDrawer;
 import com.example.moija.schedule.CityBus;
 import com.example.moija.schedule.IntercityBus;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
 import com.kakao.vectormap.KakaoMap;
 import com.kakao.vectormap.KakaoMapReadyCallback;
 import com.kakao.vectormap.LatLng;
@@ -194,13 +195,16 @@ public class MapFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 BusData busData = new BusData(BusCityCode,BusLocalBlID,BusID,BusNo,StartID,EndID);
+                Gson gson=new Gson();
+                String bbusData=gson.toJson(busData);
+                Log.d("bbusData",bbusData);
                 // 인텐트 생성 및 액티비티 시작
                 if(BusOrder.get(0) == 2) {
                     Intent intent2 = new Intent(getActivity(), CityBus.class);
                     intent2.putExtra("key", busData);
                     intent2.putExtra("index", 0);
                     startActivity(intent2);
-                }else if(BusOrder.get(0) == 6) {
+                }else if(BusOrder.get(0) == 6 || BusOrder.get(0)==5) {
                     Intent intent2 = new Intent(getActivity(), IntercityBus.class);
                     intent2.putExtra("key", busData);
                     intent2.putExtra("index", 0);
@@ -281,7 +285,8 @@ public class MapFragment extends Fragment {
         BusID.clear();
         StartID.clear();
         EndID.clear();
-        Log.d("busids",Selectedpath.getBusIDs().toString());
+        Gson gson=new Gson();
+        Log.d("selectedpath",gson.toJson(Selectedpath));
         for(int i=0; i<Selectedpath.getBusNos().size(); i++)
         {
             if(!Selectedpath.getBusNos().get(i).contains("도보")){
@@ -290,7 +295,7 @@ public class MapFragment extends Fragment {
         }
         for(int i=0; i<Selectedpath.getTrafficType().size(); i++)
         {
-            if(Selectedpath.getTrafficType().get(i).equals(2) || Selectedpath.getTrafficType().get(i).equals(6)){
+            if(Selectedpath.getTrafficType().get(i).equals(2) || Selectedpath.getTrafficType().get(i).equals(6) || Selectedpath.getTrafficType().get(i).equals(5)){
                 BusOrder.add(Selectedpath.getTrafficType().get(i));
             }
         }
@@ -306,8 +311,13 @@ public class MapFragment extends Fragment {
                 BusLocalBlID.add("시외버스");
                 BusID.add(0);
                 BusCityCode.add(0);
+            }else if(BusOrder.get(i)==5){
+                BusLocalBlID.add("고속버스");
+                BusID.add(0);
+                BusCityCode.add(0);
             }
         }
+        Log.d("selectedpath",BusOrder.toString());
         for(int i=0; i<BusOrder.size();i++){
             if(BusOrder.get(i)==2){
                 busList.add(new Pair<>("city",BusNo.get(i).toString()));
@@ -315,6 +325,8 @@ public class MapFragment extends Fragment {
             }
             else if(BusOrder.get(i)==6){
                 busList.add(new Pair<>("intercity","시외버스"));
+            }else if(BusOrder.get(i)==5){
+                busList.add(new Pair<>("intercity","고속버스"));
             }
         }
         for(int i=0; i<Selectedpath.getStartid().size();i++){
@@ -333,14 +345,13 @@ public class MapFragment extends Fragment {
                 addBusInfo(R.drawable.intercity_bus, bus.second, addArrow);
             }
         }
-
-       Log.d("startidendid",StartID+"-"+EndID);
         for(int i = 0; i< Selectedpath.getBusNos().size(); i++)
         {
             if(routeDrawer!=null) {
                 routeDrawer.draw(Selectedpath.getstartx().get(i), Selectedpath.getstarty().get(i), Selectedpath.getendx().get(i), Selectedpath.getendy().get(i), Selectedpath.getTrafficType().get(i));
             }
         }
+        Log.d("busList",busList.toString());
         AddGoalMarker();
         AddStartMarker();
         //카메라를 현재 위치로 바꿈

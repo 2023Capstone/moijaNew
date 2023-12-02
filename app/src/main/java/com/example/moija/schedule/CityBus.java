@@ -324,8 +324,16 @@ public class CityBus extends AppCompatActivity {
             }
 
             // 운행 간격을 분 단위로 변환
-            int interval = Integer.parseInt(busInterval);
-
+            int interval;
+            if (busInterval.contains("회 -")) {
+                // 횟수로 주어진 경우
+                int count = Integer.parseInt(busInterval.split("회 -")[0].trim());
+                interval = (int) ((lastTime.getTime() - firstTime.getTime()) / count / (60 * 1000));
+                generateBusSchedule(busFirstTime,busLastTime,Integer.toString(interval));
+            } else {
+                // 분 단위로 주어진 경우
+                interval = Integer.parseInt(busInterval);
+            }
             ArrayList<String> busSchedule = new ArrayList<>();
             Date currentTime = new Date(firstTime.getTime());
             while (currentTime.compareTo(lastTime) <= 0) {
@@ -342,9 +350,12 @@ public class CityBus extends AppCompatActivity {
 
 
             if (result != null) {
+                busScheduleTextView.setText("");
                 stationNamesListView.setVisibility(View.GONE);
                 ArrayList<String> resultSchedule = generateBusSchedule(result.getFirstTime(), result.getLastTime(), result.getInterval());
-                busScheduleTextView.setText(resultSchedule.toString());
+                for(String resultschedule:resultSchedule){
+                    busScheduleTextView.append(resultschedule);
+                }
                 busScheduleView.setVisibility(View.VISIBLE);
                 busScheduleTextView.setVisibility(View.VISIBLE);
             } else {
@@ -357,7 +368,6 @@ public class CityBus extends AppCompatActivity {
         @Override
         protected BusInfo doInBackground(Void... voids) {
             try {
-                // TODO: 여기에 버스 노선 상세 조회에서 얻은 busID를 입력하세요.
                 String busID = BusID.get(index).toString();
 
                 // API 호출을 위한 URL

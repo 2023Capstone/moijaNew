@@ -171,12 +171,15 @@ public class IntercityBus extends AppCompatActivity {
         @Override
         protected List<String> doInBackground(Void... params) {
             List<String> scheduleList = new ArrayList<>();
-
+            String apiUrl=null;
             try {
-
-                String apiUrl = "https://api.odsay.com/v1/api/intercityServiceTime?apiKey=" + MainPage.OdsayAPI_KEY +
-                        "&startStationID=" + startStationId + "&endStationID=" + destStationId;
-
+                if(BusNo.get(index).equals("시외버스")) {
+                    apiUrl = "https://api.odsay.com/v1/api/intercityServiceTime?apiKey=" + MainPage.OdsayAPI_KEY +
+                            "&startStationID=" + startStationId + "&endStationID=" + destStationId;
+                }else if(BusNo.get(index).equals("고속버스")){
+                    apiUrl="https://api.odsay.com/v1/api/expressServiceTime?apiKey=" + MainPage.OdsayAPI_KEY +
+                            "&startStationID=" + startStationId + "&endStationID=" + destStationId;
+                }
                 URL url = new URL(apiUrl);
 
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();

@@ -733,29 +733,19 @@ public class MainPage extends AppCompatActivity {
                             List<Integer> busCityCodes = path.getSubPath().get(i).getLane().stream()
                                     .map(OdsayData.Lane::getBusCityCode)
                                     .collect(Collectors.toList());
-
-                            Log.d("dddasdf",startorend+busIDs.toString()+busLocalBlIDs.toString()+busCityCodes.toString());
                             pathInfo.setSubPath(busNos,busIDs, busLocalBlIDs,busCityCodes,path.getSubPath().get(i).getStartName(), path.getSubPath().get(i).getEndName(), path.getSubPath().get(i).getStartX(), path.getSubPath().get(i).getStartY(), path.getSubPath().get(i).getEndX(), path.getSubPath().get(i).getEndY(), path.getSubPath().get(i).getTrafficType());
                             count++;
                         }
                         Gson gson=new Gson();
-                        Log.d("dddasdf2",gson.toJson(pathInfo));
                     }
 
                     if (startorend.equals("start")) {
-                        Gson gson=new Gson();
-                        Log.d("dddasdf3","Start"+gson.toJson(pathInfo));
                         myPathInfo.addPathinfo(pathInfo, 0);
-                        Log.d("dddasdf3","Startplus"+gson.toJson(myPathInfo));
                         myPathInfo.setStartEndID(startid,endid,"start");
                     } else if (startorend.equals("end")) {
-                        Gson gson=new Gson();
 
-                        Log.d("dddasdf3","End"+gson.toJson(pathInfo));
                         myPathInfo.addPathinfo(pathInfo, 1);
                         pathInfoList.add(myPathInfo);
-
-                        Log.d("dddasdf3","Endplus"+gson.toJson(myPathInfo));
                         myPathInfo.setStartEndID(startid,endid,"end");
                     }
 
@@ -764,6 +754,7 @@ public class MainPage extends AppCompatActivity {
                     }
                 }
             }
+
         PathAdapter pathadapter = new PathAdapter(this, pathInfoList);
         searchPathListView.setAdapter(pathadapter);
         searchPathListView.setVisibility(View.VISIBLE);
@@ -805,8 +796,8 @@ public class MainPage extends AppCompatActivity {
                                     .map(OdsayData.Lane::getBusCityCode)
                                     .collect(Collectors.toList());
 
-                            Log.d("dd",busLocalBlIDs.toString());
-                            Log.d("dd",busCityCodes.toString());
+                            Log.d("busLocalBlid",busLocalBlIDs.toString());
+                            Log.d("buscitycode",busCityCodes.toString());
                             pathInfo.setSubPath(busNos,busIDs, busLocalBlIDs,busCityCodes,path.getSubPath().get(i).getStartName(), path.getSubPath().get(i).getEndName(), path.getSubPath().get(i).getStartX(), path.getSubPath().get(i).getStartY(), path.getSubPath().get(i).getEndX(), path.getSubPath().get(i).getEndY(), path.getSubPath().get(i).getTrafficType());
                         }
                     }
@@ -821,7 +812,12 @@ public class MainPage extends AppCompatActivity {
                     List<OdsayData.SubPath> subPath=path.getSubPath();
                     for (int i=0; i<subPath.size(); i++) {
                         List<String> busNos=new ArrayList<>();
-                        busNos.add("시외버스");
+                        if(path.getSubPath().get(i).getTrafficType()==6) {
+                            busNos.add("시외버스");
+                        }
+                        else if(path.getSubPath().get(i).getTrafficType()==5){
+                            busNos.add("고속버스");
+                        }
                         List<Integer> startID=new ArrayList<>();
                         startID.add(path.getSubPath().get(i).getstartid());
                         List<Integer> endID=new ArrayList<>();

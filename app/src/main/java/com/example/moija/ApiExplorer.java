@@ -118,7 +118,7 @@ public class ApiExplorer implements Runnable {
                 msg.setData(bundle);
                 handler.sendMessage(msg);
 
-                Thread.sleep(10000);
+                Thread.sleep(3000);
 
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt(); // 스레드 중단
@@ -130,61 +130,62 @@ public class ApiExplorer implements Runnable {
 
     private void executeApiCall() throws IOException {
 
-        Log.d("ApiLog",BusCityCode.toString());
-        StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/1613000/BusLcInfoInqireService/getRouteAcctoBusLcList"); /*URL*/
-        urlBuilder.append("?" + URLEncoder.encode("serviceKey","UTF-8") + "=oN5Nb0f8GC1%2FULPYTW0DMcWIjmNQ2VxOvGBkQatyEDrIrvdOO%2F4Z3dmPKP15PJbt9tBv%2FRO%2BHKJULbGs2UHsJg%3D%3D"); /*Service Key*/
-        urlBuilder.append("&" + URLEncoder.encode("pageNo","UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지번호*/
-        urlBuilder.append("&" + URLEncoder.encode("numOfRows","UTF-8") + "=" + URLEncoder.encode("10", "UTF-8")); /*한 페이지 결과 수*/
-        urlBuilder.append("&" + URLEncoder.encode("_type","UTF-8") + "=" + URLEncoder.encode("xml", "UTF-8")); /*데이터 타입(xml, json)*/
-        urlBuilder.append("&" + URLEncoder.encode("cityCode","UTF-8") + "=" + URLEncoder.encode(cityCodes.get(BusCityCode.get(index)).toString(), "UTF-8")); /*도시코드 [상세기능3 도시코드 목록 조회]에서 조회 가능*/
-        urlBuilder.append("&" + URLEncoder.encode("routeId","UTF-8") + "=" + URLEncoder.encode(BusLocalBlIDs.get(index), "UTF-8")); /*노선ID [국토교통부(TAGO)_버스노선정보]에서 조회가능*/
-        URL url = new URL(urlBuilder.toString());
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-        conn.setRequestProperty("Content-type", "application/json");
+        Log.d("ApiLog", BusCityCode.toString());
+        if (BusCityCode.get(index)!=1000) {
+            StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/1613000/BusLcInfoInqireService/getRouteAcctoBusLcList"); /*URL*/
+            urlBuilder.append("?" + URLEncoder.encode("serviceKey", "UTF-8") + "=oN5Nb0f8GC1%2FULPYTW0DMcWIjmNQ2VxOvGBkQatyEDrIrvdOO%2F4Z3dmPKP15PJbt9tBv%2FRO%2BHKJULbGs2UHsJg%3D%3D"); /*Service Key*/
+            urlBuilder.append("&" + URLEncoder.encode("pageNo", "UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지번호*/
+            urlBuilder.append("&" + URLEncoder.encode("numOfRows", "UTF-8") + "=" + URLEncoder.encode("10", "UTF-8")); /*한 페이지 결과 수*/
+            urlBuilder.append("&" + URLEncoder.encode("_type", "UTF-8") + "=" + URLEncoder.encode("xml", "UTF-8")); /*데이터 타입(xml, json)*/
+            urlBuilder.append("&" + URLEncoder.encode("cityCode", "UTF-8") + "=" + URLEncoder.encode(cityCodes.get(BusCityCode.get(index)).toString(), "UTF-8")); /*도시코드 [상세기능3 도시코드 목록 조회]에서 조회 가능*/
+            urlBuilder.append("&" + URLEncoder.encode("routeId", "UTF-8") + "=" + URLEncoder.encode(BusLocalBlIDs.get(index), "UTF-8")); /*노선ID [국토교통부(TAGO)_버스노선정보]에서 조회가능*/
+            URL url = new URL(urlBuilder.toString());
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Content-type", "application/json");
 
-        BufferedReader rd;
-        if(conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
-            rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        } else {
-            rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
-        }
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = rd.readLine()) != null) {
-            sb.append(line);
-        }
-        rd.close();
-        conn.disconnect();
-
-        try {
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-
-            ByteArrayInputStream input = new ByteArrayInputStream(sb.toString().getBytes("UTF-8"));
-            Document doc = dBuilder.parse(input);
-
-            doc.getDocumentElement().normalize();
-
-            NodeList nList = doc.getElementsByTagName("item");
-
-            nodeNames.clear(); // 새 요청 전에 리스트를 비웁니다.
-            for (int temp = 0; temp < nList.getLength(); temp++) {
-                Node nNode = nList.item(temp);
-                if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-                    Element eElement = (Element) nNode;
-                    String nodenm = eElement.getElementsByTagName("nodenm").item(0).getTextContent();
-                    nodeNames.add(nodenm);
-                }
+            BufferedReader rd;
+            if (conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
+                rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            } else {
+                rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
             }
-            Log.d("ApiLog",nodeNames.toString());
-            String totalCountStr = doc.getElementsByTagName("totalCount").item(0).getTextContent();
-            totalCount = Integer.parseInt(totalCountStr);
-        } catch (ParserConfigurationException | SAXException | NumberFormatException e) {
-            e.printStackTrace();
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = rd.readLine()) != null) {
+                sb.append(line);
+            }
+            rd.close();
+            conn.disconnect();
+
+            try {
+                DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+
+                ByteArrayInputStream input = new ByteArrayInputStream(sb.toString().getBytes("UTF-8"));
+                Document doc = dBuilder.parse(input);
+
+                doc.getDocumentElement().normalize();
+
+                NodeList nList = doc.getElementsByTagName("item");
+
+                nodeNames.clear(); // 새 요청 전에 리스트를 비웁니다.
+                for (int temp = 0; temp < nList.getLength(); temp++) {
+                    Node nNode = nList.item(temp);
+                    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                        Element eElement = (Element) nNode;
+                        String nodenm = eElement.getElementsByTagName("nodenm").item(0).getTextContent();
+                        nodeNames.add(nodenm);
+                    }
+                }
+                Log.d("ApiLog", nodeNames.toString());
+                String totalCountStr = doc.getElementsByTagName("totalCount").item(0).getTextContent();
+                totalCount = Integer.parseInt(totalCountStr);
+            } catch (ParserConfigurationException | SAXException | NumberFormatException e) {
+                e.printStackTrace();
+            }
         }
     }
-
     // Getter 메소드 추가
     public List<String> getNodeNames() {
         return nodeNames;
@@ -193,4 +194,5 @@ public class ApiExplorer implements Runnable {
     public int getTotalCount() {
         return totalCount;
     }
+
 }

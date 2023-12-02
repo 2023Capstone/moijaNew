@@ -41,13 +41,17 @@ public class PathAdapter extends ArrayAdapter<PathInfo> {
             for(int i=0; i<path.getBusNos().size(); i++)
             {
 
-                if(!path.getBusNos().get(i).contains("도보") && !path.getBusNos().get(i).contains("시외버스")) {
+                if(!path.getBusNos().get(i).contains("도보") && !path.getBusNos().get(i).contains("시외버스") && !path.getBusNos().get(i).contains("고속버스")) {
                    BusText.append("버스 번호: " + path.getBusNos().get(i).get(0).toString() + "\n");
                     BusText.append("승차: " + path.getStartNames().get(i).toString() + "\n");
                     BusText.append("하차: " + path.getEndNames().get(i).toString() + "\n");
                 }
                 else if(path.getBusNos().get(i).contains("시외버스")){
                     BusText.append("----시외버스 탑승----"+"\n");
+                    BusText.append("승차: " + path.getStartNames().get(i).toString() + "\n");
+                    BusText.append("하차: " + path.getEndNames().get(i).toString() + "\n");
+                } else if(path.getBusNos().get(i).contains("고속버스")){
+                    BusText.append("----고속버스 탑승----"+"\n");
                     BusText.append("승차: " + path.getStartNames().get(i).toString() + "\n");
                     BusText.append("하차: " + path.getEndNames().get(i).toString() + "\n");
                 }
