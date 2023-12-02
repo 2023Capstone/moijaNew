@@ -30,8 +30,8 @@ public class CityBus extends AppCompatActivity {
     private ListView stationNamesListView;
 
     // TODO: 사용자가 발급받은 odsay lab API 키를 입력하세요.
-    private static final String API_KEY = "fXCWmI16V2ggA9Y9OhTrVMSiPw/YHkDXoHmKjpLG7l8";
-
+//    private static final String API_KEY = "fXCWmI16V2ggA9Y9OhTrVMSiPw/YHkDXoHmKjpLG7l8";
+    private static final String API_KEY = "Bk3FXTpa4bUs3dxTOsUxSFvLGFYhTaoBDPKfSPOLdwI";
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
