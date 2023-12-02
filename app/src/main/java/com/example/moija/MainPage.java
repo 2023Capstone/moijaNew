@@ -254,6 +254,9 @@ public class MainPage extends AppCompatActivity {
                 mf.BusOrder.clear();
                 mf.BusNo.clear();
                 mf.BusID.clear();
+                mf.StartID.clear();
+                mf.EndID.clear();
+                Log.d("mystartid and endid2",selectedpath.getStartid().toString()+"+"+selectedpath.getEndid().toString());
                 mf.busInfoLayout.removeAllViews();
                 if(mf.routeDrawer!=null) {
                     mf.routeDrawer.clearRouteLines();
@@ -684,6 +687,11 @@ public class MainPage extends AppCompatActivity {
     private void busLogicAdd(OdsayData searchResult,PathInfo myPathInfo,String startorend) {
         int count = 0;
             PathInfo pathInfo = new PathInfo();
+            List<Integer> startid=new ArrayList<>();
+            startid.add(0);
+            List<Integer> endid=new ArrayList<>();
+            endid.add(0);
+
             for (OdsayData.Path path : searchResult.getResult().getPath()) {
                 if (path.getPathType() == 2) {
                     myPathInfo.addTotalTime(path.getInfo().getTotalTime());
@@ -725,6 +733,7 @@ public class MainPage extends AppCompatActivity {
                             List<Integer> busCityCodes = path.getSubPath().get(i).getLane().stream()
                                     .map(OdsayData.Lane::getBusCityCode)
                                     .collect(Collectors.toList());
+
                             Log.d("dddasdf",startorend+busIDs.toString()+busLocalBlIDs.toString()+busCityCodes.toString());
                             pathInfo.setSubPath(busNos,busIDs, busLocalBlIDs,busCityCodes,path.getSubPath().get(i).getStartName(), path.getSubPath().get(i).getEndName(), path.getSubPath().get(i).getStartX(), path.getSubPath().get(i).getStartY(), path.getSubPath().get(i).getEndX(), path.getSubPath().get(i).getEndY(), path.getSubPath().get(i).getTrafficType());
                             count++;
@@ -732,11 +741,13 @@ public class MainPage extends AppCompatActivity {
                         Gson gson=new Gson();
                         Log.d("dddasdf2",gson.toJson(pathInfo));
                     }
+
                     if (startorend.equals("start")) {
                         Gson gson=new Gson();
                         Log.d("dddasdf3","Start"+gson.toJson(pathInfo));
                         myPathInfo.addPathinfo(pathInfo, 0);
                         Log.d("dddasdf3","Startplus"+gson.toJson(myPathInfo));
+                        myPathInfo.setStartEndID(startid,endid,"start");
                     } else if (startorend.equals("end")) {
                         Gson gson=new Gson();
 
@@ -745,6 +756,7 @@ public class MainPage extends AppCompatActivity {
                         pathInfoList.add(myPathInfo);
 
                         Log.d("dddasdf3","Endplus"+gson.toJson(myPathInfo));
+                        myPathInfo.setStartEndID(startid,endid,"end");
                     }
 
                     if (count >= 3) {
@@ -792,6 +804,7 @@ public class MainPage extends AppCompatActivity {
                             List<Integer> busCityCodes=path.getSubPath().get(i).getLane().stream()
                                     .map(OdsayData.Lane::getBusCityCode)
                                     .collect(Collectors.toList());
+
                             Log.d("dd",busLocalBlIDs.toString());
                             Log.d("dd",busCityCodes.toString());
                             pathInfo.setSubPath(busNos,busIDs, busLocalBlIDs,busCityCodes,path.getSubPath().get(i).getStartName(), path.getSubPath().get(i).getEndName(), path.getSubPath().get(i).getStartX(), path.getSubPath().get(i).getStartY(), path.getSubPath().get(i).getEndX(), path.getSubPath().get(i).getEndY(), path.getSubPath().get(i).getTrafficType());
@@ -809,7 +822,13 @@ public class MainPage extends AppCompatActivity {
                     for (int i=0; i<subPath.size(); i++) {
                         List<String> busNos=new ArrayList<>();
                         busNos.add("시외버스");
+                        List<Integer> startID=new ArrayList<>();
+                        startID.add(path.getSubPath().get(i).getstartid());
+                        List<Integer> endID=new ArrayList<>();
+                        endID.add(path.getSubPath().get(i).getendID());
+                        Log.d("startidendid",startID.toString()+endID.toString());
                         pathInfo.WalkSetSubPath(busNos,subPath.get(i).getStartName(), subPath.get(i).getEndName(), subPath.get(i).getStartX(), subPath.get(i).getStartY(), subPath.get(i).getEndX(), subPath.get(i).getEndY(), subPath.get(i).getTrafficType());
+                        pathInfo.setStartEndID(startID,endID,"end");
                     }
                     pathInfoList.clear();
                     callApi1(Mylocation.StartPlace.getX(), Mylocation.StartPlace.getY(), pathInfo.getstartx().get(0), pathInfo.getstarty().get(0), pathInfo);

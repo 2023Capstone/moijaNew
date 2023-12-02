@@ -47,6 +47,9 @@ public class IntercityBus extends AppCompatActivity {
     private List<String> BusLocalBlID;
     private List<String> BusNo;
     private List<Integer> BusID;
+
+    private List<Integer> StartID;
+    private List<Integer> EndID;
     Integer index;
 
     public static int convertDpToPixel(float dp, Context context) {
@@ -70,7 +73,8 @@ public class IntercityBus extends AppCompatActivity {
         BusLocalBlID = busData.getBusLocalBlID();
         BusID=busData.getBusID();
         BusNo = busData.getBusNo();
-
+        StartID=busData.getStartID();
+        EndID=busData.getEndID();
         // Toolbar에 이미지 뷰와 텍스트 뷰 추가
         LinearLayout busLayout = findViewById(R.id.busLayout); // Toolbar가 LinearLayout 또는 RelativeLayout 내에 있어야 함
         busLayout.setWeightSum(BusCityCode.size()); // 모든 뷰가 균등하게 배치되도록 weightSum 설정
@@ -106,23 +110,26 @@ public class IntercityBus extends AppCompatActivity {
             // LinearLayout에 ImageView와 TextView 추가
             singleBusLayout.addView(imageView);
             singleBusLayout.addView(textView);
-
+            Log.d("BusCitycode",BusCityCode.toString());
+            Log.d("StartID",StartID.toString());
+            Log.d("EndID",EndID.toString());
             // 클릭 이벤트 설정
-            final int value = BusCityCode.get(i);
+            int value = i;
+            boolean isintercitybus=BusCityCode.get(i).equals(0);
             singleBusLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (value == 0) {
+                    if(isintercitybus) {
                         Intent intent = new Intent(IntercityBus.this, IntercityBus.class);
                         intent.putExtra("key", busData);
-                        intent.putExtra("index", BusCityCode.indexOf(value));
-                        Log.d("value_index", index.toString());
+                        intent.putExtra("index", value);
+                        Log.d("value_index", Integer.toString(value));
                         startActivity(intent);
-                    } else {
+                    }else{
                         Intent intent = new Intent(IntercityBus.this, CityBus.class);
                         intent.putExtra("key", busData);
-                        intent.putExtra("index", BusCityCode.indexOf(value));
-                        Log.d("value_index", index.toString());
+                        intent.putExtra("index", value);
+                        Log.d("value_index", Integer.toString(value));
                         startActivity(intent);
                     }
                 }
@@ -132,8 +139,8 @@ public class IntercityBus extends AppCompatActivity {
             busLayout.addView(singleBusLayout);
         }
 
-        String startStationId = "4000159";
-        String destStationId = "4000064";
+        String startStationId = StartID.get(index).toString();
+        String destStationId = EndID.get(index).toString();
 
         // AsyncTask를 사용하여 스케줄 데이터를 가져와 UI에 표시
         new GetBusScheduleTask(startStationId, destStationId).execute();

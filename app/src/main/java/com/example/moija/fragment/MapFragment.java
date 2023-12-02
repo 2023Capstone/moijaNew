@@ -70,6 +70,9 @@ public class MapFragment extends Fragment {
     public List<Integer> BusID=new ArrayList<>();
     public List<Integer> BusCityCode=new ArrayList<>();
     public List<Integer> BusOrder=new ArrayList<>();
+
+    public List<Integer> StartID=new ArrayList<>();
+    public List<Integer> EndID=new ArrayList<>();
     public PathInfo Selectedpath;
     //길 그려주는 RouteDrawer 클래스 선언
     public RouteDrawer routeDrawer;
@@ -84,11 +87,15 @@ public class MapFragment extends Fragment {
         private List<String> busLocalBlID;
         private List<Integer> busID;
         private List<String> BusNo;
-        public BusData(List<Integer> integerList,List<String> busLocalBlID,List<Integer> busID, List<String> BusNo) {
+        private List<Integer> StartID;
+        private List<Integer> EndID;
+        public BusData(List<Integer> integerList,List<String> busLocalBlID,List<Integer> busID, List<String> BusNo,List<Integer> StartID,List<Integer> EndID) {
             this.integerList = integerList;
             this.busLocalBlID = busLocalBlID;
             this.busID=busID;
             this.BusNo=BusNo;
+            this.StartID=StartID;
+            this.EndID=EndID;
         }
 
         public List<Integer> getIntegerList() {
@@ -99,6 +106,8 @@ public class MapFragment extends Fragment {
         }
         public List<Integer> getBusID(){return busID;}
         public List<String> getBusNo() { return BusNo;}
+        public List<Integer> getStartID(){return StartID;}
+        public List<Integer> getEndID(){return EndID;}
     }
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -184,7 +193,7 @@ public class MapFragment extends Fragment {
         busInfoLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BusData busData = new BusData(BusCityCode,BusLocalBlID,BusID,BusNo);
+                BusData busData = new BusData(BusCityCode,BusLocalBlID,BusID,BusNo,StartID,EndID);
                 // 인텐트 생성 및 액티비티 시작
                 if(BusOrder.get(0) == 2) {
                     Intent intent2 = new Intent(getActivity(), CityBus.class);
@@ -270,6 +279,8 @@ public class MapFragment extends Fragment {
         BusCityCode.clear();
         BusLocalBlID.clear();
         BusID.clear();
+        StartID.clear();
+        EndID.clear();
         Log.d("busids",Selectedpath.getBusIDs().toString());
         for(int i=0; i<Selectedpath.getBusNos().size(); i++)
         {
@@ -295,7 +306,6 @@ public class MapFragment extends Fragment {
                 BusLocalBlID.add("시외버스");
                 BusID.add(0);
                 BusCityCode.add(0);
-
             }
         }
         for(int i=0; i<BusOrder.size();i++){
@@ -307,7 +317,10 @@ public class MapFragment extends Fragment {
                 busList.add(new Pair<>("intercity","시외버스"));
             }
         }
-
+        for(int i=0; i<Selectedpath.getStartid().size();i++){
+            StartID.add(Selectedpath.getStartid().get(i).get(0));
+            EndID.add(Selectedpath.getEndid().get(i).get(0));
+        }
         for (int i = 0; i < busList.size(); i++) {
             Pair<String, String> bus = busList.get(i);
             // ">" 기호를 추가할지 결정 (마지막 버스 정보가 아닌 경우에만 추가)
@@ -321,12 +334,7 @@ public class MapFragment extends Fragment {
             }
         }
 
-        Log.d("youlog",BusOrder.toString());
-        Log.d("youlog",BusNo.toString());
-        Log.d("youlog",busList.toString());
-        Log.d("youlog",BusLocalBlID.toString());
-        Log.d("youlog",BusID.toString());
-        Log.d("youlog",BusCityCode.toString());
+       Log.d("startidendid",StartID+"-"+EndID);
         for(int i = 0; i< Selectedpath.getBusNos().size(); i++)
         {
             if(routeDrawer!=null) {

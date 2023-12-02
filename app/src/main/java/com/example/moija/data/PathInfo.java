@@ -16,6 +16,8 @@ public class PathInfo {
     List<String> endNames = new ArrayList<>();
     private int totalTime;
 
+    private List<List<Integer>> startid=new ArrayList<>();
+    private List<List<Integer>> endid=new ArrayList<>();
     private List<Double> startx=new ArrayList<>();
     private List<Double> starty=new ArrayList<>();
     private List<Double> endx=new ArrayList<>();
@@ -70,6 +72,8 @@ public class PathInfo {
     public List<Double> getendx(){return endx;}
     public List<Double> getendy(){return endy;}
 
+    public List<List<Integer>> getStartid(){return startid;}
+    public List<List<Integer>> getEndid(){return endid;}
     public List<Integer> getTrafficType(){return trafficType;}
     public void setSubPath(List<String> busNos,List<Integer> busIDs,List<String> busLocalBlIDs,List<Integer> busCityCodes,String startName, String endName,double startX,double startY,double endX,double endY,int trafficType) {
         this.busNos.add(busNos);
@@ -95,6 +99,21 @@ public class PathInfo {
         this.endx.add(endX);
         this.endy.add(endY);
         this.trafficType.add(trafficType);
+    }
+    public void setStartEndID(List<Integer> startid,List<Integer> endid,String startorend){
+        if(startorend.equals("start"))
+        {
+            this.startid.add(0,startid);
+            this.endid.add(0,endid);
+        }
+        if(startorend.equals("end"))
+        {
+            this.startid.add(startid);
+            this.endid.add(endid);
+        }
+
+        Log.d("startid and endid",startid+"-"+endid);
+        Log.d("startid and endid2",this.startid+"-"+this.endid);
     }
     public void addPathinfo(PathInfo path,int startorend){
 

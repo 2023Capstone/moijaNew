@@ -144,21 +144,22 @@ public class CityBus extends AppCompatActivity {
             singleBusLayout.addView(textView);
 
             // 클릭 이벤트 설정
-            final int value = BusCityCode.get(i);
+            int value = i;
+            boolean isintercitybus=BusCityCode.get(i).equals(0);
             singleBusLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (value == 0) {
+                    if(isintercitybus) {
                         Intent intent = new Intent(CityBus.this, IntercityBus.class);
                         intent.putExtra("key", busData);
-                        intent.putExtra("index", BusCityCode.indexOf(value));
-                        Log.d("value_index", index.toString());
+                        intent.putExtra("index", value);
+                        Log.d("value_index", Integer.toString(value));
                         startActivity(intent);
-                    } else {
+                    }else{
                         Intent intent = new Intent(CityBus.this, CityBus.class);
                         intent.putExtra("key", busData);
-                        intent.putExtra("index", BusCityCode.indexOf(value));
-                        Log.d("value_index", index.toString());
+                        intent.putExtra("index", value);
+                        Log.d("value_index", Integer.toString(value));
                         startActivity(intent);
                     }
                 }

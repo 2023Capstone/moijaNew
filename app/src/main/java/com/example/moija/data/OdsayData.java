@@ -151,7 +151,13 @@ public class OdsayData {
         private double endX;
         @SerializedName("endY")
         private double endY;
+        @SerializedName("endID")
+        private Integer endID;
+        @SerializedName("startID")
+        private Integer startID;
 
+        public Integer getstartid(){return startID;}
+        public Integer getendID(){return endID;}
         public int getTrafficType() {
             return trafficType;
         }
