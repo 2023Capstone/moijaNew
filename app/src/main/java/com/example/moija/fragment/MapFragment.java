@@ -31,6 +31,7 @@ import com.example.moija.data.PathInfo;
 import com.example.moija.map.Mylocation;
 import com.example.moija.map.RouteDrawer;
 import com.example.moija.schedule.CityBus;
+import com.example.moija.schedule.IntercityBus;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.kakao.vectormap.KakaoMap;
 import com.kakao.vectormap.KakaoMapReadyCallback;
@@ -106,6 +107,7 @@ public class MapFragment extends Fragment {
         MapView mapView = rootview.findViewById(R.id.map_view);
         busInfoLayout = rootview.findViewById(R.id.bus_info_layout);
         RemoveMarkerbtn=rootview.findViewById(R.id.removemarkerbtn);
+
         RemoveMarkerbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -190,8 +192,9 @@ public class MapFragment extends Fragment {
                     intent2.putExtra("index", 0);
                     startActivity(intent2);
                 }else if(BusOrder.get(0) == 6) {
-                    Intent intent2 = new Intent(getActivity(), CityBus.class);
+                    Intent intent2 = new Intent(getActivity(), IntercityBus.class);
                     intent2.putExtra("key", busData);
+                    intent2.putExtra("index", 0);
                     startActivity(intent2);
                 }
             }

@@ -150,6 +150,9 @@ public class CityBus extends AppCompatActivity {
                 public void onClick(View view) {
                     if (value == 0) {
                         Intent intent = new Intent(CityBus.this, IntercityBus.class);
+                        intent.putExtra("key", busData);
+                        intent.putExtra("index", BusCityCode.indexOf(value));
+                        Log.d("value_index", index.toString());
                         startActivity(intent);
                     } else {
                         Intent intent = new Intent(CityBus.this, CityBus.class);
