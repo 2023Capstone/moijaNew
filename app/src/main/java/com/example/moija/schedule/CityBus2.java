@@ -3,11 +3,18 @@ package com.example.moija.schedule;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.moija.R;
@@ -21,6 +28,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Locale;
 
 
 public class CityBus2 extends AppCompatActivity {
@@ -28,8 +37,9 @@ public class CityBus2 extends AppCompatActivity {
     private Button getBusScheduleButton;
 
     private TextView busScheduleTextView;
-
-    private static final String API_KEY = "fXCWmI16V2ggA9Y9OhTrVMSiPw/YHkDXoHmKjpLG7l8";
+    private TextView intervalTextView;
+    private ListView infoListView;
+    private static final String API_KEY = "Bk3FXTpa4bUs3dxTOsUxSFvLGFYhTaoBDPKfSPOLdwI";
 
     @Override
 
@@ -39,9 +49,8 @@ public class CityBus2 extends AppCompatActivity {
 
         getBusScheduleButton = findViewById(R.id.getBusScheduleButton);
         busScheduleTextView = findViewById(R.id.busScheduleTextView);
-
-
-
+        intervalTextView = findViewById(R.id.intervalTextView);
+        infoListView = findViewById(R.id.infoListView);
 
         getBusScheduleButton.setOnClickListener(
 
@@ -65,7 +74,7 @@ public class CityBus2 extends AppCompatActivity {
 
 // TODO: 여기에 버스 노선 상세 조회에서 얻은 busID를 입력하세요.
 
-                String busID = "2040148";
+                String busID = "2040055";
 
 
 // API 호출을 위한 URL
@@ -102,7 +111,7 @@ public class CityBus2 extends AppCompatActivity {
                     JSONObject jsonResponse = new JSONObject(stringBuilder.toString());
 
                     JSONObject result = jsonResponse.getJSONObject("result");
-                    if(result == null){
+                    if (result == null) {
                         return null;
                     }
 
@@ -124,7 +133,7 @@ public class CityBus2 extends AppCompatActivity {
                 } finally {
                     urlConnection.disconnect();
                 }
-            }catch (IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
                 return null;
             }
@@ -147,41 +156,124 @@ public class CityBus2 extends AppCompatActivity {
 
 
                                 "\nInterval: " + result.getInterval());
+
+                ArrayList<String> timetable = result.getMinutesBetween();
+
+                TimetableAdapter adapter = new TimetableAdapter(timetable);
+                infoListView.setAdapter(adapter);
             } else {
-                // Handle the case where data retrieval failed
+            }
+        }
+
+        private class TimetableAdapter extends ArrayAdapter<String> {
+            TimetableAdapter(ArrayList<String> timetable){
+
+                super(CityBus2.this, R.layout.timetable_item, timetable);
+            }
+
+            @NonNull
+            @Override
+            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                View itemView = convertView;
+                if(itemView == null){
+                    itemView = LayoutInflater.from(getContext()).inflate(R.layout.timetable_item, parent,false);
+                }
+
+                TextView timeTextView = itemView.findViewById(R.id.timeTextView);
+                timeTextView.setText(getItem(position));
+
+                return itemView;
             }
         }
     }
+}
 
 
-    class BusSchedule {
+class BusSchedule {
 
-        private String firstTime;
-        private String lastTime;
-        private String interval;
+    private String firstTime;
+    private String lastTime;
+    private String interval;
 
-        public String getFirstTime() {
-            return firstTime;
+    public String getFirstTime() {
+        return firstTime;
+    }
+
+    public void setFirstTime(String firstTime) {
+        this.firstTime = firstTime;
+    }
+
+    public String getLastTime() {
+        return lastTime;
+    }
+
+    public void setLastTime(String lastTime) {
+        this.lastTime = lastTime;
+    }
+
+    public String getInterval() {
+        return interval;
+    }
+
+    public void setInterval(String interval) {
+        this.interval = interval;
+    }
+
+    private int convertTimeToMinutes(String time) {
+        String[] parts = time.split(
+
+                ":");
+        int hours = Integer.parseInt(parts[0]);
+        int minutes = Integer.parseInt(parts[1]);
+        return hours * 60 + minutes;
+    }
+
+    public ArrayList<String> getMinutesBetween() {
+        ArrayList<String> timetable = new ArrayList<>();
+        try {
+            int firstTimeMinutes = convertTimeToMinutes(firstTime);
+            int lastTimeMinutes = convertTimeToMinutes(lastTime);
+            Log.d("firstTimeMinutes", "firstTimeMinutes: "+firstTimeMinutes);
+            String[] aa= interval.split("회");
+            //간격 횟수
+            int intervalTime =Integer.valueOf(aa[0]);
+            // (마지막분 -시작분)/interval -> 간격분
+            int time = (lastTimeMinutes-firstTimeMinutes)/intervalTime;
+
+            Log.d("intervalTime", "intervalTime: "+interval);
+//                        int time = (lastTimeMinutes-firstTimeMinutes)/intervalTime;
+            // Generate timetable with 10-minute intervals
+            int count=0;
+            for (int i = firstTimeMinutes; i <= lastTimeMinutes; i += time) {
+                timetable.add(convertMinutesToTime(i));
+                count++;
+                if(count==intervalTime+1){
+                    break;
+                }
+            }
         }
 
-        public void setFirstTime(String firstTime) {
-            this.firstTime = firstTime;
+        catch (NumberFormatException e) {
+            e.printStackTrace();
         }
+        return timetable;
+    }
 
-        public String getLastTime() {
-            return lastTime;
-        }
+    private String convertMinutesToTime(int minutes) {
+        int hours = minutes / 60;
+        int remainderMinutes = minutes % 60;
+        return String.format(Locale.getDefault(), "%02d:%02d", hours, remainderMinutes);
+    }
 
-        public void setLastTime(String lastTime) {
-            this.lastTime = lastTime;
-        }
-
-        public String getInterval() {
-            return interval;
-        }
-
-        public void setInterval(String interval) {
-            this.interval = interval;
+    private int extractFrequency(String interval) {
+        try {
+            // Extract the frequency from the interval string
+            String[] parts = interval.split(" - ");
+            String frequencyPart = parts[1].trim(); // assuming "106회 -" format
+            return Integer.parseInt(frequencyPart);
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+            e.printStackTrace();
+            return 1; // Default to 1 if extraction fails or not present
         }
     }
 }
