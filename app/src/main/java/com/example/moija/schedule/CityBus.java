@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.moija.ApiExplorer;
 import com.example.moija.CustomAdapter;
+import com.example.moija.MainPage;
 import com.example.moija.R;
 import com.example.moija.busPointGPS;
 import com.example.moija.data.PathInfo;
@@ -94,7 +95,7 @@ public class CityBus extends AppCompatActivity {
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(CityBus.this,CityBus2.class);
+                Intent intent = new Intent(CityBus.this, MainPage.class);
                 startActivity(intent);
             }
         });
