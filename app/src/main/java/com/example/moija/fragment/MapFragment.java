@@ -274,7 +274,6 @@ public class MapFragment extends Fragment {
     //시작점 좌표,도착점 좌표와 대중교통 종류에 따라 그리기 예시
     //오디세이 결과값에 따라 그리도록 수정 필요함
     public void Draw(){
-
         int blidcitycodeindex=0;
         int busidindex=0;
         busList.clear();
@@ -299,24 +298,52 @@ public class MapFragment extends Fragment {
                 BusOrder.add(Selectedpath.getTrafficType().get(i));
             }
         }
+        Log.d("BusIDS",Selectedpath.getBusIDs().toString());
+        Log.d("BusOrder",BusOrder.toString());
         for(int i=0; i<BusOrder.size();i++)
         {
-            if(BusOrder.get(i)==2){
-                BusLocalBlID.add(Selectedpath.getBusLocalBlIDs().get(blidcitycodeindex).get(0));
-                BusCityCode.add(Selectedpath.getBusCityCodes().get(blidcitycodeindex).get(0));
-                BusID.add(Selectedpath.getBusIDs().get(busidindex).get(0));
-                blidcitycodeindex++;
-                busidindex+=3;
-            }else if(BusOrder.get(i)==6){
-                BusLocalBlID.add("시외버스");
-                BusID.add(0);
-                BusCityCode.add(0);
-            }else if(BusOrder.get(i)==5){
-                BusLocalBlID.add("고속버스");
-                BusID.add(0);
-                BusCityCode.add(0);
+            if(BusOrder.contains(6) || BusOrder.contains(5)) {
+                if (BusOrder.get(i) == 2) {
+                    BusLocalBlID.add(Selectedpath.getBusLocalBlIDs().get(blidcitycodeindex).get(0));
+                    BusCityCode.add(Selectedpath.getBusCityCodes().get(blidcitycodeindex).get(0));
+                    if (busidindex <= Selectedpath.getBusIDs().size()) {
+                        if (Selectedpath.getBusIDs().get(busidindex) != null) {
+                            for(int localbusindex=0; localbusindex<Selectedpath.getBusIDs().get(busidindex).size(); localbusindex++) {
+                                BusID.add(Selectedpath.getBusIDs().get(busidindex).get(localbusindex));
+                            }
+                            if (Selectedpath.getBusIDs().get(busidindex).size() <= 1) {
+                                busidindex += 3;
+                            }
+                        }
+                    }
+                    blidcitycodeindex++;
+                } else if (BusOrder.get(i) == 6) {
+                    BusLocalBlID.add("시외버스");
+                    BusID.add(0);
+                    busidindex += 1;
+                    BusCityCode.add(0);
+                } else if (BusOrder.get(i) == 5) {
+                    BusLocalBlID.add("고속버스");
+                    BusID.add(0);
+                    busidindex += 1;
+                    BusCityCode.add(0);
+                }
+            }
+            else{
+                if (BusOrder.get(i) == 2) {
+                    BusLocalBlID.add(Selectedpath.getBusLocalBlIDs().get(blidcitycodeindex).get(0));
+                    BusCityCode.add(Selectedpath.getBusCityCodes().get(blidcitycodeindex).get(0));
+                    if (busidindex <= Selectedpath.getBusIDs().size()) {
+                        if (Selectedpath.getBusIDs().get(busidindex) != null) {
+                            BusID.add(Selectedpath.getBusIDs().get(0).get(busidindex));
+                            busidindex += 1;
+                        }
+                    }
+                    blidcitycodeindex++;
+                }
             }
         }
+        Log.d("BusIDs", BusID.toString());
         Log.d("selectedpath",BusOrder.toString());
         for(int i=0; i<BusOrder.size();i++){
             if(BusOrder.get(i)==2){

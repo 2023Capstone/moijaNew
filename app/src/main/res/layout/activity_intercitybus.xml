@@ -8,7 +8,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="#92B2E3"/>
+        android:background="#8BC34A"/>
     <Button
         android:id="@+id/getScheduleButton"
         android:layout_width="wrap_content"
@@ -29,6 +29,7 @@
 
     <!-- 뒤로가기 버튼 -->
     <ImageButton
+        android:id="@+id/backBtn"
         style="@style/TransparentButtonStyle"
         android:layout_width="20dp"
         android:layout_height="20dp"
@@ -106,6 +107,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/busInfoTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
@@ -168,15 +170,13 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="400dp"
         android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/busScheduleTextView"
+        <TableLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="버스일정"
-            android:textAlignment="center"
-            android:textSize="40dp" />
-
+            android:id="@+id/tableLayout"
+            android:background="@color/white"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+        </TableLayout>
     </ScrollView>
 
 </RelativeLayout>

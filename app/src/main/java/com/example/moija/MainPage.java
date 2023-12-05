@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.moija.api.KakaoApi;
 import com.example.moija.api.ODsayService;
@@ -35,6 +36,7 @@ import com.example.moija.map.SearchResults;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -58,7 +60,7 @@ public class MainPage extends AppCompatActivity {
     public boolean pathsearched=false;
     /*예비 fXCWmI16V2ggA9Y9OhTrVMSiPw/YHkDXoHmKjpLG7l8
     * 	6WN7AcWOFR1SJnfFVFKVtoIBidc4AoB2nj6qPmjXbPc*/
-    public static final String OdsayAPI_KEY = "fXCWmI16V2ggA9Y9OhTrVMSiPw/YHkDXoHmKjpLG7l8";
+    public static final String OdsayAPI_KEY = "6WN7AcWOFR1SJnfFVFKVtoIBidc4AoB2nj6qPmjXbPc";
     //api 기본 URL
     public static final String BASE_URL = "https://dapi.kakao.com/";
     public static final String BASE_URL2 = "https://api.odsay.com/";
@@ -83,6 +85,23 @@ public class MainPage extends AppCompatActivity {
     private List<PathInfo> pathInfoList = new ArrayList<>();
     private ArrayAdapter<String> listViewadapter;
 
+    @Override
+    public void onBackPressed() {
+        if (Mapframelayout.getVisibility()==View.VISIBLE) {
+            Mapframelayout.setVisibility(View.GONE);
+            searchPathListView.setVisibility(View.VISIBLE);
+        }else if(searchPathListView.getVisibility()==View.VISIBLE){
+            searchPathListView.setVisibility(View.GONE);
+            startEditText.setText("");
+            Startsearched=false;
+            goalEditText.setText("");
+            Goalsearched=false;
+            recordPlaceList.setVisibility(View.VISIBLE);
+            dataclear.setVisibility(View.VISIBLE);
+        } else {
+            super.onBackPressed();
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -150,8 +169,10 @@ public class MainPage extends AppCompatActivity {
                         goalEditText.setText("");
                     }
                     //검색결과 숨김
+
                     Mapframelayout.setVisibility(View.GONE);
                     searchPathListView.setVisibility(View.GONE);
+                    dataclear.setVisibility(View.VISIBLE);
                     recordPlaceList.setVisibility(View.VISIBLE);
                     resultListView.setVisibility(View.GONE);
                 }
@@ -173,6 +194,7 @@ public class MainPage extends AppCompatActivity {
                     //검색결과 숨김
                     Mapframelayout.setVisibility(View.GONE);
                     searchPathListView.setVisibility(View.GONE);
+                    dataclear.setVisibility(View.VISIBLE);
                     recordPlaceList.setVisibility(View.VISIBLE);
                     resultListView.setVisibility(View.GONE);
                 }
@@ -189,11 +211,13 @@ public class MainPage extends AppCompatActivity {
                 if(Startsearched==false)
                 {
                     search(startEditText, 0);
+                    Mapframelayout.setVisibility(View.GONE);
                     recordPlaceList.setVisibility(View.GONE);
                     resultListView.setVisibility(View.VISIBLE);
                 }
                 if(startEditText.getText().toString().isEmpty())
                 {
+                    dataclear.setVisibility(View.VISIBLE);
                     recordPlaceList.setVisibility(View.VISIBLE);
                     resultListView.setVisibility(View.GONE);
                 }
@@ -223,10 +247,13 @@ public class MainPage extends AppCompatActivity {
                 {
                     search(goalEditText, 1);
                     recordPlaceList.setVisibility(View.GONE);
+                    Mapframelayout.setVisibility(View.GONE);
                     resultListView.setVisibility(View.VISIBLE);
+
                 }
                 if(goalEditText.getText().toString().isEmpty())
                 {
+                    dataclear.setVisibility(View.VISIBLE);
                     recordPlaceList.setVisibility(View.VISIBLE);
                     resultListView.setVisibility(View.GONE);
                 }
@@ -615,9 +642,11 @@ public class MainPage extends AppCompatActivity {
             @Override
             public void onResponse(Call<OdsayData> call, Response<OdsayData> response) {
                 if (response.isSuccessful()) {
+
                     pathInfoList.clear();
                     OdsayData searchResult = response.body();
-                    busLogic(searchResult);
+                        busLogic(searchResult);
+
                 }
             }
 
@@ -646,8 +675,9 @@ public class MainPage extends AppCompatActivity {
                     Gson json=new Gson();
                     String j=json.toJson(searchResult);
                     Log.d("mylog",j);
-
-                    busLogicAdd(searchResult,MypathInfo,"start");
+                    if(searchResult.getResult()!=null) {
+                        busLogicAdd(searchResult, MypathInfo, "start");
+                    }
                 }
             }
 
@@ -673,8 +703,10 @@ public class MainPage extends AppCompatActivity {
                     Gson json=new Gson();
                     String j=json.toJson(searchResult);
                     Log.d("mylog",j);
+                    if(searchResult.getResult()!=null) {
+                        busLogicAdd(searchResult,MypathInfo,"end");
+                    }
 
-                    busLogicAdd(searchResult,MypathInfo,"end");
                 }
             }
             @Override
@@ -685,6 +717,7 @@ public class MainPage extends AppCompatActivity {
         });
     }
     private void busLogicAdd(OdsayData searchResult,PathInfo myPathInfo,String startorend) {
+        if(searchResult.getResult()!=null) {
         int count = 0;
             PathInfo pathInfo = new PathInfo();
             List<Integer> startid=new ArrayList<>();
@@ -692,83 +725,89 @@ public class MainPage extends AppCompatActivity {
             List<Integer> endid=new ArrayList<>();
             endid.add(0);
 
-            for (OdsayData.Path path : searchResult.getResult().getPath()) {
-                if (path.getPathType() == 2) {
-                    myPathInfo.addTotalTime(path.getInfo().getTotalTime());
-                    for (int i = 0; i < path.getSubPath().size(); i++) {
-                        if (path.getSubPath().get(i).getTrafficType() == 3) {//도보
-                            List<String> busNos = new ArrayList<>();
-                            busNos.add("도보");
-                            //도보는 x,y값은 없고 시간만 나타내고 있음
-                            //따라서, x,y값을 받으려면 for문으로 index값을 통하여 x,y값을 받아오는 수밖에 없음
-                            if (i == 0) {
-                                if (startorend == "start") {
-                                    pathInfo.WalkSetSubPath(busNos, Mylocation.StartPlace.getPlaceName(), path.getSubPath().get(i + 1).getStartName(), Mylocation.StartPlace.getX(), Mylocation.StartPlace.getY(), path.getSubPath().get(i + 1).getStartX(), path.getSubPath().get(i + 1).getStartY(), path.getSubPath().get(i).getTrafficType());
+                for (OdsayData.Path path : searchResult.getResult().getPath()) {
+                    if (path.getPathType() == 2) {
+                        myPathInfo.addTotalTime(path.getInfo().getTotalTime());
+                        List<Integer> busIDs = new ArrayList<>();
+                        for (int i = 0; i < path.getSubPath().size(); i++) {
+                            if (path.getSubPath().get(i).getTrafficType() == 3) {//도보
+                                List<String> busNos = new ArrayList<>();
+                                busNos.add("도보");
+                                //도보는 x,y값은 없고 시간만 나타내고 있음
+                                //따라서, x,y값을 받으려면 for문으로 index값을 통하여 x,y값을 받아오는 수밖에 없음
+                                if (i == 0) {
+                                    if (startorend == "start") {
+                                        pathInfo.WalkSetSubPath(busNos, Mylocation.StartPlace.getPlaceName(), path.getSubPath().get(i + 1).getStartName(), Mylocation.StartPlace.getX(), Mylocation.StartPlace.getY(), path.getSubPath().get(i + 1).getStartX(), path.getSubPath().get(i + 1).getStartY(), path.getSubPath().get(i).getTrafficType());
+                                    }
+                                    if (startorend == "end") {
+                                        pathInfo.WalkSetSubPath(busNos, myPathInfo.getEndNames().get(myPathInfo.getEndNames().size() - 1), path.getSubPath().get(i + 1).getStartName(), myPathInfo.getendx().get(myPathInfo.getendx().size() - 1),
+                                                myPathInfo.getendy().get(myPathInfo.getendy().size() - 1), path.getSubPath().get(i + 1).getStartX(), path.getSubPath().get(i + 1).getStartY(), path.getSubPath().get(i).getTrafficType());
+                                    }
+                                } else if (i == path.getSubPath().size() - 1) {
+                                    if (startorend == "start") {
+                                        pathInfo.WalkSetSubPath(busNos, path.getSubPath().get(i - 1).getEndName(), myPathInfo.getStartNames().get(0), path.getSubPath().get(i - 1).getEndX(), path.getSubPath().get(i - 1).getEndY(), myPathInfo.getstartx().get(0), myPathInfo.getstarty().get(0), path.getSubPath().get(i).getTrafficType());
+                                    }
+                                    if (startorend == "end") {
+                                        pathInfo.WalkSetSubPath(busNos, path.getSubPath().get(i - 1).getEndName(), Mylocation.GoalPlace.getPlaceName(), path.getSubPath().get(i - 1).getEndX(), path.getSubPath().get(i - 1).getEndY(), Mylocation.GoalPlace.getX(), Mylocation.GoalPlace.getY(), path.getSubPath().get(i).getTrafficType());
+                                    }
+                                } else {
+                                    pathInfo.WalkSetSubPath(busNos, path.getSubPath().get(i - 1).getEndName(), path.getSubPath().get(i + 1).getStartName(), path.getSubPath().get(i - 1).getEndX(), path.getSubPath().get(i - 1).getEndY(), path.getSubPath().get(i + 1).getStartX(), path.getSubPath().get(i + 1).getStartY(), path.getSubPath().get(i).getTrafficType());
                                 }
-                                if (startorend == "end") {
-                                    pathInfo.WalkSetSubPath(busNos, myPathInfo.getEndNames().get(myPathInfo.getEndNames().size() - 1), path.getSubPath().get(i + 1).getStartName(), myPathInfo.getendx().get(myPathInfo.getendx().size() - 1),
-                                            myPathInfo.getendy().get(myPathInfo.getendy().size() - 1), path.getSubPath().get(i + 1).getStartX(), path.getSubPath().get(i + 1).getStartY(), path.getSubPath().get(i).getTrafficType());
-                                }
-                            } else if (i == path.getSubPath().size() - 1) {
-                                if (startorend == "start") {
-                                    pathInfo.WalkSetSubPath(busNos, path.getSubPath().get(i - 1).getEndName(), myPathInfo.getStartNames().get(0), path.getSubPath().get(i - 1).getEndX(), path.getSubPath().get(i - 1).getEndY(), myPathInfo.getstartx().get(0), myPathInfo.getstarty().get(0), path.getSubPath().get(i).getTrafficType());
-                                }
-                                if (startorend == "end") {
-                                    pathInfo.WalkSetSubPath(busNos, path.getSubPath().get(i - 1).getEndName(), Mylocation.GoalPlace.getPlaceName(), path.getSubPath().get(i - 1).getEndX(), path.getSubPath().get(i - 1).getEndY(), Mylocation.GoalPlace.getX(), Mylocation.GoalPlace.getY(), path.getSubPath().get(i).getTrafficType());
-                                }
-                            } else {
-                                pathInfo.WalkSetSubPath(busNos, path.getSubPath().get(i - 1).getEndName(), path.getSubPath().get(i + 1).getStartName(), path.getSubPath().get(i - 1).getEndX(), path.getSubPath().get(i - 1).getEndY(), path.getSubPath().get(i + 1).getStartX(), path.getSubPath().get(i + 1).getStartY(), path.getSubPath().get(i).getTrafficType());
+                                count++;
+                            } else if (path.getSubPath().get(i).getTrafficType() == 2) { // 버스 경로인 경우
+                                List<String> busNos = path.getSubPath().get(i).getLane().stream()
+                                        .map(OdsayData.Lane::getBusNo)
+                                        .collect(Collectors.toList());
+                                Log.d("getBusID", Integer.toString(path.getSubPath().get(i).getLane().get(0).getBusID()));
+                                busIDs.add(path.getSubPath().get(i).getLane().get(0).getBusID());
+                                List<String> busLocalBlIDs = path.getSubPath().get(i).getLane().stream()
+                                        .map(OdsayData.Lane::getBusLocalBlID)
+                                        .collect(Collectors.toList());
+                                List<Integer> busCityCodes = path.getSubPath().get(i).getLane().stream()
+                                        .map(OdsayData.Lane::getBusCityCode)
+                                        .collect(Collectors.toList());
+                                pathInfo.setSubPath(busNos, busIDs, busLocalBlIDs, busCityCodes, path.getSubPath().get(i).getStartName(), path.getSubPath().get(i).getEndName(), path.getSubPath().get(i).getStartX(), path.getSubPath().get(i).getStartY(), path.getSubPath().get(i).getEndX(), path.getSubPath().get(i).getEndY(), path.getSubPath().get(i).getTrafficType());
+                                count++;
                             }
-                            count++;
-                        } else if (path.getSubPath().get(i).getTrafficType() == 2) { // 버스 경로인 경우
-                            List<String> busNos = path.getSubPath().get(i).getLane().stream()
-                                    .map(OdsayData.Lane::getBusNo)
-                                    .collect(Collectors.toList());
-                            List<Integer> busIDs = path.getSubPath().get(i).getLane().stream()
-                                    .map(OdsayData.Lane::getBusID)
-                                    .collect(Collectors.toList());
-                            List<String> busLocalBlIDs = path.getSubPath().get(i).getLane().stream()
-                                    .map(OdsayData.Lane::getBusLocalBlID)
-                                    .collect(Collectors.toList());
-                            List<Integer> busCityCodes = path.getSubPath().get(i).getLane().stream()
-                                    .map(OdsayData.Lane::getBusCityCode)
-                                    .collect(Collectors.toList());
-                            pathInfo.setSubPath(busNos,busIDs, busLocalBlIDs,busCityCodes,path.getSubPath().get(i).getStartName(), path.getSubPath().get(i).getEndName(), path.getSubPath().get(i).getStartX(), path.getSubPath().get(i).getStartY(), path.getSubPath().get(i).getEndX(), path.getSubPath().get(i).getEndY(), path.getSubPath().get(i).getTrafficType());
-                            count++;
+                            Gson gson = new Gson();
                         }
-                        Gson gson=new Gson();
-                    }
 
-                    if (startorend.equals("start")) {
-                        myPathInfo.addPathinfo(pathInfo, 0);
-                        myPathInfo.setStartEndID(startid,endid,"start");
-                    } else if (startorend.equals("end")) {
+                        if (startorend.equals("start")) {
+                            myPathInfo.addPathinfo(pathInfo, 0);
+                            myPathInfo.setStartEndID(startid, endid, "start");
+                        } else if (startorend.equals("end")) {
 
-                        myPathInfo.addPathinfo(pathInfo, 1);
-                        pathInfoList.add(myPathInfo);
-                        myPathInfo.setStartEndID(startid,endid,"end");
-                    }
+                            myPathInfo.addPathinfo(pathInfo, 1);
+                            pathInfoList.add(myPathInfo);
+                            myPathInfo.setStartEndID(startid, endid, "end");
+                        }
 
-                    if (count >= 3) {
-                        break; // 최대 3개의 Path 객체만 처리하고 루프를 중단
+                        if (count >= 3) {
+                            break; // 최대 3개의 Path 객체만 처리하고 루프를 중단
+                        }
                     }
                 }
-            }
 
-        PathAdapter pathadapter = new PathAdapter(this, pathInfoList);
-        searchPathListView.setAdapter(pathadapter);
-        searchPathListView.setVisibility(View.VISIBLE);
+                PathAdapter pathadapter = new PathAdapter(this, pathInfoList);
+
+                searchPathListView.setAdapter(pathadapter);
+                dataclear.setVisibility(View.INVISIBLE);
+                searchPathListView.setVisibility(View.VISIBLE);
+            }
     }
     private void busLogic(OdsayData searchResult) {
         pathInfoList.clear();
         int count = 0;
         for (OdsayData.Path path : searchResult.getResult().getPath()) {
             PathInfo pathInfo=new PathInfo();
+
             // 도시내 길찾기의 경우
             if (searchResult.getResult().getSearchType()==0) {
                 pathInfo.setTotalTime(path.getInfo().getTotalTime());
                 if (path.getPathType() == 2) {
+                    List<Integer> busIDs=new ArrayList<>();
                     for (int i = 0; i < path.getSubPath().size(); i++) {
+
                         if (path.getSubPath().get(i).getTrafficType() == 3) {//도보
                             List<String> busNos = new ArrayList<>();
                             busNos.add("도보");
@@ -786,9 +825,8 @@ public class MainPage extends AppCompatActivity {
                             List<String> busNos = path.getSubPath().get(i).getLane().stream()
                                     .map(OdsayData.Lane::getBusNo)
                                     .collect(Collectors.toList());
-                            List<Integer> busIDs=path.getSubPath().get(i).getLane().stream()
-                                            .map(OdsayData.Lane::getBusID)
-                                            .collect(Collectors.toList());
+                            Log.d("getBusID",Integer.toString(path.getSubPath().get(i).getLane().get(0).getBusID()));
+                            busIDs.add(path.getSubPath().get(i).getLane().get(0).getBusID());
                             List<String> busLocalBlIDs=path.getSubPath().get(i).getLane().stream()
                                     .map(OdsayData.Lane::getBusLocalBlID)
                                     .collect(Collectors.toList());
@@ -826,9 +864,9 @@ public class MainPage extends AppCompatActivity {
                         pathInfo.WalkSetSubPath(busNos,subPath.get(i).getStartName(), subPath.get(i).getEndName(), subPath.get(i).getStartX(), subPath.get(i).getStartY(), subPath.get(i).getEndX(), subPath.get(i).getEndY(), subPath.get(i).getTrafficType());
                         pathInfo.setStartEndID(startID,endID,"end");
                     }
-                    pathInfoList.clear();
+                    pathInfoList.add(pathInfo);
                     callApi1(Mylocation.StartPlace.getX(), Mylocation.StartPlace.getY(), pathInfo.getstartx().get(0), pathInfo.getstarty().get(0), pathInfo);
-                    callApi2(pathInfo.getendx().get(pathInfo.getendx().size()-1),pathInfo.getendy().get(pathInfo.getendy().size()-1),Mylocation.GoalPlace.getX(),Mylocation.GoalPlace.getY(),pathInfo);
+                    callApi2(pathInfo.getendx().get(pathInfo.getendx().size() - 1), pathInfo.getendy().get(pathInfo.getendy().size() - 1), Mylocation.GoalPlace.getX(), Mylocation.GoalPlace.getY(), pathInfo);
                     count++;
                 }
                 }
@@ -838,8 +876,10 @@ public class MainPage extends AppCompatActivity {
                 break; // 최대 3개의 Path 객체만 처리하고 루프를 중단
             }
         }
+        Log.d("pathInfoList",pathInfoList.toString());
         PathAdapter pathadapter = new PathAdapter(this, pathInfoList);
         searchPathListView.setAdapter(pathadapter);
+        dataclear.setVisibility(View.INVISIBLE);
         searchPathListView.setVisibility(View.VISIBLE);
     }
     private boolean isRecordExist(SQLiteDatabase database, String start, String end) {

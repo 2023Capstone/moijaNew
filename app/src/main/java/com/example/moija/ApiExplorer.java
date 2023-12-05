@@ -102,6 +102,7 @@ public class ApiExplorer implements Runnable {
 
     public void stop() {
         isRunning = false;
+        Log.d("Thread","스레드 종료");
         thread.interrupt();
     }
 
@@ -117,8 +118,8 @@ public class ApiExplorer implements Runnable {
                 bundle.putInt("totalCount", totalCount);
                 msg.setData(bundle);
                 handler.sendMessage(msg);
-
-                Thread.sleep(3000);
+                Log.d("Thread","스레드 작동");
+                Thread.sleep(1000);
 
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt(); // 스레드 중단
