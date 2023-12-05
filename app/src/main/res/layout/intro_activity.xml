@@ -1,41 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center">
+    android:layout_height="match_parent">
+    <!--    android:background="#92B2E3"-->
+
+    <ImageView
+        android:layout_width="365dp"
+        android:layout_height="361dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="90dp"
+        android:gravity="center"
+        android:src="@drawable/buss" />
 
     <TextView
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.424"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.374"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="가보자"
-        android:textColor="#0A94CC"
-        android:textSize="50dp"
-        android:textStyle="bold"
-        tools:layout_editor_absoluteX="100dp"
-        tools:layout_editor_absoluteY="203dp" />
-
+        android:layout_marginTop="390dp"
+        android:layout_marginLeft="110dp"
+        android:textColor="#01060E"
+        android:textSize="30dp"
+        android:textStyle="bold" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Going"
-        android:textSize="40dp"
+        android:text="GoGo"
+        android:textColor="#6496E3"
+        android:textSize="38dp"
         android:textStyle="bold"
-        tools:layout_editor_absoluteX="198dp"
-        tools:layout_editor_absoluteY="268dp" />
+        android:layout_marginTop="385dp"
+        android:layout_marginLeft="205dp"/>
 
-    <ImageView
-        android:layout_width="436dp"
-        android:layout_height="229dp"
-        android:background="@android:color/transparent"
-        android:src="@drawable/bbbus"
-        tools:layout_editor_absoluteX="-13dp"
-        tools:layout_editor_absoluteY="394dp" />
 
-</LinearLayout>
+</RelativeLayout>
