@@ -16,6 +16,8 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -65,6 +67,7 @@ public class MapFragment extends Fragment {
     //도착 위치를 나타내는 마커
     public Label goalLabel;
     public LinearLayout busInfoLayout;
+    public HorizontalScrollView horizontalScrollView;
     public List<String> BusNo=new ArrayList<>();
     public List<String> BusLocalBlID=new ArrayList<>();
 
@@ -117,6 +120,7 @@ public class MapFragment extends Fragment {
         MapView mapView = rootview.findViewById(R.id.map_view);
         busInfoLayout = rootview.findViewById(R.id.bus_info_layout);
         RemoveMarkerbtn=rootview.findViewById(R.id.removemarkerbtn);
+        horizontalScrollView = rootview.findViewById(R.id.horizontalScrollView);
 
         RemoveMarkerbtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -433,8 +437,36 @@ public class MapFragment extends Fragment {
                 arrowTextView.setGravity(Gravity.CENTER);
                 busInfoLayout.addView(arrowTextView);
             }
+
+            // busInfoLayout을 HorizontalScrollView 내에서 중앙에 위치시키기
+            centerBusInfoLayout();
         } else {
             Log.e("MapFragment", "busInfoLayout is null");
         }
+    }
+
+    private void centerBusInfoLayout() {
+        if (horizontalScrollView == null) {
+            Log.e("MapFragment", "horizontalScrollView is null");
+            return;
+        }
+        busInfoLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                int scrollViewWidth = horizontalScrollView.getWidth();
+                int busLayoutWidth = busInfoLayout.getWidth();
+
+                // 패딩 계산 로직은 scrollViewWidth가 busLayoutWidth보다 클 때만 적용
+                if (scrollViewWidth > busLayoutWidth) {
+                    int padding = (scrollViewWidth - busLayoutWidth) / 2;
+                    busInfoLayout.setPadding(padding, busInfoLayout.getPaddingTop(), padding, busInfoLayout.getPaddingBottom());
+                } else {
+                    // scrollViewWidth가 busLayoutWidth보다 작거나 같으면 패딩을 0으로 설정
+                    busInfoLayout.setPadding(0, busInfoLayout.getPaddingTop(), 0, busInfoLayout.getPaddingBottom());
+                }
+
+                horizontalScrollView.invalidate();
+            }
+        });
     }
 }
