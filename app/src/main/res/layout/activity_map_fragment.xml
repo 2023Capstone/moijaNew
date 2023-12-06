@@ -35,9 +35,11 @@
         android:layout_height="match_parent" />
 
         <HorizontalScrollView
+            android:id="@+id/horizontalScrollView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:background="@drawable/border"
             android:scrollbars="none"> <!-- 스크롤 바 없애기 -->
 
             <LinearLayout
@@ -45,7 +47,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
-                android:gravity="center"> <!-- 버스 정보를 가로로 스크롤 가능하게 -->
+                android:gravity="center"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                > <!-- 버스 정보를 가로로 스크롤 가능하게 -->
                 <!-- 버스 정보가 동적으로 추가될 공간 -->
             </LinearLayout>
         </HorizontalScrollView>
