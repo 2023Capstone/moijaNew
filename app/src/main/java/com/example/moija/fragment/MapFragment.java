@@ -5,6 +5,7 @@ import com.example.moija.R;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -416,6 +417,7 @@ public class MapFragment extends Fragment {
             // 버스 번호 텍스트 뷰 생성 및 설정
             TextView textView = new TextView(getContext());
             textView.setText(busNumber);
+            textView.setTypeface(null, Typeface.BOLD);
             textView.setLayoutParams(new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
