@@ -2,11 +2,20 @@ package com.example.moija.schedule;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.text.Layout;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.LeadingMarginSpan;
+import android.text.style.LineHeightSpan;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -16,8 +25,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.moija.ApiExplorer;
@@ -29,6 +42,7 @@ import com.example.moija.fragment.MapFragment;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -46,12 +60,13 @@ public class CityBus extends AppCompatActivity {
     private ImageButton backBtn;
     private Button getBusScheduleButton;
     private TextView busInfoTextView;
-    private TextView busScheduleTextView;
+    private TextView busScheduleTextView,busScheduleTextView2;
     private ScrollView busScheduleView;
     private ListView stationNamesListView;
     private CustomAdapter adapter; // 커스텀 어댑터
     private ApiExplorer apiExplorer;
     ArrayList Station;
+    private TableLayout tableLayout;
     private List<Integer> BusCityCode;
     private List<String> BusLocalBlID;
     private List<String> BusNo;
@@ -133,18 +148,22 @@ public class CityBus extends AppCompatActivity {
     public static int convertDpToPixel(float dp, Context context) {
         return (int) (dp * context.getResources().getDisplayMetrics().density);
     }
-
     @Override
-
+    public void onBackPressed(){
+        Intent intent = new Intent(CityBus.this, MainPage.class);
+        startActivity(intent);
+    }
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_citybus);
-
+        tableLayout=findViewById(R.id.tableLayout);
         backBtn = findViewById(R.id.backBtn);
         getBusScheduleButton = findViewById(R.id.getBusScheduleButton);
         busInfoTextView = findViewById(R.id.busInfoTextView);
         stationNamesListView = findViewById(R.id.stationNamesListView);
-        busScheduleTextView = findViewById(R.id.busScheduleTextView);
+        busScheduleTextView = findViewById(R.id.busScheduleTextView1);
+        busScheduleTextView2=findViewById(R.id.busScheduleTextView2);
         busScheduleView=findViewById(R.id.busScheduleView);
         Intent intent = getIntent();
         MapFragment.BusData busData = (MapFragment.BusData) intent.getSerializableExtra("key");
@@ -170,7 +189,6 @@ public class CityBus extends AppCompatActivity {
         // Toolbar에 이미지 뷰와 텍스트 뷰 추가
         LinearLayout busLayout = findViewById(R.id.busLayout); // Toolbar가 LinearLayout 또는 RelativeLayout 내에 있어야 함
         busLayout.setWeightSum(BusCityCode.size()); // 모든 뷰가 균등하게 배치되도록 weightSum 설정
-
         for (int i = 0; i < BusCityCode.size(); i++) {
             // 각 이미지와 텍스트를 위한 LinearLayout 생성
             LinearLayout singleBusLayout = new LinearLayout(this);
@@ -209,18 +227,20 @@ public class CityBus extends AppCompatActivity {
             singleBusLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(isintercitybus) {
-                        Intent intent = new Intent(CityBus.this, IntercityBus.class);
-                        intent.putExtra("key", busData);
-                        intent.putExtra("index", value);
-                        Log.d("value_index", Integer.toString(value));
-                        startActivity(intent);
-                    }else{
-                        Intent intent = new Intent(CityBus.this, CityBus.class);
-                        intent.putExtra("key", busData);
-                        intent.putExtra("index", value);
-                        Log.d("value_index", Integer.toString(value));
-                        startActivity(intent);
+                    if(index!=value) {
+                        if (isintercitybus) {
+                            Intent intent = new Intent(CityBus.this, IntercityBus.class);
+                            intent.putExtra("key", busData);
+                            intent.putExtra("index", value);
+                            Log.d("value_index", Integer.toString(value));
+                            startActivity(intent);
+                        } else {
+                            Intent intent = new Intent(CityBus.this, CityBus.class);
+                            intent.putExtra("key", busData);
+                            intent.putExtra("index", value);
+                            Log.d("value_index", Integer.toString(value));
+                            startActivity(intent);
+                        }
                     }
                 }
             });
@@ -350,11 +370,32 @@ public class CityBus extends AppCompatActivity {
 
 
             if (result != null) {
-                busScheduleTextView.setText("");
+                // TableLayout에 TableRow 추가
                 stationNamesListView.setVisibility(View.GONE);
                 ArrayList<String> resultSchedule = generateBusSchedule(result.getFirstTime(), result.getLastTime(), result.getInterval());
-                for(String resultschedule:resultSchedule){
-                    busScheduleTextView.append(resultschedule);
+                for(int i=0; i<resultSchedule.size()-1;i++){
+                    TableRow tableRow=new TableRow(getApplicationContext());
+                    tableRow.setBackgroundColor(Color.WHITE);
+                    TextView textview=new TextView(getApplicationContext());
+                    textview.setGravity(Gravity.CENTER);
+                    textview.setText(resultSchedule.get(i));
+                    TableRow.LayoutParams textViewParams = new TableRow.LayoutParams(
+                            TableRow.LayoutParams.WRAP_CONTENT,
+                            200
+                    );
+                    textViewParams.setMargins(3, 3, 3, 3);
+                    textview.setLayoutParams(textViewParams);
+                    textview.setTextSize(50);
+                    TextView textview2=new TextView(getApplicationContext());
+                    textview2.setText(resultSchedule.get(i+1));
+                    textview2.setTextSize(50);
+                    textview2.setGravity(Gravity.CENTER);
+                    textview2.setLayoutParams(textViewParams);
+                    textview.setBackgroundColor(Color.parseColor("#F7F7F7"));
+                    textview2.setBackgroundColor(Color.parseColor("#F7F7F7"));
+                    tableRow.addView(textview);
+                    tableRow.addView(textview2);
+                    tableLayout.addView(tableRow);
                 }
                 busScheduleView.setVisibility(View.VISIBLE);
                 busScheduleTextView.setVisibility(View.VISIBLE);
@@ -435,6 +476,7 @@ public class CityBus extends AppCompatActivity {
             }
         }
     }
+
 }
 
 

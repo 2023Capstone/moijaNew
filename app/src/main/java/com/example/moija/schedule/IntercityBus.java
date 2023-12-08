@@ -2,17 +2,21 @@ package com.example.moija.schedule;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,6 +27,7 @@ import com.example.moija.CustomAdapter;
 import com.example.moija.MainPage;
 import com.example.moija.R;
 import com.example.moija.fragment.MapFragment;
+import com.google.common.collect.Table;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,6 +48,8 @@ public class IntercityBus extends AppCompatActivity {
     private TextView startStationTextView;
     private TextView destStationTextView;
 
+    private TableLayout tableLayout;
+    private ImageButton backBtn;
     ArrayList Station;
     private List<Integer> BusCityCode;
     private List<String> BusLocalBlID;
@@ -56,17 +63,20 @@ public class IntercityBus extends AppCompatActivity {
     public static int convertDpToPixel(float dp, Context context) {
         return (int) (dp * context.getResources().getDisplayMetrics().density);
     }
-
+    @Override
+    public void onBackPressed(){
+        Intent intent = new Intent(IntercityBus.this, MainPage.class);
+        startActivity(intent);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intercitybus);
-
+        backBtn=findViewById(R.id.backBtn);
 //        getScheduleButton = findViewById(R.id.getScheduleButton);
-        busScheduleTextView = findViewById(R.id.busScheduleTextView);
         startStationTextView = findViewById(R.id.startStationTextView);
         destStationTextView = findViewById(R.id.destStationTextView);
-
+        tableLayout=findViewById(R.id.tableLayout);
         Intent intent = getIntent();
         MapFragment.BusData busData = (MapFragment.BusData) intent.getSerializableExtra("key");
         index = intent.getIntExtra("index", 0);
@@ -114,6 +124,14 @@ public class IntercityBus extends AppCompatActivity {
             Log.d("BusCitycode",BusCityCode.toString());
             Log.d("StartID",StartID.toString());
             Log.d("EndID",EndID.toString());
+            backBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(IntercityBus.this, MainPage.class);
+                    startActivity(intent);
+                }
+            });
+
             // 클릭 이벤트 설정
             int value = i;
             boolean isintercitybus=BusCityCode.get(i).equals(0);
@@ -164,6 +182,7 @@ public class IntercityBus extends AppCompatActivity {
         private final String startStationId;
         private final String destStationId;
 
+        private TextView busInfoTextView=findViewById(R.id.busInfoTextView);
         public GetBusScheduleTask(String startStationId, String destStationId){
             this.startStationId = startStationId;
             this.destStationId = destStationId;
@@ -173,6 +192,7 @@ public class IntercityBus extends AppCompatActivity {
             List<String> scheduleList = new ArrayList<>();
             String apiUrl=null;
             try {
+                busInfoTextView.setText(BusNo.get(index));
                 if(BusNo.get(index).equals("시외버스")) {
                     apiUrl = "https://api.odsay.com/v1/api/intercityServiceTime?apiKey=" + MainPage.OdsayAPI_KEY +
                             "&startStationID=" + startStationId + "&endStationID=" + destStationId;
@@ -225,14 +245,30 @@ public class IntercityBus extends AppCompatActivity {
         @Override
         protected void onPostExecute(List<String> scheduleList) {
             // UI에 스케줄 데이터를 표시
-            StringBuilder scheduleText = new StringBuilder();
-
-            for (String time : scheduleList) {
-                scheduleText.append(time).append("\n");
+            for (int i=0;i<scheduleList.size();i++) {
+                TableRow tableRow=new TableRow(getApplicationContext());
+                TableLayout.LayoutParams tableRowParams = new TableLayout.LayoutParams(
+                        TableLayout.LayoutParams.MATCH_PARENT,
+                        TableLayout.LayoutParams.WRAP_CONTENT
+                );
+                tableRow.setLayoutParams(tableRowParams);
+                tableRow.setBackgroundColor(Color.WHITE);
+                TextView textview = new TextView(getApplicationContext());
+                TableRow.LayoutParams textViewParams = new TableRow.LayoutParams(
+                        TableRow.LayoutParams.MATCH_PARENT,
+                        TableRow.LayoutParams.MATCH_PARENT,
+                        1.0f
+                );
+                textViewParams.setMargins(3, 3, 3, 3);
+                textview.setLayoutParams(textViewParams);
+                textview.setTextSize(50);
+                textview.setBackgroundColor(Color.parseColor("#F7F7F7"));
+                textview.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                textview.setGravity(Gravity.CENTER);
+                textview.setText(scheduleList.get(i));
+                tableRow.addView(textview);
+                tableLayout.addView(tableRow);
             }
-
-            busScheduleTextView.setText(scheduleText.toString());
-
             startStationTextView.setText(startTerminal);
             destStationTextView.setText(destTerminal);
 

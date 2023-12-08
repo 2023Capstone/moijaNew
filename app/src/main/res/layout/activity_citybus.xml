@@ -69,13 +69,34 @@
         android:layout_marginTop="200dp"
         android:orientation="vertical"
         android:visibility="gone">
-    <TextView
-        android:layout_width="match_parent"
-        android:textSize="50dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/busScheduleTextView"
-        android:gravity="center_horizontal"
-        android:visibility="gone"/>
+        <TableLayout
+            android:layout_width="match_parent"
+            android:id="@+id/tableLayout"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content"
+            android:stretchColumns="0,1">
+            <TableRow>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:textSize="50dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/busScheduleTextView1"
+                    android:background="#E2E2E2"
+                    android:text="출발 시간"
+                    android:layout_margin="1dp"
+                 />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:textSize="50dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/busScheduleTextView2"
+                    android:background="#E2E2E2"
+                    android:layout_margin="1dp"
+                    android:textAlignment="center"
+                    android:text="도착 시간"
+                  />
+            </TableRow>
+        </TableLayout>
     </ScrollView>
     <ListView
         android:id="@+id/stationNamesListView"

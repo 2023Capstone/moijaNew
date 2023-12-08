@@ -34,12 +34,12 @@
             android:exported="false" />
 
         <activity
-            android:name=".schedule.CityBus"
-            android:exported="true" />
+            android:name="com.example.moija.schedule.CityBus"
+            android:exported="false" />
 
         <activity
-            android:name=".schedule.IntercityBus"
-            android:exported="true" />
+            android:name="com.example.moija.schedule.IntercityBus"
+            android:exported="false" />
 
         <activity
             android:name="com.example.moija.IntroActivity"

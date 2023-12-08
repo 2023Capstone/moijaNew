@@ -5,6 +5,7 @@ import com.example.moija.R;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -16,6 +17,8 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -65,6 +68,7 @@ public class MapFragment extends Fragment {
     //도착 위치를 나타내는 마커
     public Label goalLabel;
     public LinearLayout busInfoLayout;
+    public HorizontalScrollView horizontalScrollView;
     public List<String> BusNo=new ArrayList<>();
     public List<String> BusLocalBlID=new ArrayList<>();
 
@@ -117,6 +121,7 @@ public class MapFragment extends Fragment {
         MapView mapView = rootview.findViewById(R.id.map_view);
         busInfoLayout = rootview.findViewById(R.id.bus_info_layout);
         RemoveMarkerbtn=rootview.findViewById(R.id.removemarkerbtn);
+        horizontalScrollView = rootview.findViewById(R.id.horizontalScrollView);
 
         RemoveMarkerbtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -274,7 +279,6 @@ public class MapFragment extends Fragment {
     //시작점 좌표,도착점 좌표와 대중교통 종류에 따라 그리기 예시
     //오디세이 결과값에 따라 그리도록 수정 필요함
     public void Draw(){
-
         int blidcitycodeindex=0;
         int busidindex=0;
         busList.clear();
@@ -299,24 +303,52 @@ public class MapFragment extends Fragment {
                 BusOrder.add(Selectedpath.getTrafficType().get(i));
             }
         }
+        Log.d("BusIDS",Selectedpath.getBusIDs().toString());
+        Log.d("BusOrder",BusOrder.toString());
         for(int i=0; i<BusOrder.size();i++)
         {
-            if(BusOrder.get(i)==2){
-                BusLocalBlID.add(Selectedpath.getBusLocalBlIDs().get(blidcitycodeindex).get(0));
-                BusCityCode.add(Selectedpath.getBusCityCodes().get(blidcitycodeindex).get(0));
-                BusID.add(Selectedpath.getBusIDs().get(busidindex).get(0));
-                blidcitycodeindex++;
-                busidindex+=3;
-            }else if(BusOrder.get(i)==6){
-                BusLocalBlID.add("시외버스");
-                BusID.add(0);
-                BusCityCode.add(0);
-            }else if(BusOrder.get(i)==5){
-                BusLocalBlID.add("고속버스");
-                BusID.add(0);
-                BusCityCode.add(0);
+            if(BusOrder.contains(6) || BusOrder.contains(5)) {
+                if (BusOrder.get(i) == 2) {
+                    BusLocalBlID.add(Selectedpath.getBusLocalBlIDs().get(blidcitycodeindex).get(0));
+                    BusCityCode.add(Selectedpath.getBusCityCodes().get(blidcitycodeindex).get(0));
+                    if (busidindex <= Selectedpath.getBusIDs().size()) {
+                        if (Selectedpath.getBusIDs().get(busidindex) != null) {
+                            for(int localbusindex=0; localbusindex<Selectedpath.getBusIDs().get(busidindex).size(); localbusindex++) {
+                                BusID.add(Selectedpath.getBusIDs().get(busidindex).get(localbusindex));
+                            }
+                            if (Selectedpath.getBusIDs().get(busidindex).size() <= 1) {
+                                busidindex += 3;
+                            }
+                        }
+                    }
+                    blidcitycodeindex++;
+                } else if (BusOrder.get(i) == 6) {
+                    BusLocalBlID.add("시외버스");
+                    BusID.add(0);
+                    busidindex += 1;
+                    BusCityCode.add(0);
+                } else if (BusOrder.get(i) == 5) {
+                    BusLocalBlID.add("고속버스");
+                    BusID.add(0);
+                    busidindex += 1;
+                    BusCityCode.add(0);
+                }
+            }
+            else{
+                if (BusOrder.get(i) == 2) {
+                    BusLocalBlID.add(Selectedpath.getBusLocalBlIDs().get(blidcitycodeindex).get(0));
+                    BusCityCode.add(Selectedpath.getBusCityCodes().get(blidcitycodeindex).get(0));
+                    if (busidindex <= Selectedpath.getBusIDs().size()) {
+                        if (Selectedpath.getBusIDs().get(busidindex) != null) {
+                            BusID.add(Selectedpath.getBusIDs().get(0).get(busidindex));
+                            busidindex += 1;
+                        }
+                    }
+                    blidcitycodeindex++;
+                }
             }
         }
+        Log.d("BusIDs", BusID.toString());
         Log.d("selectedpath",BusOrder.toString());
         for(int i=0; i<BusOrder.size();i++){
             if(BusOrder.get(i)==2){
@@ -385,6 +417,7 @@ public class MapFragment extends Fragment {
             // 버스 번호 텍스트 뷰 생성 및 설정
             TextView textView = new TextView(getContext());
             textView.setText(busNumber);
+            textView.setTypeface(null, Typeface.BOLD);
             textView.setLayoutParams(new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
@@ -406,8 +439,36 @@ public class MapFragment extends Fragment {
                 arrowTextView.setGravity(Gravity.CENTER);
                 busInfoLayout.addView(arrowTextView);
             }
+
+            // busInfoLayout을 HorizontalScrollView 내에서 중앙에 위치시키기
+            centerBusInfoLayout();
         } else {
             Log.e("MapFragment", "busInfoLayout is null");
         }
+    }
+
+    private void centerBusInfoLayout() {
+        if (horizontalScrollView == null) {
+            Log.e("MapFragment", "horizontalScrollView is null");
+            return;
+        }
+        busInfoLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                int scrollViewWidth = horizontalScrollView.getWidth();
+                int busLayoutWidth = busInfoLayout.getWidth();
+
+                // 패딩 계산 로직은 scrollViewWidth가 busLayoutWidth보다 클 때만 적용
+                if (scrollViewWidth > busLayoutWidth) {
+                    int padding = (scrollViewWidth - busLayoutWidth) / 2;
+                    busInfoLayout.setPadding(padding, busInfoLayout.getPaddingTop(), padding, busInfoLayout.getPaddingBottom());
+                } else {
+                    // scrollViewWidth가 busLayoutWidth보다 작거나 같으면 패딩을 0으로 설정
+                    busInfoLayout.setPadding(0, busInfoLayout.getPaddingTop(), 0, busInfoLayout.getPaddingBottom());
+                }
+
+                horizontalScrollView.invalidate();
+            }
+        });
     }
 }
