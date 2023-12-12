@@ -1,16 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center">
+    android:layout_height="match_parent">
+    <!--    android:background="#92B2E3"-->
+
+    <ImageView
+        android:layout_width="365dp"
+        android:layout_height="361dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="90dp"
+        android:gravity="center"
+        android:src="@drawable/buss2" />
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="MoYeo"
-        android:textAlignment="center"
-        android:textColor="#0A94CC"
-        android:textSize="60dp"
+        android:text="가보자"
+        android:layout_marginTop="390dp"
+        android:layout_marginLeft="110dp"
+        android:textColor="#01060E"
+        android:textSize="30dp"
         android:textStyle="bold" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="GoGo"
+        android:textColor="#6496E3"
+        android:textSize="38dp"
+        android:textStyle="bold"
+        android:layout_marginTop="385dp"
+        android:layout_marginLeft="205dp"/>
 
-</LinearLayout>
+
+</RelativeLayout>
