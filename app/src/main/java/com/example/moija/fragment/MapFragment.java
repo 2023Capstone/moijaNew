@@ -286,9 +286,8 @@ public class MapFragment extends Fragment {
         EndID.clear();
         Gson gson=new Gson();
         Log.d("selectedpath",gson.toJson(Selectedpath));
-        for(int i=0; i<Selectedpath.getBusNos().size(); i++)
-        {
-            if(!Selectedpath.getBusNos().get(i).contains("도보")){
+        for(int i=0; i<Selectedpath.getBusNos().size(); i++) {
+            if (!Selectedpath.getBusNos().get(i).contains("도보")) {
                 BusNo.add(Selectedpath.getBusNos().get(i).get(0));
             }
         }

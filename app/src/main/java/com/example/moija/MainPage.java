@@ -675,6 +675,7 @@ public class MainPage extends AppCompatActivity {
                     Gson json=new Gson();
                     String j=json.toJson(searchResult);
                     Log.d("mylog",j);
+
                     if(searchResult.getResult()!=null) {
                         busLogicAdd(searchResult, MypathInfo, "start");
                     }
@@ -699,12 +700,17 @@ public class MainPage extends AppCompatActivity {
             @Override
             public void onResponse(Call<OdsayData> call, Response<OdsayData> response) {
                 if (response.isSuccessful()) {
+
                     OdsayData searchResult = response.body();
                     Gson json=new Gson();
                     String j=json.toJson(searchResult);
                     Log.d("mylog",j);
                     if(searchResult.getResult()!=null) {
                         busLogicAdd(searchResult,MypathInfo,"end");
+
+                    }
+                    else{
+                        pathInfoList.add(MypathInfo);
                     }
 
                 }
@@ -718,7 +724,8 @@ public class MainPage extends AppCompatActivity {
     }
     private void busLogicAdd(OdsayData searchResult,PathInfo myPathInfo,String startorend) {
         if(searchResult.getResult()!=null) {
-        int count = 0;
+
+            int count = 0;
             PathInfo pathInfo = new PathInfo();
             List<Integer> startid=new ArrayList<>();
             startid.add(0);
@@ -772,15 +779,16 @@ public class MainPage extends AppCompatActivity {
                             Gson gson = new Gson();
                         }
 
+
                         if (startorend.equals("start")) {
                             myPathInfo.addPathinfo(pathInfo, 0);
                             myPathInfo.setStartEndID(startid, endid, "start");
                         } else if (startorend.equals("end")) {
-
                             myPathInfo.addPathinfo(pathInfo, 1);
-                            pathInfoList.add(myPathInfo);
                             myPathInfo.setStartEndID(startid, endid, "end");
+                            pathInfoList.add(myPathInfo);
                         }
+
 
                         if (count >= 3) {
                             break; // 최대 3개의 Path 객체만 처리하고 루프를 중단
@@ -838,8 +846,9 @@ public class MainPage extends AppCompatActivity {
                             Log.d("buscitycode",busCityCodes.toString());
                             pathInfo.setSubPath(busNos,busIDs, busLocalBlIDs,busCityCodes,path.getSubPath().get(i).getStartName(), path.getSubPath().get(i).getEndName(), path.getSubPath().get(i).getStartX(), path.getSubPath().get(i).getStartY(), path.getSubPath().get(i).getEndX(), path.getSubPath().get(i).getEndY(), path.getSubPath().get(i).getTrafficType());
                         }
+                        pathInfoList.add(pathInfo);
                     }
-                    pathInfoList.add(pathInfo);
+
                     count++;
                     //도시간 길찾기의 경우
                 }
@@ -864,18 +873,20 @@ public class MainPage extends AppCompatActivity {
                         pathInfo.WalkSetSubPath(busNos,subPath.get(i).getStartName(), subPath.get(i).getEndName(), subPath.get(i).getStartX(), subPath.get(i).getStartY(), subPath.get(i).getEndX(), subPath.get(i).getEndY(), subPath.get(i).getTrafficType());
                         pathInfo.setStartEndID(startID,endID,"end");
                     }
-                    pathInfoList.add(pathInfo);
+
                     callApi1(Mylocation.StartPlace.getX(), Mylocation.StartPlace.getY(), pathInfo.getstartx().get(0), pathInfo.getstarty().get(0), pathInfo);
                     callApi2(pathInfo.getendx().get(pathInfo.getendx().size() - 1), pathInfo.getendy().get(pathInfo.getendy().size() - 1), Mylocation.GoalPlace.getX(), Mylocation.GoalPlace.getY(), pathInfo);
                     count++;
                 }
-                }
+            }
 
             // 처리한 Path 객체의 수 증가
             if (count >= 3) {
                 break; // 최대 3개의 Path 객체만 처리하고 루프를 중단
             }
+
         }
+
         Log.d("pathInfoList",pathInfoList.toString());
         PathAdapter pathadapter = new PathAdapter(this, pathInfoList);
         searchPathListView.setAdapter(pathadapter);
