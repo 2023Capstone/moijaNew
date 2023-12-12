@@ -847,9 +847,9 @@ public class MainPage extends AppCompatActivity {
                             Log.d("buscitycode",busCityCodes.toString());
                             pathInfo.setSubPath(busNos,busIDs, busLocalBlIDs,busCityCodes,path.getSubPath().get(i).getStartName(), path.getSubPath().get(i).getEndName(), path.getSubPath().get(i).getStartX(), path.getSubPath().get(i).getStartY(), path.getSubPath().get(i).getEndX(), path.getSubPath().get(i).getEndY(), path.getSubPath().get(i).getTrafficType());
                         }
-                        pathInfoList.add(pathInfo);
-                    }
 
+                    }
+                    pathInfoList.add(pathInfo);
                     count++;
                     //도시간 길찾기의 경우
                 }
